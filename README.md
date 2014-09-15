@@ -1,1 +1,1 @@
-##tivo-php: Communicate with a S3 TiVo via Guzzle  
+##tivo-php: Communicate with a S3 TiVo via Guzzle
