@@ -11,6 +11,6 @@
 		}
 	],
 	"autoload": {
-		"classmap": ["src/"]
-	}
+        "psr-0": { "JimLind\\tivo-php": "src" }
+    }
 }
