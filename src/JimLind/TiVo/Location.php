@@ -26,7 +26,7 @@ class Location
             return false;
         }
 
-        $ipMatch = parseAvahiOutput($avahiOutput);
+        $ipMatch = $this->parseAvahi($avahiOutput);
         if ($ipMatch) {
             return $ipMatch;
         }
