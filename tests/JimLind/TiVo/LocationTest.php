@@ -11,17 +11,17 @@ class LocationTest extends \PHPUnit_Framework_TestCase {
     private $fixture;
 
     public function setUp() {
-        $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
-                             ->disableOriginalConstructor()
-                             ->getMock();
-
         $this->process = $this->getMockBuilder('\Symfony\Component\Process\Process')
                               ->disableOriginalConstructor()
                               ->getMock();
 
+        $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
+                             ->disableOriginalConstructor()
+                             ->getMock();
+        
         $this->fixture = new TiVo\Location(
-            $this->logger,
-            $this->process
+            $this->process,
+            $this->logger
         );
     }
 
