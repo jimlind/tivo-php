@@ -1,6 +1,6 @@
 <?php
 
-namespace JimLind\tivo-php;
+namespace JimLind\TiVo;
 
 use Monolog\Logger;
 use Symfony\Component\Process\Process;

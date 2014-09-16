@@ -1,16 +1,21 @@
 {
-	"name": "jimlind/tivo-php",
-	"description": "Communicate with a S3 TiVo via Guzzle",
-	"keywords": ["tivo", "guzzle"],
-	"homepage": "https://github.com/jimlind/tivo-php",
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Jim Lind",
-			"homepage": "http://about.me/jlind"
-		}
-	],
-	"autoload": {
-        "psr-0": { "JimLind\\tivo-php": "src" }
+    "name": "jimlind/tivo-php",
+    "description": "Communicate with a S3 TiVo via Guzzle",
+    "keywords": ["tivo", "guzzle"],
+    "homepage": "https://github.com/jimlind/tivo-php",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jim Lind",
+            "homepage": "http://about.me/jlind"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "~4.2",
+        "psr/log": "~1.0",
+        "symfony/process": "~2.5"
+    },
+    "autoload": {
+        "psr-0": { "JimLind\\TiVo": "src" }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace JimLind\tivo-php;
+namespace JimLind\TiVo;
 
 class Show {
 
