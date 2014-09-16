@@ -2,48 +2,49 @@
 
 namespace JimLind\TiVo;
 
-use Psr\Log;
-use Symfony\Component\Process;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Process;
 
 class Location
 {
+    protected $process = null;
     protected $logger = null;
 
-    function __construct(Log\LoggerInterface $logger = null) {
-        if ($logger !== null) {
-            $this->logger = $logger;
-        }
+    function __construct(Process $process, LoggerInterface $logger) {
+        $this->$process = $process;
+        $this->logger   = $logger;
     }
 
     public function find() {
         $avahiOutput = $this->fetchAvahi();
 
         if (empty($avahiOutput)) {
-            $this->logger->addWarning('Problem locating a proper device on the
-                network. The avahi-browse tool may not be installed.');
+            $this->logger->warning(
+                'Problem locating a proper device on the network. ' .
+                'The avahi-browse tool may not be installed. '
+            );
             return false;
         }
 
         $ipMatch = parseAvahiOutput($avahiOutput);
-        if (empty($ipMatch)) {
-            $this->logger->addWarning('Unable to parse IP from Avahi.');
-            return false;
-        } else {
+        if ($ipMatch) {
             return $ipMatch;
         }
 
-        $this->logger->addWarning('Unable to parse IP from Avahi.');
+        $this->logger->warning('Unable to parse IP from Avahi.');
         return false;
     }
-    
+
     protected function fetchAvahi() {
+        // Command to find the records for the TiVo on TCP
         $command = 'avahi-browse -l -r -t _tivo-videos._tcp';
-        $process = new Process\Process($command);
-        $process->setTimeout(60); // 1 minute
-        $process->run();
-        return $process->getOutput();
+
+        $this->process->setCommandLine($command);
+        $this->process->setTimeout(60); // 1 minute
+        $this->process->run();
+        return $this->process->getOutput();
     }
-    
+
     protected function parseAvahi($avahiOutput) {
         $matches = array();
         $pattern = '/^\s+address = \[(\d+\.\d+\.\d+\.\d+)\]$/m';
