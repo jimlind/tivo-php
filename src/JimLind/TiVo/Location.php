@@ -11,8 +11,8 @@ class Location
     protected $logger = null;
 
     function __construct(Process $process, LoggerInterface $logger) {
-        $this->$process = $process;
-        $this->logger   = $logger;
+        $this->process = $process;
+        $this->logger  = $logger;
     }
 
     public function find() {
