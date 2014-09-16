@@ -28,13 +28,13 @@ class LocationTest extends \PHPUnit_Framework_TestCase {
     /**
      * @dataProvider provider
      */
-    public function testLocatorFind($return, $output) {
+    public function testLocatorFind($return, $expected) {
         $this->process->expects($this->any())
                       ->method('getOutput')
                       ->will($this->returnValue($return));
 
         // Expect something to be logged if bad output.
-        if ($output === false) {
+        if ($expected === false) {
             $this->logger->expects($this->once())
 	                 ->method('warning');
         } else {
@@ -42,31 +42,31 @@ class LocationTest extends \PHPUnit_Framework_TestCase {
 		 ->method('warning');
         }
 
-        $found = $this->fixture->find();
-        $this->assertEquals($found, $output);
+        $actual = $this->fixture->find();
+        $this->assertEquals($expected, $actual);
     }
 
     public function provider() {
         return array(
             array(
                 'return' => null,
-                'output' => false,
+                'expected' => false,
             ),
             array(
                 'return' => 0,
-                'output' => false,
+                'expected' => false,
             ),
             array(
                 'return' => '',
-                'output' => false,
+                'expected' => false,
             ),
             array(
                 'return' => ' address = [192.168.1.187]',
-                'output' => '192.168.1.187',
+                'expected' => '192.168.1.187',
             ),
             array(
                 'return' => ' address = [192.168.1.X]',
-                'output' => false,
+                'expected' => false,
             ),
             array(
                 'return' => '+ eth0 IPv4 Living Room _tivo-videos._tcp' . PHP_EOL .
@@ -75,7 +75,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase {
                 ' address = [192.168.0.42]' . PHP_EOL .
                 ' port = [443]' . PHP_EOL .
                 ' txt = ["TSN=65200118047F449" "platform=tcd/Series3"]',
-                'output' => '192.168.0.42',
+                'expected' => '192.168.0.42',
             )
         );
     }
