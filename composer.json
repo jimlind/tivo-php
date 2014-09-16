@@ -13,7 +13,7 @@
     "require": {
         "guzzlehttp/guzzle": "~4.2",
         "psr/log": "~1.0",
-        "symfony/process": "~2.5"
+        "symfony/process": "2.5.4"
     },
     "autoload": {
         "psr-0": { "JimLind\\TiVo": "src" }
