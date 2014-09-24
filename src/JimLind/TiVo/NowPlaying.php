@@ -2,7 +2,7 @@
 
 namespace JimLind\TiVo;
 
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Process;
 
 class NowPlaying {
@@ -12,7 +12,7 @@ class NowPlaying {
     private $logger;
     private $process;
 
-    function __construct(Location $location, $mak, Logger $logger, Process $process) {
+    function __construct(Location $location, $mak, Process $process, LoggerInterface $logger) {
         $this->ip = $location->find();
         $this->mak = $mak;
         $this->logger = $logger;
@@ -24,7 +24,7 @@ class NowPlaying {
 
     public function download() {
         if ($this->ip === false) {
-            $this->logger->addWarning('Can not download without a TiVo.');
+            $this->logger->warning('Can not download without a TiVo.');
             return array();
         }
 

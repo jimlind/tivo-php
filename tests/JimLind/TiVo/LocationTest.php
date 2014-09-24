@@ -1,6 +1,6 @@
 <?php
 
-namespace JimLind\TiVo;
+namespace Tests\JimLind\TiVo;
 
 use JimLind\TiVo;
 
