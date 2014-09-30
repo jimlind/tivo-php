@@ -11,3 +11,5 @@ To get Guzzle to work you'll need PHP's implementation of cURL
 ```sh
 sudo apt-get install php5-curl
 ```
+### 100% Code Coverage!
+phpunit --coverage-text
