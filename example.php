@@ -3,6 +3,7 @@
 include 'vendor/autoload.php';
 
 $process = new Symfony\Component\Process\Process('');
+$guzzle = new GuzzleHttp\Client();
 
 class Logger implements Psr\Log\LoggerInterface
 {
@@ -18,4 +19,11 @@ class Logger implements Psr\Log\LoggerInterface
 }
 
 $location = new JimLind\TiVo\Location($process, new Logger());
-var_dump($location->find());
+$output = $location->find();
+var_dump($output);
+
+$ip  = '192.168.0.1';
+$mak = '7678999999';
+$nowPlaying = new JimLind\TiVo\NowPlaying($ip, $mak, $guzzle, new Logger());
+$output = $nowPlaying->download();
+var_dump($output);

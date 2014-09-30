@@ -7,62 +7,71 @@ use JimLind\TiVo;
 class NowPlayingTest extends \PHPUnit_Framework_TestCase {
 
     private $location;
-    private $process;
+    private $guzzle;
     private $logger;
+    private $response;
 
     public function setUp() {
         $this->location = $this->getMockBuilder('\JimLind\TiVo\Location')
                                ->disableOriginalConstructor()
                                ->getMock();
 
-        $this->process = $this->getMockBuilder('\Symfony\Component\Process\Process')
+        $this->guzzle = $this->getMockBuilder('\GuzzleHttp\Client')
                               ->disableOriginalConstructor()
                               ->getMock();
 
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
                              ->disableOriginalConstructor()
                              ->getMock();
+        
+        $this->response = $this->getMockBuilder('\GuzzleHttp\Message\Response')
+                               ->disableOriginalConstructor()
+                               ->getMock();
     }
 
     /**
      * @dataProvider nowPlayingDownloadProvider
      */
-    public function testNowPlayingDownload($ip, $return, $expected, $output) {
-        $this->location->expects($this->once())
-             ->method('find')
-             ->will($this->returnValue($ip));
-
-        // If the IP is legit.
-        if ($ip) {
-            // Basic setup for the process service
-            $this->process->expects($this->atLeastOnce())
-                 ->method('setCommandLine');
-            $this->process->expects($this->atLeastOnce())
-                 ->method('setTimeout');
-            $this->process->expects($this->atLeastOnce())
-                 ->method('run');
-
-            // Recursive return values
-            foreach ($return as $index => $xmlValue) {
-                $this->process->expects($this->at(($index * 4) + 3))
-                     ->method('getOutput')
-                     ->will($this->returnValue($xmlValue));
-            }
-        }
-
-        // Expect something to be logged if bad output.
-        if ($output === false) {
-            $this->logger->expects($this->once())
-                 ->method('warning');
-        } else {
-            $this->logger->expects($this->exactly(0))
-                 ->method('warning');
-        }
-
+    public function testNowPlayingDownload($xmlList, $expected) {
+        $ip  = rand();
+        $mak = rand();
+        
         // Constructor
         $nowPlaying = new TiVo\NowPlaying(
-            $this->location, 'MAK', $this->process, $this->logger
+            $ip, $mak, $this->guzzle, $this->logger
         );
+        
+        // Setup Options
+        $options = array(
+            'auth' =>  ['tivo', $mak, 'digest'],
+            'query' => array(
+                'Command' => 'QueryContainer',
+                'Container' => '/NowPlaying',
+                'Recurse' => 'Yes',
+                'AnchorOffset' => 0,
+            ),
+            'verify' => false,
+        );
+
+        $count = 0;
+        foreach($xmlList as $index => $xml) {
+            
+            $optionReplace = array('query' => array('AnchorOffset' => $index));
+            $optionInput = array_replace_recursive($options, $optionReplace);
+            
+            $this->guzzle->expects($this->at($count))
+                     ->method('get')
+                     ->with($this->equalTo('https://' . $ip . '/TiVoConnect'),
+                            $this->equalTo($optionInput))
+                     ->will($this->returnValue($this->response));
+        
+            $simpleXml = simplexml_load_string($xml);
+            $this->response->expects($this->at($count))
+                           ->method('xml')
+                           ->will($this->returnValue($simpleXml));
+            $count++;
+        }
+        
         // Download
         $actual = $nowPlaying->download();
         $this->assertEquals($expected, $actual);
@@ -71,38 +80,26 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase {
     public function nowPlayingDownloadProvider() {
         return array(
             array(
-                'ip' => false,
-                'return' => false,
+                'xmlList' => array(''),
                 'expected' => array(),
-                'output' => false,
             ),
             array(
-                'ip' => '192.168.0.1',
-                'return' => array(''),
-                'expected' => array(),
-                'output' => true,
-            ),
-            array(
-                'ip' => '192.168.0.1',
-                'return' => array(
+                'xmlList' => array(
                     '<xml><NorseWords>Ragnarok</NorseWords></xml>',
                 ),
                 'expected' => array(),
-                'output' => true,
             ),
             array(
-                'ip' => '192.168.0.1',
-                'return' => array(
-                    '<xml><ItemCount>2</ItemCount><Item /><Item /></xml>',
-                    '<xml><ItemCount>1</ItemCount><Item /></xml>',
-                    '<xml><ItemCount>0</ItemCount></xml>',
+                'xmlList' => array(
+                    0 => '<xml><ItemCount>2</ItemCount><Item /><Item /></xml>',
+                    2 => '<xml><ItemCount>1</ItemCount><Item /></xml>',
+                    3 => '<xml><ItemCount>0</ItemCount></xml>',
                 ),
                 'expected' => array(
                     new \SimpleXMLElement('<Item />'),
                     new \SimpleXMLElement('<Item />'),
                     new \SimpleXMLElement('<Item />'),
                 ),
-                'output' => true,
             ),
         );
     }

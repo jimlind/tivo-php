@@ -2,7 +2,7 @@
 
 namespace JimLind\TiVo;
 
-use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Client as GuzzleClient;
 use Psr\Log\LoggerInterface;
 
 class NowPlaying {
@@ -12,16 +12,19 @@ class NowPlaying {
     private $guzzle;
     private $logger;
 
-    function __construct($ip, $mak, Guzzle $guzzle, LoggerInterface $logger) {
+    function __construct($ip, $mak, GuzzleClient $guzzle, LoggerInterface $logger) {
         $this->url = 'https://' . $ip . '/TiVoConnect';
         $this->mak = $mak;
         $this->guzzle = $guzzle;
         $this->logger = $logger;
     }
 
+    /**
+     * 
+     * @return SimpleXMLElement[]
+     */
     public function download() {
-        $anchorOffset = 0;
-        $xmlFile = $this->downloadXmlFile($anchorOffset);
+        $xmlFile = $this->downloadXmlFile();
         $showList = $this->xmlFileToArray($xmlFile);
 
         while ($xmlFile) {
@@ -35,52 +38,21 @@ class NowPlaying {
         return $showList;
     }
 
-    private function downloadXmlFile($anchorOffset) {
-        $data = array(
-            'Command' => 'QueryContainer',
-            'Container' => '/NowPlaying',
-            'Recurse' => 'Yes',
-            'AnchorOffset' => $anchorOffset,
-        );
-        $config = array(
-            'stream_context' => [
-                'ssl' => [
-                    'allow_self_signed' => true
-                ],
-            ]
-        );
-        
-        $req = $this->guzzle->get($this->url, [
-            'query' => $data,
+    private function downloadXmlFile($anchorOffset = 0) {
+        $options = array(
             'auth' =>  ['tivo', $this->mak, 'digest'],
-            //'config' => $config,
+            'query' => array(
+                'Command' => 'QueryContainer',
+                'Container' => '/NowPlaying',
+                'Recurse' => 'Yes',
+                'AnchorOffset' => $anchorOffset,
+            ),
             'verify' => false,
-        ]);
-        
-        //$req->getCurlOptions()->set(CURLOPT_SSL_VERIFYHOST, false);
-        //$req->getCurlOptions()->set(CURLOPT_SSL_VERIFYPEER, false);
-        
-        //$response = $req->send();
-        
-        echo $req->getBody();
-        die;
-                
-        
-        $url = 'https://' . $this->ip . '/TiVoConnect?' . http_build_query($data);
-        $command = "curl -s '$url' -k --digest -u tivo:" . $this->mak;
+        );
 
-        /*
-        $this->process->setCommandLine($command);
-        $this->process->setTimeout(600); // 10 minutes
-        $this->process->run();
-
+        $response = $this->guzzle->get($this->url, $options);
+        $xml = $response->xml();
         
-        
-        $out = $this->process->getOutput();
-        var_dump($out);
-        die;
-        
-        $xml = simplexml_load_string($this->process->getOutput());
         if (!is_object($xml)) {
             return false;
         }
@@ -93,8 +65,6 @@ class NowPlaying {
         } else {
             return $xml;
         }
-         *
-         */
     }
 
     private function xmlFileToArray($simpleXml) {
