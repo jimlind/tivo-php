@@ -19,11 +19,9 @@ class Logger implements Psr\Log\LoggerInterface
 }
 
 $location = new JimLind\TiVo\Location($process, new Logger());
-$output = $location->find();
-var_dump($output);
+$ipAddress = $location->find();
 
 $ip  = '192.168.0.1';
 $mak = '7678999999';
 $nowPlaying = new JimLind\TiVo\NowPlaying($ip, $mak, $guzzle, new Logger());
-$output = $nowPlaying->download();
-var_dump($output);
+$xmlList = $nowPlaying->download();
