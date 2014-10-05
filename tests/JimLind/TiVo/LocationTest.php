@@ -4,13 +4,21 @@ namespace Tests\JimLind\TiVo;
 
 use JimLind\TiVo;
 
-class LocationTest extends \PHPUnit_Framework_TestCase {
+/**
+ * Test the TiVo\Location service.
+ */
+class LocationTest extends \PHPUnit_Framework_TestCase
+{
 
     private $logger;
     private $process;
     private $fixture;
 
-    public function setUp() {
+    /**
+     * Setup the PHPUnit Test
+     */
+    public function setUp()
+    {
         $this->process = $this->getMockBuilder('\Symfony\Component\Process\Process')
                               ->disableOriginalConstructor()
                               ->getMock();
@@ -18,7 +26,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase {
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
                              ->disableOriginalConstructor()
                              ->getMock();
-        
+
         $this->fixture = new TiVo\Location(
             $this->process,
             $this->logger
@@ -26,9 +34,15 @@ class LocationTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider provider
+     * Test the find method on TiVo/Location
+     * 
+     * @param null|string    $return   Simulated output from Avahi
+     * @param boolean|string $expected Expected result from find
+     * 
+     * @dataProvider locatorFindProvider
      */
-    public function testLocatorFind($return, $expected) {
+    public function testLocatorFind($return, $expected)
+    {
         $this->process->expects($this->any())
                       ->method('getOutput')
                       ->will($this->returnValue($return));
@@ -36,17 +50,23 @@ class LocationTest extends \PHPUnit_Framework_TestCase {
         // Expect something to be logged if bad output.
         if ($expected === false) {
             $this->logger->expects($this->once())
-	                 ->method('warning');
+                         ->method('warning');
         } else {
             $this->logger->expects($this->exactly(0))
-		 ->method('warning');
+                         ->method('warning');
         }
 
         $actual = $this->fixture->find();
         $this->assertEquals($expected, $actual);
     }
 
-    public function provider() {
+    /**
+     * Data provider for the test.
+     * 
+     * @return mixed[]
+     */
+    public function locatorFindProvider()
+    {
         return array(
             array(
                 'return' => null,

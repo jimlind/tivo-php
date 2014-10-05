@@ -5,14 +5,22 @@ namespace Tests\JimLind\TiVo;
 use GuzzleHttp\Exception\TransferException;
 use JimLind\TiVo;
 
-class NowPlayingTest extends \PHPUnit_Framework_TestCase {
+/**
+ * Test the TiVo\NowPlaying service.
+ */
+class NowPlayingTest extends \PHPUnit_Framework_TestCase
+{
 
     private $location;
     private $guzzle;
     private $logger;
     private $response;
 
-    public function setUp() {
+    /**
+     * Setup the PHPUnit Test
+     */
+    public function setUp()
+    {
         $this->location = $this->getMockBuilder('\JimLind\TiVo\Location')
                                ->disableOriginalConstructor()
                                ->getMock();
@@ -24,36 +32,46 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase {
         $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
                              ->disableOriginalConstructor()
                              ->getMock();
-        
+
         $this->response = $this->getMockBuilder('\GuzzleHttp\Message\Response')
                                ->disableOriginalConstructor()
                                ->getMock();
     }
 
-    public function testNowPlayingException() {
+    /**
+     * Test what happens when Guzzle throws an exception.
+     */
+    public function testNowPlayingException()
+    {
         $nowPlaying = new TiVo\NowPlaying(
             rand(), rand(), $this->guzzle, $this->logger
         );
-        
+
         $this->guzzle->method('get')
                      ->will($this->throwException(new TransferException));
-        
+
         $actual = $nowPlaying->download();
         $this->assertEquals(array(), $actual);
     }
-    
+
     /**
+     * Test the download method of TiVo/NowPlaying. 
+     *
+     * @param string[]           $xmlList  Array of XML strings
+     * @param SimpleXMLElement[] $expected Array of XML Elements
+     * 
      * @dataProvider nowPlayingDownloadProvider
      */
-    public function testNowPlayingDownload($xmlList, $expected) {
+    public function testNowPlayingDownload($xmlList, $expected)
+    {
         $ip  = rand();
         $mak = rand();
-        
+
         // Constructor
         $nowPlaying = new TiVo\NowPlaying(
             $ip, $mak, $this->guzzle, $this->logger
         );
-        
+
         // Setup Options
         $options = array(
             'auth' =>  ['tivo', $mak, 'digest'],
@@ -67,30 +85,38 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase {
         );
 
         $count = 0;
-        foreach($xmlList as $index => $xml) {
-            
+        foreach ($xmlList as $index => $xml) {
+
             $optionReplace = array('query' => array('AnchorOffset' => $index));
             $optionInput = array_replace_recursive($options, $optionReplace);
-            
+
             $this->guzzle->expects($this->at($count))
-                     ->method('get')
-                     ->with($this->equalTo('https://' . $ip . '/TiVoConnect'),
-                            $this->equalTo($optionInput))
-                     ->will($this->returnValue($this->response));
-        
+                         ->method('get')
+                         ->with(
+                             $this->equalTo('https://' . $ip . '/TiVoConnect'),
+                             $this->equalTo($optionInput)
+                         )
+                         ->will($this->returnValue($this->response));
+
             $simpleXml = simplexml_load_string($xml);
             $this->response->expects($this->at($count))
                            ->method('xml')
                            ->will($this->returnValue($simpleXml));
             $count++;
         }
-        
+
         // Download
         $actual = $nowPlaying->download();
         $this->assertEquals($expected, $actual);
     }
 
-    public function nowPlayingDownloadProvider() {
+    /**
+     * Data provider for the test.
+     * 
+     * @return mixed[]
+     */
+    public function nowPlayingDownloadProvider()
+    {
         return array(
             array(
                 'xmlList' => array('<xml />'),
