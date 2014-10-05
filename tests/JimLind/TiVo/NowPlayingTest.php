@@ -80,7 +80,7 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase {
     public function nowPlayingDownloadProvider() {
         return array(
             array(
-                'xmlList' => array(''),
+                'xmlList' => array('<xml />'),
                 'expected' => array(),
             ),
             array(
