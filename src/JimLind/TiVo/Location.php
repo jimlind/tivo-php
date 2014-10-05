@@ -15,11 +15,11 @@ class Location
 
     /**
      * Constructor
-     * 
+     *
      * @param \Symfony\Component\Process\Process $process The Symfony Process Component
      * @param \Psr\Log\LoggerInterface           $logger  A PSR-0 Logger
      */
-    public function __construct(Process $process, LoggerInterface $logger)
+    public function __construct(Process $process, LoggerInterface $logger = null)
     {
         $this->process = $process;
         $this->logger  = $logger;
@@ -27,17 +27,17 @@ class Location
 
     /**
      * Attempt to find the TiVo and log any problems.
-     * 
+     *
      * Returns IP address or false
-     * 
-     * @return boolean|string 
+     *
+     * @return boolean|string
      */
     public function find()
     {
         $avahiOutput = $this->fetchAvahi();
 
         if (empty($avahiOutput)) {
-            $this->logger->warning(
+            $this->warn(
                 'Problem locating a proper device on the network. ' .
                 'The avahi-browse tool may not be installed. '
             );
@@ -50,14 +50,14 @@ class Location
             return $ipMatch;
         }
 
-        $this->logger->warning('Unable to parse IP from Avahi.');
+        $this->warn('Unable to parse IP from Avahi.');
         // TiVo not found.
         return false;
     }
 
     /**
      * Execute the command line to run Avahi.
-     * 
+     *
      * @return string
      */
     protected function fetchAvahi()
@@ -74,9 +74,9 @@ class Location
 
     /**
      * Regular Expression to find IP in Avahi output.
-     * 
+     *
      * @param string $avahiOutput
-     * 
+     *
      * @return boolean|string
      */
     protected function parseAvahi($avahiOutput)
@@ -89,5 +89,17 @@ class Location
         }
 
         return false;
+    }
+
+    /**
+     * Logs a warning if a logger is available.
+     *
+     * @param string $warning
+     */
+    protected function warn($warning)
+    {
+        if ($this->logger) {
+            $this->logger->warning($warning);
+        }
     }
 }
