@@ -26,7 +26,7 @@ class NowPlaying
      * @param GuzzleHttp\Client        $guzzle A Guzzle Client
      * @param \Psr\Log\LoggerInterface $logger A PSR-0 Logger
      */
-    public function __construct($ip, $mak, GuzzleClient $guzzle, LoggerInterface $logger)
+    public function __construct($ip, $mak, GuzzleClient $guzzle, LoggerInterface $logger = null)
     {
         $this->url = 'https://' . $ip . '/TiVoConnect';
         $this->mak = $mak;
@@ -79,6 +79,8 @@ class NowPlaying
 
             return $response->xml();
         } catch (TransferException $exception) {
+            $this->warn($exception->getMessage());
+
             return new \SimpleXMLElement('<xml />');
         }
     }
@@ -100,6 +102,18 @@ class NowPlaying
         }
 
         return $shows;
+    }
+
+    /**
+     * Logs a warning if a logger is available.
+     *
+     * @param string $warning
+     */
+    protected function warn($warning)
+    {
+        if ($this->logger) {
+            $this->logger->warning($warning);
+        }
     }
 
 }
