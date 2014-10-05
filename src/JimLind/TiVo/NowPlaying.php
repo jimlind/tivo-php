@@ -79,7 +79,7 @@ class NowPlaying
 
             return $response->xml();
         } catch (TransferException $exception) {
-            return new SimpleXMLElement();
+            return new \SimpleXMLElement('<xml />');
         }
     }
 

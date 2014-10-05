@@ -2,6 +2,7 @@
 
 namespace Tests\JimLind\TiVo;
 
+use GuzzleHttp\Exception\TransferException;
 use JimLind\TiVo;
 
 class NowPlayingTest extends \PHPUnit_Framework_TestCase {
@@ -29,6 +30,18 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase {
                                ->getMock();
     }
 
+    public function testNowPlayingException() {
+        $nowPlaying = new TiVo\NowPlaying(
+            rand(), rand(), $this->guzzle, $this->logger
+        );
+        
+        $this->guzzle->method('get')
+                     ->will($this->throwException(new TransferException));
+        
+        $actual = $nowPlaying->download();
+        $this->assertEquals(array(), $actual);
+    }
+    
     /**
      * @dataProvider nowPlayingDownloadProvider
      */
