@@ -44,7 +44,7 @@ class Location
             // Exit early.
             return false;
         }
-        
+
         $ipMatch = $this->parseAvahi($avahiOutput);
         if ($ipMatch) {
             return $ipMatch;
