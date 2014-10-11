@@ -2,7 +2,11 @@
 
 namespace JimLind\TiVo\Model;
 
-class Show {
+/**
+ * Model of Show that's stored on the TiVo
+ */
+class Show
+{
 
     /**
      * @var integer
@@ -288,7 +292,8 @@ class Show {
      *
      * @return string
      */
-    public function getDetail() {
+    public function getDetail()
+    {
         return $this->showTitle . ':' . $this->episodeTitle . ':' . $this->episodeNumber;
     }
 
@@ -297,7 +302,8 @@ class Show {
      *
      * @return mixed[]
      */
-    public function getAsDBALArray() {
+    public function getAsDBALArray()
+    {
         return array(
             'id'             => $this->id,
             'show_title'     => $this->showTitle,
