@@ -45,6 +45,7 @@ class NowPlaying
     public function download($offset = 0)
     {
         $xmlFile = $this->downloadXmlFile($offset);
+        $this->removeNameSpace($xmlFile);
         $showList = $this->xmlFileToItemList($xmlFile);
         if (count($showList) > 0) {
             $this->returnList = array_merge($this->returnList, $showList);
@@ -104,6 +105,16 @@ class NowPlaying
         return $shows;
     }
 
+    /**
+     * Remove the namespaces from the XML element.
+     * 
+     * @param SimpleXMLElement $simpleXml
+     */
+    protected function removeNameSpace(&$simpleXml) {
+        $xmlString = $simpleXml->asXML();
+        $simpleXml = simplexml_load_string(preg_replace('/xmlns="[^"]+"/', '', $xmlString));
+    }
+    
     /**
      * Logs a warning if a logger is available.
      *
