@@ -95,14 +95,7 @@ class NowPlaying
      */
     private function xmlFileToItemList($simpleXml)
     {
-        $shows = array();
-        foreach ($simpleXml->children() as $child) {
-            if ($child->getName() == 'Item') {
-                $shows[] = $child;
-            }
-        }
-
-        return $shows;
+        return $simpleXml->xpath('//Item');
     }
 
     /**
