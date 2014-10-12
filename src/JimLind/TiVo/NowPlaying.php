@@ -100,14 +100,15 @@ class NowPlaying
 
     /**
      * Remove the namespaces from the XML element.
-     * 
+     *
      * @param SimpleXMLElement $simpleXml
      */
-    protected function removeNameSpace(&$simpleXml) {
+    protected function removeNameSpace(&$simpleXml)
+    {
         $xmlString = $simpleXml->asXML();
         $simpleXml = simplexml_load_string(preg_replace('/xmlns="[^"]+"/', '', $xmlString));
     }
-    
+
     /**
      * Logs a warning if a logger is available.
      *
