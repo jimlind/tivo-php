@@ -4,11 +4,19 @@ namespace Tests\JimLind\TiVo\Model;
 
 use JimLind\TiVo\Model;
 
-class ShowTest extends \PHPUnit_Framework_TestCase {
+/**
+ * Test the TiVo\Model\Show Model.
+ */
+class ShowTest extends \PHPUnit_Framework_TestCase
+{
 
-    public function testSettersAndGetters() {
+    /**
+     * Test normal setters and getters.
+     */
+    public function testSettersAndGetters()
+    {
         $show = new Model\Show();
-        
+
         $show->setId(1);
         $show->setShowTitle('Show Title');
         $show->setEpisodeNumber(2);
@@ -20,7 +28,7 @@ class ShowTest extends \PHPUnit_Framework_TestCase {
         $show->setStation('Station');
         $show->setHD(true);
         $show->setURL('URL');
-        
+
         $this->assertSame(1, $show->getId());
         $this->assertSame('Show Title', $show->getShowTitle());
         $this->assertSame(2, $show->getEpisodeNumber());
@@ -31,19 +39,23 @@ class ShowTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame(4, $show->getChannel());
         $this->assertSame('Station', $show->getStation());
         $this->assertSame(true, $show->getHD());
-        $this->assertSame('URL', $show->getURL()); 
+        $this->assertSame('URL', $show->getURL());
     }
-    
-    public function testConversionSettersAndGetters() {
+
+    /**
+     * Test converting setters and getters.
+     */
+    public function testConversionSettersAndGetters()
+    {
         $show = new Model\Show();
-        
+
         $show->setId('1');
         $show->setEpisodeNumber('2');
         $show->setDuration('3');
         $show->setDate('1/1/2001 12:00:00');
         $show->setChannel('4');
         $show->setHD(1);
-        
+
         $this->assertSame(1, $show->getId());
         $this->assertSame(2, $show->getEpisodeNumber());
         $this->assertSame(3, $show->getDuration());
@@ -51,12 +63,16 @@ class ShowTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame(4, $show->getChannel());
         $this->assertSame(true, $show->getHD());
     }
-    
-    public function testAlternateConversionSettersAndGetters() {
+
+    /**
+     * Test alternate converting setters and getters.
+     */
+    public function testAlternateConversionSettersAndGetters()
+    {
         $show = new Model\Show();
-        
+
         $show->setHD(0);
-        
+
         $this->assertSame(false, $show->getHD());
     }
 }

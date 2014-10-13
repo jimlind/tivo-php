@@ -90,5 +90,5 @@ class Location
 
         return false;
     }
-    
+
 }

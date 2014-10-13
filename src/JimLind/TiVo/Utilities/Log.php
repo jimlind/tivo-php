@@ -6,7 +6,7 @@ namespace JimLind\TiVo\Utilities;
  * Logger Helper Util
  */
 class Log
-{   
+{
     /**
      * Logs a warning if a logger is available.
      *
