@@ -2,6 +2,7 @@
 
 namespace JimLind\TiVo;
 
+use JimLind\TiVo\Utilities;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Process;
 
@@ -37,10 +38,9 @@ class Location
         $avahiOutput = $this->fetchAvahi();
 
         if (empty($avahiOutput)) {
-            $this->warn(
-                'Problem locating a proper device on the network. ' .
-                'The avahi-browse tool may not be installed. '
-            );
+            $warning = 'Problem locating a proper device on the network. ' .
+                       'The avahi-browse tool may not be installed. ';
+            Utilities\Log::warn($warning, $this->logger);
             // Exit early.
             return false;
         }
@@ -50,7 +50,7 @@ class Location
             return $ipMatch;
         }
 
-        $this->warn('Unable to parse IP from Avahi.');
+        Utilities\Log::warn('Unable to parse IP from Avahi.', $this->logger);
         // TiVo not found.
         return false;
     }
@@ -90,16 +90,5 @@ class Location
 
         return false;
     }
-
-    /**
-     * Logs a warning if a logger is available.
-     *
-     * @param string $warning
-     */
-    protected function warn($warning)
-    {
-        if ($this->logger) {
-            $this->logger->warning($warning);
-        }
-    }
+    
 }

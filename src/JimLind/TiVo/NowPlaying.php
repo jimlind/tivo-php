@@ -81,7 +81,7 @@ class NowPlaying
 
             return $response->xml();
         } catch (TransferException $exception) {
-            $this->warn($exception->getMessage());
+            Utilities\Log::warn($exception->getMessage(), $this->logger);
 
             return new \SimpleXMLElement('<xml />');
         }
@@ -97,18 +97,6 @@ class NowPlaying
     private function xmlFileToItemList($simpleXml)
     {
         return $simpleXml->xpath('//tivo:Item');
-    }
-
-    /**
-     * Logs a warning if a logger is available.
-     *
-     * @param string $warning
-     */
-    protected function warn($warning)
-    {
-        if ($this->logger) {
-            $this->logger->warning($warning);
-        }
     }
 
 }
