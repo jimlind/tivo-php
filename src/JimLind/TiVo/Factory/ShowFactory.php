@@ -3,8 +3,13 @@
 namespace JimLind\TiVo\Factory;
 
 use JimLind\TiVo\Model\Show;
+use JimLind\TiVo\Utilities;
 
-class ShowFactory {
+/**
+ * Build a Show Model
+ */
+class ShowFactory
+{
 
     /**
      * @var \JimLind\TiVo\Model\Show
@@ -25,36 +30,77 @@ class ShowFactory {
      * Create a Show from an XML Element.
      *
      * @param \SimpleXMLElement $xml
+     *
      * @return \JimLind\TiVo\Model\Show
      */
     public function createFromXML(\SimpleXMLElement $xml)
     {
-        $details   = $xml->Details;
-        $links     = $xml->Links;
-        $detailUrl = (string) $links->TiVoVideoDetails->Url;
+        $this->show = clone $this->show;
+        Utilities\XmlNameSpace::addTiVoNameSpace($xml);
 
-        preg_match('/.+?id=([0-9]+)$/', $detailUrl, $matches);
-        $id = $matches[1];
+        $detailList = $xml->xpath('tivo:Details');
+        $urlList = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
 
-        return $this->populateWithXMLPieces($id, $details, $links);
+        $detailXML = array_pop($detailList);
+        $urlString = (string) array_pop($urlList);
+
+        return $this->populateWithXMLPieces($detailXML, $urlString);
     }
 
-    protected function populateWithXMLPieces($id, $details, $links)
+    /**
+     * Populate the Model with data.
+     *
+     * @param \SimpleXMLElement $detailXML
+     * @param string            $urlString
+     *
+     * @return \JimLind\TiVo\Model\Show
+     */
+    protected function populateWithXMLPieces($detailXML, $urlString)
     {
-        $timestamp = hexdec($details->CaptureDate);
+        Utilities\XmlNameSpace::addTiVoNameSpace($detailXML);
 
-        $this->show->setId($id);
-        $this->show->setShowTitle($details->Title);
-        $this->show->setEpisodeTitle($details->EpisodeTitle);
-        $this->show->setEpisodeNumber($details->EpisodeNumber);
-        $this->show->setDuration($details->Duration);
-        $this->show->setDescription($details->Description);
-        $this->show->setChannel($details->SourceChannel);
-        $this->show->setStation($details->SourceStation);
-        $this->show->setHD(strtoupper($details->HighDefinition) == 'YES');
+        $this->show->setId($this->parseID($urlString));
+        $this->show->setShowTitle($this->popXPath($detailXML, 'Title'));
+        $this->show->setEpisodeTitle($this->popXPath($detailXML, 'EpisodeTitle'));
+        $this->show->setEpisodeNumber($this->popXPath($detailXML, 'EpisodeNumber'));
+        $this->show->setDuration($this->popXPath($detailXML, 'Duration'));
+        $this->show->setDescription($this->popXPath($detailXML, 'Description'));
+        $this->show->setChannel($this->popXPath($detailXML, 'SourceChannel'));
+        $this->show->setStation($this->popXPath($detailXML, 'SourceStation'));
+        $this->show->setHD(strtoupper($this->popXPath($detailXML, 'HighDefinition')) == 'YES');
+        $this->show->setURL($urlString);
+
+        $timestamp = hexdec($this->popXPath($detailXML, 'CaptureDate'));
         $this->show->setDate(new \DateTime("@$timestamp"));
-        $this->show->setURL($links->Content->Url);
 
         return $this->show;
+    }
+
+    protected function popXPath($xml, $path)
+    {
+        $pathList = $xml->xpath('tivo:' . $path);
+        if (count($pathList) == 1) {
+            return (string) array_pop($pathList);
+        }
+
+        return '';
+    }
+
+    /**
+     * Parses an ID from a download string.
+     *
+     * @param string $urlString
+     * 
+     * @return integer
+     */
+    protected function parseID($urlString)
+    {
+        $matches = array();
+        preg_match('/.+?id=([0-9]+)$/', $urlString, $matches);
+        if (count($matches) == 2) {
+            return (integer) $matches[1];
+        }
+
+        return 0;
     }
 }
