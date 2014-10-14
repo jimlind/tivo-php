@@ -287,35 +287,4 @@ class Show
         $this->url = (string) $url;
     }
 
-    /**
-     * Translate Show to a simple summary.
-     *
-     * @return string
-     */
-    public function getDetail()
-    {
-        return $this->showTitle . ':' . $this->episodeTitle . ':' . $this->episodeNumber;
-    }
-
-    /**
-     * Returns an associative array for use in DBAL
-     *
-     * @return mixed[]
-     */
-    public function getAsDBALArray()
-    {
-        return array(
-            'id'             => $this->id,
-            'show_title'     => $this->showTitle,
-            'episode_title'  => $this->episodeTitle,
-            'episode_number' => $this->episodeNumber,
-            'duration'       => $this->duration,
-            'description'    => $this->description,
-            'channel'        => $this->channel,
-            'station'        => $this->station,
-            'hd'             => $this->hd,
-            'date'           => $this->date->format('Y-m-d H:i:s'),
-            'url'            => $this->url,
-        );
-    }
 }
