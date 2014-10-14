@@ -46,7 +46,7 @@ class NowPlaying
     public function download($offset = 0)
     {
         $xmlFile = $this->downloadXmlFile($offset);
-        Utilities\XmlNameSpace::addTiVoNameSpace($xmlFile);
+        Utilities\XmlNamespace::addTiVoNamespace($xmlFile);
         $showList = $this->xmlFileToItemList($xmlFile);
         if (count($showList) > 0) {
             $this->returnList = array_merge($this->returnList, $showList);

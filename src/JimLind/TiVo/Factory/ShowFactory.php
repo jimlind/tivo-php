@@ -36,7 +36,7 @@ class ShowFactory
     public function createFromXML(\SimpleXMLElement $xml)
     {
         $this->show = clone $this->show;
-        Utilities\XmlNameSpace::addTiVoNameSpace($xml);
+        Utilities\XmlNamespace::addTiVoNamespace($xml);
 
         $detailList = $xml->xpath('tivo:Details');
         $urlList = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
@@ -57,7 +57,7 @@ class ShowFactory
      */
     protected function populateWithXMLPieces($detailXML, $urlString)
     {
-        Utilities\XmlNameSpace::addTiVoNameSpace($detailXML);
+        Utilities\XmlNamespace::addTiVoNamespace($detailXML);
 
         $this->show->setId($this->parseID($urlString));
         $this->show->setShowTitle($this->popXPath($detailXML, 'Title'));
