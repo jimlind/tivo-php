@@ -264,7 +264,7 @@ class Show
      */
     public function setHD($hd)
     {
-        $this->hd = boolval($hd);
+        $this->hd = (bool) $hd;
     }
 
     /**
