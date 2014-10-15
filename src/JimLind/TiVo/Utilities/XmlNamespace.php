@@ -14,6 +14,10 @@ class XmlNamespace
      */
     public static function addTiVoNamespace(&$simpleXml)
     {
+        if (!$simpleXml instanceof \SimpleXMLElement) {
+            throw new \Exception('Input is not a SimpleXMLElement');
+        }
+        
         $namespaces = $simpleXml->getNamespaces(true);
         if (isset($namespaces[''])) {
             $namespaceUrl = $namespaces[''];

@@ -44,5 +44,51 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
             $simpleXml->getNamespaces(true)
         );
     }
+
+    /**
+     * Test empty XML attempt
+     * 
+     * @expectedException Exception
+     */
+    public function testEmptyXMLString()
+    {
+        $xml = '';
+        $simpleXml = simplexml_load_string($xml);
+        Utilities\XmlNamespace::addTiVoNamespace($simpleXml);
+    }
+
+    /**
+     * Test XML element output.
+     */
+    public function testElementXMLString()
+    {
+        $xml = '<item/>';
+        $simpleXml = simplexml_load_string($xml);
+        Utilities\XmlNamespace::addTiVoNamespace($simpleXml);
+
+        $xmlString = $simpleXml->asXml();
+
+        $expected = '<?xml version="1.0"?>' . "\n"
+                  . '<item xmlns="http://www.w3.org/2001/XMLSchema"/>' . "\n" ;
+
+        $this->assertEquals($expected, $xmlString);
+    }
+
+    /**
+     * Test full XML structure output.
+     */
+    public function testStructureXMLString()
+    {
+        $xml = '<items><item /></items>';
+        $simpleXml = simplexml_load_string($xml);
+        Utilities\XmlNamespace::addTiVoNamespace($simpleXml);
+
+        $xmlString = $simpleXml->asXml();
+
+        $expected = '<?xml version="1.0"?>' . "\n"
+                  . '<items xmlns="http://www.w3.org/2001/XMLSchema"><item/></items>' . "\n" ;
+
+        $this->assertEquals($expected, $xmlString);
+    }
 }
 
