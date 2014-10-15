@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\JimLind\TiVo;
+namespace JimLind\TiVo\Tests;
 
 use GuzzleHttp\Exception\TransferException;
 use JimLind\TiVo;
