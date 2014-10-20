@@ -11,7 +11,6 @@ use JimLind\TiVo;
 class NowPlayingTest extends \PHPUnit_Framework_TestCase
 {
 
-    private $location;
     private $guzzle;
     private $logger;
     private $response;
@@ -21,10 +20,6 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->location = $this->getMockBuilder('\JimLind\TiVo\Location')
-                               ->disableOriginalConstructor()
-                               ->getMock();
-
         $this->guzzle = $this->getMockBuilder('\GuzzleHttp\Client')
                               ->disableOriginalConstructor()
                               ->getMock();
