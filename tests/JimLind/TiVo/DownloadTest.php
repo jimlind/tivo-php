@@ -74,7 +74,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $options = array(
             'auth' => ['tivo', $mak, 'digest'],
             'verify' => false,
-            'cookies' => ['sid' => rand()],
+            'cookies' => ['sid' => 'SESSIONID'],
             'save_to' => $filePath,
         );
 

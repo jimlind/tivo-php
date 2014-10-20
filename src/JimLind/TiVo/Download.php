@@ -41,7 +41,7 @@ class Download
         $options = array(
             'auth' => ['tivo', $this->mak, 'digest'],
             'verify' => false,
-            'cookies' => ['sid' => rand()],
+            'cookies' => ['sid' => 'SESSIONID'],
             'save_to' => $filePath,
         );
 
