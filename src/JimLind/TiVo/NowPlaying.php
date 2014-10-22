@@ -12,12 +12,10 @@ use Psr\Log\LoggerInterface;
  */
 class NowPlaying
 {
-
     private $url;
     private $mak;
     private $guzzle;
     private $logger;
-    private $returnList;
 
     /**
      * Constructor
@@ -29,48 +27,49 @@ class NowPlaying
      */
     public function __construct($ip, $mak, GuzzleClient $guzzle, LoggerInterface $logger = null)
     {
-        $this->url = 'https://' . $ip . '/TiVoConnect';
-        $this->mak = $mak;
+        $this->url    = 'https://' . $ip . '/TiVoConnect';
+        $this->mak    = $mak;
         $this->guzzle = $guzzle;
         $this->logger = $logger;
-        $this->returnList = array();
     }
 
     /**
      * Returns multiple XML file downloads merged into one array.
      *
-     * @param integer $offset Offset indicates count of previous shows
+     * @param SimpleXMLElement[] $previousShowList Array of previous shows
      *
      * @return SimpleXMLElement[]
      */
-    public function download($offset = 0)
+    public function download($previousShowList = array())
     {
-        $xmlFile = $this->downloadXmlFile($offset);
+        $xmlFile = $this->downloadXmlFile(count($previousShowList));
         Utilities\XmlNamespace::addTiVoNamespace($xmlFile);
-        $showList = $this->xmlFileToItemList($xmlFile);
-        if (count($showList) > 0) {
-            $this->returnList = array_merge($this->returnList, $showList);
-            $this->download(count($this->returnList));
-        }
 
-        return $this->returnList;
+        $showList = $xmlFile->xpath('//tivo:Item');
+        if (count($showList) > 0) {
+            // Recurse on next set of shows.
+            return $this->download(array_merge($previousShowList, $showList));
+        } else {
+            // Last set of shows reached.
+            return $previousShowList;
+        }
     }
 
     /**
      * Downloads a single file as SimpleXML
      *
-     * @param integer $anchorOffset Offset indicates count of previous shows
+     * @param integer $anchorOffset Count of previous shows
      *
      * @return GuzzleHttp\Message\Response
      */
     private function downloadXmlFile($anchorOffset)
     {
         $options = array(
-            'auth' =>  ['tivo', $this->mak, 'digest'],
+            'auth'  =>  ['tivo', $this->mak, 'digest'],
             'query' => array(
-                'Command' => 'QueryContainer',
-                'Container' => '/NowPlaying',
-                'Recurse' => 'Yes',
+                'Command'      => 'QueryContainer',
+                'Container'    => '/NowPlaying',
+                'Recurse'      => 'Yes',
                 'AnchorOffset' => $anchorOffset,
             ),
             'verify' => false,
@@ -78,25 +77,13 @@ class NowPlaying
 
         try {
             $response = $this->guzzle->get($this->url, $options);
-
+            // Return response as XML.
             return $response->xml();
         } catch (TransferException $exception) {
             Utilities\Log::warn($exception->getMessage(), $this->logger);
-
+            // Return an empty XML element.
             return new \SimpleXMLElement('<xml />');
         }
-    }
-
-    /**
-     * Copies 'Item' elements from origin SimpleXML object.
-     *
-     * @param SimpleXMLElement $simpleXml
-     *
-     * @return SimpleXMLElement[]
-     */
-    private function xmlFileToItemList($simpleXml)
-    {
-        return $simpleXml->xpath('//tivo:Item');
     }
 
 }

@@ -12,7 +12,7 @@ use Symfony\Component\Process\Process;
 class Location
 {
     protected $process = null;
-    protected $logger = null;
+    protected $logger  = null;
 
     /**
      * Constructor
@@ -29,9 +29,7 @@ class Location
     /**
      * Attempt to find the TiVo and log any problems.
      *
-     * Returns IP address or false
-     *
-     * @return boolean|string
+     * @return string|boolean IP address or false
      */
     public function find()
     {
@@ -47,6 +45,7 @@ class Location
 
         $ipMatch = $this->parseAvahi($avahiOutput);
         if ($ipMatch) {
+            // IP successfully parsed.
             return $ipMatch;
         }
 
@@ -56,28 +55,27 @@ class Location
     }
 
     /**
-     * Execute the command line to run Avahi.
+     * Get string output from Avahi attempting to locate TiVo.
      *
-     * @return string
+     * @return string Command line output
      */
     protected function fetchAvahi()
     {
-        // Command to find the records for the TiVo on TCP
         $command = 'avahi-browse -l -r -t _tivo-videos._tcp';
 
         $this->process->setCommandLine($command);
         $this->process->setTimeout(60); // 1 minute
         $this->process->run();
-
+        // Command line output.
         return $this->process->getOutput();
     }
 
     /**
-     * Regular Expression to find IP in Avahi output.
+     * Regular expression to find IP in Avahi output.
      *
-     * @param string $avahiOutput
+     * @param string $avahiOutput Output of the call to Avahi
      *
-     * @return boolean|string
+     * @return string|boolean IP address or false
      */
     protected function parseAvahi($avahiOutput)
     {
@@ -85,9 +83,10 @@ class Location
         $pattern = '/^\s+address = \[(\d+\.\d+\.\d+\.\d+)\]$/m';
         preg_match($pattern, $avahiOutput, $matches);
         if (!empty($matches) && isset($matches[1])) {
+            // Successfully parsed.
             return $matches[1];
         }
-
+        // Nothing parsed.
         return false;
     }
 

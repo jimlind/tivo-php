@@ -39,8 +39,8 @@ class Download
         $this->touchSecureServer($urlPath);
 
         $options = array(
-            'auth' => ['tivo', $this->mak, 'digest'],
-            'verify' => false,
+            'auth'    => ['tivo', $this->mak, 'digest'],
+            'verify'  => false,
             'cookies' => ['sid' => 'SESSIONID'],
             'save_to' => $filePath,
         );
@@ -65,9 +65,9 @@ class Download
      */
     protected function touchSecureServer($urlPath)
     {
-        $url = 'https://' . $this->parseIpAddress($urlPath);
+        $url     = 'https://' . $this->parseIpAddress($urlPath);
         $options = array(
-            'auth' =>  ['tivo', $this->mak, 'digest'],
+            'auth'   =>  ['tivo', $this->mak, 'digest'],
             'verify' => false,
         );
 
@@ -83,13 +83,14 @@ class Download
      */
     protected function parseIpAddress($urlPath)
     {
+        $matches = array();
         $pattern = '/http:..(\d+\.\d+\.\d+\.\d+):80/';
         preg_match($pattern, $urlPath, $matches);
         if (!empty($matches) && isset($matches[1])) {
-
+            // Successfully parsed.
             return $matches[1];
         }
-
+        // Nothing parsed.
         return '';
     }
 
