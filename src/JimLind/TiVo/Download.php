@@ -9,16 +9,27 @@ use GuzzleHttp\Client as GuzzleClient;
  */
 class Download
 {
+    /**
+     * @var string
+     */
     private $mak;
+
+    /**
+     * @var GuzzleHttp\Client
+     */
     private $guzzle;
+
+    /**
+     * @var Psr\Log\LoggerInterface
+     */
     private $logger;
 
     /**
      * Constructor
      *
-     * @param string                   $mak    Media Access Key
-     * @param GuzzleHttp\Client        $guzzle A Guzzle Client
-     * @param \Psr\Log\LoggerInterface $logger A PSR-0 Logger
+     * @param string                  $mak    Your TiVo's Media Access Key.
+     * @param GuzzleHttp\Client       $guzzle Any Guzzle Client.
+     * @param Psr\Log\LoggerInterface $logger Any PSR-0 Logger.
      */
     public function __construct($mak, GuzzleClient $guzzle, LoggerInterface $logger = null)
     {
@@ -28,7 +39,7 @@ class Download
     }
 
     /**
-     * Store the video file to the local file system
+     * Store the video file to the local file system.
      *
      * @param string $urlPath
      * @param string $filePath
@@ -59,7 +70,7 @@ class Download
     }
 
     /**
-     * Just hit the sever via HTTPS.
+     * Touch the server via HTTPS.
      *
      * @param string $urlPath
      */

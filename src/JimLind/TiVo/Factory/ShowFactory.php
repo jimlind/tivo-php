@@ -6,20 +6,19 @@ use JimLind\TiVo\Model\Show;
 use JimLind\TiVo\Utilities;
 
 /**
- * Build a Show Model
+ * Build a show model.
  */
 class ShowFactory
 {
-
     /**
-     * @var \JimLind\TiVo\Model\Show
+     * @var JimLind\TiVo\Model\Show
      */
     protected $show = null;
 
     /**
      * Constructor
      *
-     * @param \JimLind\TiVo\Model\Show $show
+     * @param JimLind\TiVo\Model\Show $show An empty show model to be filled in.
      */
     public function __construct(Show $show)
     {
@@ -27,13 +26,13 @@ class ShowFactory
     }
 
     /**
-     * Create a Show from an XML Element.
+     * Create a show from an XML Element.
      *
-     * @param \SimpleXMLElement $xml
+     * @param SimpleXMLElement $xml XML Element from the TiVo.
      *
-     * @return \JimLind\TiVo\Model\Show
+     * @return JimLind\TiVo\Model\Show
      */
-    public function createFromXML(\SimpleXMLElement $xml)
+    public function createFromXml(\SimpleXMLElement $xml)
     {
         $this->show = clone $this->show;
         Utilities\XmlNamespace::addTiVoNamespace($xml);
@@ -41,17 +40,17 @@ class ShowFactory
         $detailList = $xml->xpath('tivo:Details');
         $urlList = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
 
-        $detailXML = array_pop($detailList);
+        $detailXml = array_pop($detailList);
         $urlString = (string) array_pop($urlList);
 
-        return $this->populateWithXMLPieces($detailXML, $urlString);
+        return $this->populateWithXMLPieces($detailXml, $urlString);
     }
 
     /**
-     * Populate the Model with data.
+     * Populate the model with data.
      *
-     * @param \SimpleXMLElement $detailXML
-     * @param string            $urlString
+     * @param SimpleXMLElement $detailXML All the particular show data.
+     * @param string           $urlString The full string of the TiVo show URL.
      *
      * @return \JimLind\TiVo\Model\Show
      */
@@ -76,6 +75,14 @@ class ShowFactory
         return $this->show;
     }
 
+    /**
+     * Return a string represented from the XPath.
+     *
+     * @param SimpleXMLElement $xml  The XML element that hopefully contains the XPath.
+     * @param string           $path The XPath string to parse the XML with.
+     *
+     * @return string
+     */
     protected function popXPath($xml, $path)
     {
         $pathList = $xml->xpath('tivo:' . $path);
@@ -89,8 +96,8 @@ class ShowFactory
     /**
      * Parses an ID from a download string.
      *
-     * @param string $urlString
-     * 
+     * @param string $urlString A full URL with parameters.
+     *
      * @return integer
      */
     protected function parseID($urlString)

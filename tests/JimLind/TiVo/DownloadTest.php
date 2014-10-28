@@ -12,7 +12,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
     private $guzzle  = null;
 
     /**
-     * Setup the PHPUnit Test
+     * Setup the PHPUnit test.
      */
     public function setUp()
     {
@@ -30,7 +30,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $fixture = new TiVo\Download(rand(), $this->guzzle);
 
         $this->guzzle->expects($this->exactly(2))
-             ->method('get');
+                     ->method('get');
 
         $fixture->store(rand(), rand());
     }
@@ -51,11 +51,11 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->guzzle->expects($this->at(0))
-             ->method('get')
-             ->with(
-                 $this->equalTo('https://' . $fakeIp),
-                 $this->equalTo($options)
-             );
+                     ->method('get')
+                     ->with(
+                         $this->equalTo('https://' . $fakeIp),
+                         $this->equalTo($options)
+                     );
 
         $fixture->store($insecureURL, rand());
     }
@@ -79,11 +79,11 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->guzzle->expects($this->at(1))
-             ->method('get')
-             ->with(
-                 $this->equalTo($insecureURL),
-                 $this->equalTo($options)
-             );
+                     ->method('get')
+                     ->with(
+                         $this->equalTo($insecureURL),
+                         $this->equalTo($options)
+                     );
 
         $fixture->store($insecureURL, $filePath);
     }

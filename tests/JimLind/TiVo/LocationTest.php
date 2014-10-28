@@ -15,7 +15,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     private $fixture;
 
     /**
-     * Setup the PHPUnit Test
+     * Setup the PHPUnit test.
      */
     public function setUp()
     {
@@ -34,7 +34,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the find method on TiVo/Location
+     * Test the find method on TiVo/Location.
      * 
      * @param null|string    $return   Simulated output from Avahi
      * @param boolean|string $expected Expected result from find

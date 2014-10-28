@@ -46,7 +46,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test empty XML attempt
+     * Test empty XML attempt.
      * 
      * @expectedException Exception
      */

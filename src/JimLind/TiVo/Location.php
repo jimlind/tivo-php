@@ -11,14 +11,21 @@ use Symfony\Component\Process\Process;
  */
 class Location
 {
+    /**
+     * @var Symfony\Component\Process\Process
+     */
     protected $process = null;
+
+    /**
+     * @var Psr\Log\LoggerInterface
+     */
     protected $logger  = null;
 
     /**
      * Constructor
      *
-     * @param \Symfony\Component\Process\Process $process The Symfony Process Component
-     * @param \Psr\Log\LoggerInterface           $logger  A PSR-0 Logger
+     * @param Symfony\Component\Process\Process $process The Symfony Process Component.
+     * @param Psr\Log\LoggerInterface           $logger  A PSR-0 Logger.
      */
     public function __construct(Process $process, LoggerInterface $logger = null)
     {
@@ -29,7 +36,7 @@ class Location
     /**
      * Attempt to find the TiVo and log any problems.
      *
-     * @return string|boolean IP address or false
+     * @return string|boolean
      */
     public function find()
     {
@@ -57,7 +64,7 @@ class Location
     /**
      * Get string output from Avahi attempting to locate TiVo.
      *
-     * @return string Command line output
+     * @return string
      */
     protected function fetchAvahi()
     {
@@ -75,7 +82,7 @@ class Location
      *
      * @param string $avahiOutput Output of the call to Avahi
      *
-     * @return string|boolean IP address or false
+     * @return string|boolean
      */
     protected function parseAvahi($avahiOutput)
     {

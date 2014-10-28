@@ -26,8 +26,8 @@ class ShowTest extends \PHPUnit_Framework_TestCase
         $show->setDescription('Description');
         $show->setChannel(4);
         $show->setStation('Station');
-        $show->setHD(true);
-        $show->setURL('URL');
+        $show->setHd(true);
+        $show->setUrl('URL');
 
         $this->assertSame(1, $show->getId());
         $this->assertSame('Show Title', $show->getShowTitle());
@@ -38,8 +38,8 @@ class ShowTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('Description', $show->getDescription());
         $this->assertSame(4, $show->getChannel());
         $this->assertSame('Station', $show->getStation());
-        $this->assertSame(true, $show->getHD());
-        $this->assertSame('URL', $show->getURL());
+        $this->assertSame(true, $show->getHd());
+        $this->assertSame('URL', $show->getUrl());
     }
 
     /**
@@ -54,14 +54,14 @@ class ShowTest extends \PHPUnit_Framework_TestCase
         $show->setDuration('3');
         $show->setDate('1/1/2001 12:00:00');
         $show->setChannel('4');
-        $show->setHD(1);
+        $show->setHd(1);
 
         $this->assertSame(1, $show->getId());
         $this->assertSame(2, $show->getEpisodeNumber());
         $this->assertSame(3, $show->getDuration());
         $this->assertEquals(new \DateTime('1/1/2001 12:00:00'), $show->getDate());
         $this->assertSame(4, $show->getChannel());
-        $this->assertSame(true, $show->getHD());
+        $this->assertSame(true, $show->getHd());
     }
 
     /**
@@ -71,8 +71,8 @@ class ShowTest extends \PHPUnit_Framework_TestCase
     {
         $show = new Model\Show();
 
-        $show->setHD(0);
+        $show->setHd(0);
 
-        $this->assertSame(false, $show->getHD());
+        $this->assertSame(false, $show->getHd());
     }
 }

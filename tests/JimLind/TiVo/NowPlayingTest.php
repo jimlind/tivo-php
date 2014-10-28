@@ -16,7 +16,7 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
     private $response;
 
     /**
-     * Setup the PHPUnit Test
+     * Setup the PHPUnit test.
      */
     public function setUp()
     {

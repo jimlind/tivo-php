@@ -12,7 +12,7 @@ class LogTest extends \PHPUnit_Framework_TestCase
     protected $logger = null;
 
     /**
-     * Setup the PHPUnit Test
+     * Setup the PHPUnit test.
      */
     public function setup()
     {
@@ -39,7 +39,7 @@ class LogTest extends \PHPUnit_Framework_TestCase
     public function testNullWarn()
     {
         $this->logger->expects($this->never())
-             ->method('warning');
+                     ->method('warning');
 
         Utilities\Log::warn('warning text', null);
     }

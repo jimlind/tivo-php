@@ -12,18 +12,33 @@ use Psr\Log\LoggerInterface;
  */
 class NowPlaying
 {
+    /**
+     * @var string
+     */
     private $url;
+
+    /**
+     * @var string
+     */
     private $mak;
+
+    /**
+     * @var GuzzleHttp\Client
+     */
     private $guzzle;
+
+    /**
+     * @var Psr\Log\LoggerInterface
+     */
     private $logger;
 
     /**
      * Constructor
      *
-     * @param string                   $ip     The IP for the TiVo
-     * @param string                   $mak    The MAK for the TiVo
-     * @param GuzzleHttp\Client        $guzzle A Guzzle Client
-     * @param \Psr\Log\LoggerInterface $logger A PSR-0 Logger
+     * @param string                  $ip     The IP for the TiVo
+     * @param string                  $mak    The MAK for the TiVo
+     * @param GuzzleHttp\Client       $guzzle A Guzzle Client
+     * @param Psr\Log\LoggerInterface $logger A PSR-0 Logger
      */
     public function __construct($ip, $mak, GuzzleClient $guzzle, LoggerInterface $logger = null)
     {

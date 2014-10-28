@@ -6,14 +6,14 @@ use JimLind\TiVo\Factory;
 use JimLind\TiVo\Model;
 
 /**
- * Test the factory for Show models.
+ * Test the factory for show models.
  */
 class ShowFactoryTest extends \PHPUnit_Framework_TestCase
 {
     protected $fixture = null;
 
     /**
-     * Setup the PHPUnit Test
+     * Setup the PHPUnit test.
      */
     public function setup()
     {
@@ -26,7 +26,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testNormal()
     {
         $xml  = simplexml_load_string($this->returnXml());
-        $show = $this->fixture->createFromXML($xml);
+        $show = $this->fixture->createFromXml($xml);
 
         $this->assertEquals(1234, $show->getId());
         $this->assertEquals('url?id=1234', $show->getURL());
@@ -67,27 +67,27 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testHighDefinition()
     {
-        $xmlHD = '<xml>'
+        $xmlHd = '<xml>'
                . '<Details>'
                . '<HighDefinition>yes</HighDefinition>'
                . '</Details>'
                . '</xml>';
 
-        $simpleXmlHD  = simplexml_load_string($xmlHD);
-        $showHD = $this->fixture->createFromXML($simpleXmlHD);
+        $simpleXmlHd  = simplexml_load_string($xmlHd);
+        $showHd       = $this->fixture->createFromXml($simpleXmlHd);
 
-        $this->assertTrue($showHD->getHD());
+        $this->assertTrue($showHd->getHd());
 
-        $xmlSD = '<xml>'
+        $xmlSd = '<xml>'
                . '<Details>'
                . '<HighDefinition>no</HighDefinition>'
                . '</Details>'
                . '</xml>';
 
-        $simpleXmlSD  = simplexml_load_string($xmlSD);
-        $showSD = $this->fixture->createFromXML($simpleXmlSD);
+        $simpleXmlSd  = simplexml_load_string($xmlSd);
+        $showSd       = $this->fixture->createFromXml($simpleXmlSd);
 
-        $this->assertFalse($showSD->getHD());
+        $this->assertFalse($showSd->getHd());
     }
 
     /**
@@ -102,7 +102,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
                . '</xml>';
 
         $simpleXml2K  = simplexml_load_string($xml2K);
-        $show2K = $this->fixture->createFromXML($simpleXml2K);
+        $show2K       = $this->fixture->createFromXml($simpleXml2K);
 
         $this->assertEquals(new \DateTime('2000-12-31 12:00:00 GMT'), $show2K->getDate());
 
@@ -113,7 +113,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
                . '</xml>';
 
         $simpleXmlEpoch  = simplexml_load_string($xmlEpoch);
-        $showEpoch = $this->fixture->createFromXML($simpleXmlEpoch);
+        $showEpoch       = $this->fixture->createFromXml($simpleXmlEpoch);
 
         $this->assertEquals(new \DateTime('1970-01-01 00:00:00 GMT'), $showEpoch->getDate());
     }
