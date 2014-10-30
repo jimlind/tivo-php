@@ -26,13 +26,30 @@ class ShowFactory
     }
 
     /**
+     * Create a list of shows from a list of XML Elements.
+     *
+     * @param SimpleXMLElement[] $xmlList XML Element from the TiVo.
+     *
+     * @return JimLind\TiVo\Model\Show[]
+     */
+    public function createFromXmlList($xmlList)
+    {
+        $showList = array();
+        foreach ($xmlList as $xmlElement) {
+            $showList[] = $this->createFromXml($xmlElement);
+        }
+        // Array of created shows.
+        return $showList;
+    }
+
+    /**
      * Create a show from an XML Element.
      *
      * @param SimpleXMLElement $xml XML Element from the TiVo.
      *
      * @return JimLind\TiVo\Model\Show
      */
-    public function createFromXml(\SimpleXMLElement $xml)
+    public function createFromXml($xml)
     {
         $this->show = clone $this->show;
         Utilities\XmlNamespace::addTiVoNamespace($xml);

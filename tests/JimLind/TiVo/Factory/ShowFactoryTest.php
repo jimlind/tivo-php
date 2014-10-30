@@ -118,4 +118,20 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(new \DateTime('1970-01-01 00:00:00 GMT'), $showEpoch->getDate());
     }
 
+    /**
+     * Test running factory on an XML list.
+     */
+    public function testList()
+    {
+        $xmlList = array();
+        $xmlList[] = simplexml_load_string('<xml><Details><Title>Title A01</Title></Details></xml>');
+        $xmlList[] = simplexml_load_string('<xml><Details><Title>Title B02</Title></Details></xml>');
+
+        $showList = $this->fixture->createFromXmlList($xmlList);
+        $this->assertCount(2, $showList);
+
+        $this->assertEquals('Title A01', $showList[0]->getShowTitle());
+        $this->assertEquals('Title B02', $showList[1]->getShowTitle());
+    }
+
 }

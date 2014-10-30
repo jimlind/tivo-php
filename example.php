@@ -13,13 +13,14 @@ $mak        = '7678999999';
 $guzzle     = new GuzzleHttp\Client();
 $nowPlaying = new JimLind\TiVo\NowPlaying($ip, $mak, $guzzle);
 $xmlList    = $nowPlaying->download();
+$xmlSlice   = array_slice($xmlList, 0, 2);
 
-// Build a Show model.
+// Build a list of show models.
 $origin   = new JimLind\TiVo\Model\Show();
 $factory  = new JimLind\TiVo\Factory\ShowFactory($origin);
-$xmlPiece = array_pop($xmlList);
-$show     = $factory->createFromXML($xmlPiece);
+$showList = $factory->createFromXmlList($xmlSlice);
 
 // Download the video file.
+$show       = array_pop($showList);
 $downloader = new JimLind\TiVo\Download($mak, $guzzle);
 $downloader->store($show->getURL(), '/tmp/video.tivo');
