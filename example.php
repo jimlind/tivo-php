@@ -24,3 +24,7 @@ $showList = $factory->createFromXmlList($xmlSlice);
 $show       = array_pop($showList);
 $downloader = new JimLind\TiVo\Download($mak, $guzzle);
 $downloader->store($show->getURL(), '/tmp/video.tivo');
+
+// Decode the video file.
+$decoder = new JimLind\TiVo\Decode($mak, $process);
+$decoder->decode('/tmp/video.tivo', '/tmp/video.mpeg');
