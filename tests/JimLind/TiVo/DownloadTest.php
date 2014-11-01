@@ -9,7 +9,15 @@ use JimLind\TiVo;
  */
 class DownloadTest extends \PHPUnit_Framework_TestCase
 {
-    private $guzzle  = null;
+    /**
+     * @var GuzzleHttp\Client
+     */
+    private $guzzle = null;
+
+    /**
+     * @var GuzzleHttp\Exception\RequestException
+     */
+    private $exception = null;
 
     /**
      * Setup the PHPUnit test.
@@ -20,6 +28,9 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
                              ->disableOriginalConstructor()
                              ->getMock();
 
+        $this->exception = $this->getMockBuilder('\GuzzleHttp\Exception\RequestException')
+                                ->disableOriginalConstructor()
+                                ->getMock();
     }
 
     /**
@@ -76,6 +87,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
             'verify' => false,
             'cookies' => ['sid' => 'SESSIONID'],
             'save_to' => $filePath,
+            'timeout' => 0,
         );
 
         $this->guzzle->expects($this->at(1))
@@ -86,5 +98,35 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
                      );
 
         $fixture->store($insecureURL, $filePath);
+    }
+
+    /**
+     * Test using Guzzle to download a piece of a file from the TiVo.
+     */
+    public function testFilePreviewDownload()
+    {
+        $mak         = rand();
+        $fixture     = new TiVo\Download($mak, $this->guzzle);
+        $fakeIp      = rand() . '.' . rand() . '.' . rand() . '.' . rand();
+        $insecureURL = 'http://' . $fakeIp . ':80/test';
+        $filePath    = rand();
+
+        $options = array(
+            'auth' => ['tivo', $mak, 'digest'],
+            'verify' => false,
+            'cookies' => ['sid' => 'SESSIONID'],
+            'save_to' => $filePath,
+            'timeout' => 60,
+        );
+
+        $this->guzzle->expects($this->at(1))
+                     ->method('get')
+                     ->with(
+                         $this->equalTo($insecureURL),
+                         $this->equalTo($options)
+                     )
+                     ->will($this->throwException($this->exception));
+
+        $fixture->storePreview($insecureURL, $filePath);
     }
 }

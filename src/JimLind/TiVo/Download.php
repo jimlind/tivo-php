@@ -3,6 +3,7 @@
 namespace JimLind\TiVo;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * Download is a service for fetching video files of a TiVo.
@@ -41,10 +42,11 @@ class Download
     /**
      * Store the video file to the local file system.
      *
-     * @param string $urlPath
-     * @param string $filePath
+     * @param string  $urlPath  Download file from here.
+     * @param string  $filePath Download file to here.
+     * @param integer $timeout  Timeout download. Default 0 (never).
      */
-    public function store($urlPath, $filePath)
+    public function store($urlPath, $filePath, $timeout = 0)
     {
         $this->escapePath($urlPath);
         $this->touchSecureServer($urlPath);
@@ -54,9 +56,28 @@ class Download
             'verify'  => false,
             'cookies' => ['sid' => 'SESSIONID'],
             'save_to' => $filePath,
+            'timeout' => $timeout,
         );
 
         $this->guzzle->get($urlPath, $options);
+    }
+
+    /**
+     * Store a quick piece of a file to the local file system.
+     *
+     * Timeout to only grab a piece of the full file.
+     *
+     * @param string $urlPath
+     * @param string $filePath
+     */
+    public function storePreview($urlPath, $filePath)
+    {
+        $timeout = 60; // 60 seconds
+        try {
+            $this->store($urlPath, $filePath, $timeout);
+        } catch (RequestException $e) {
+            // Connection timed out as expected.
+        }
     }
 
     /**

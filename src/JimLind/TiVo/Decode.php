@@ -58,6 +58,7 @@ class Decode
         $command = 'tivodecode ' . $input . ' -m ' . $this->mak . ' -n -o ' . $output;
 
         $this->process->setCommandLine($command);
+        $this->process->setTimeout(0); // Remove timeout.
         $this->process->run();
     }
 
