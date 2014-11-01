@@ -27,10 +27,6 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $this->guzzle = $this->getMockBuilder('\GuzzleHttp\Client')
                              ->disableOriginalConstructor()
                              ->getMock();
-
-        $this->exception = $this->getMockBuilder('\GuzzleHttp\Exception\RequestException')
-                                ->disableOriginalConstructor()
-                                ->getMock();
     }
 
     /**
@@ -119,13 +115,16 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
             'timeout' => 60,
         );
 
+        $mock      = $this->getMock('\GuzzleHttp\Message\RequestInterface');
+        $exception = new \GuzzleHttp\Exception\RequestException(rand(), $mock);
+
         $this->guzzle->expects($this->at(1))
                      ->method('get')
                      ->with(
                          $this->equalTo($insecureURL),
                          $this->equalTo($options)
                      )
-                     ->will($this->throwException($this->exception));
+                     ->will($this->throwException($exception));
 
         $fixture->storePreview($insecureURL, $filePath);
     }
