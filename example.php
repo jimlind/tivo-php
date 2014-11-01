@@ -25,6 +25,9 @@ $show       = array_pop($showList);
 $downloader = new JimLind\TiVo\Download($mak, $guzzle);
 $downloader->store($show->getURL(), '/tmp/video.tivo');
 
+// Download a portion of the video file.
+$downloader->storePreview($show->getURL(), '/tmp/preview.tivo');
+
 // Decode the video file.
 $decoder = new JimLind\TiVo\Decode($mak, $process);
-$decoder->decode('/tmp/video.tivo', '/tmp/video.mpeg');
+$decoder->decode('/tmp/preview.tivo', '/tmp/preview.mpeg');
