@@ -9,9 +9,24 @@ use JimLind\TiVo;
  */
 class DecodeTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var string
+     */
     private $mak;
+
+    /**
+     * @var Symfony\Component\Process\Process
+     */
     private $process;
+
+    /**
+     * @var Psr\Log\LoggerInterface
+     */
     private $logger;
+
+    /**
+     * @var JimLind\TiVo\Decode
+     */
     private $fixture;
 
     /**
