@@ -4,6 +4,7 @@ namespace JimLind\TiVo;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Download is a service for fetching video files of a TiVo.
@@ -75,8 +76,11 @@ class Download
         $timeout = 60; // 60 seconds
         try {
             $this->store($urlPath, $filePath, $timeout);
-        } catch (RequestException $e) {
+        } catch (RequestException $requestException) {
             // Connection timed out as expected.
+        } catch (\Exception $exception) {
+            $message = $exception->getMessage();
+            Utilities\Log::warn($message, $this->logger);
         }
     }
 
@@ -103,7 +107,12 @@ class Download
             'verify' => false,
         );
 
-        $this->guzzle->get($url, $options);
+        try {
+            $this->guzzle->get($url, $options);
+        } catch (\Exception $exception) {
+            $message = $exception->getMessage();
+            Utilities\Log::warn($message, $this->logger);
+        }
     }
 
     /**

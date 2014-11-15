@@ -15,9 +15,9 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
     private $guzzle = null;
 
     /**
-     * @var GuzzleHttp\Exception\RequestException
+     * @var Psr\Log\LoggerInterface
      */
-    private $exception = null;
+    private $logger = null;
 
     /**
      * Setup the PHPUnit test.
@@ -25,6 +25,10 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->guzzle = $this->getMockBuilder('\GuzzleHttp\Client')
+                             ->disableOriginalConstructor()
+                             ->getMock();
+
+        $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
                              ->disableOriginalConstructor()
                              ->getMock();
     }
@@ -65,6 +69,27 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
                      );
 
         $fixture->store($insecureURL, rand());
+    }
+
+    /**
+     * Test catching an exception from the first touch.
+     */
+    public function testSecureTouchException()
+    {
+        $mak       = rand();
+        $message   = rand();
+        $fixture   = new TiVo\Download($mak, $this->guzzle, $this->logger);
+        $exception = new \Exception($message);
+
+        $this->guzzle->expects($this->at(0))
+                     ->method('get')
+                     ->will($this->throwException($exception));
+
+        $this->logger->expects($this->once())
+                     ->method('warning')
+                     ->with($this->equalTo($message));
+
+        $fixture->store(rand(), rand());
     }
 
     /**
@@ -127,5 +152,26 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
                      ->will($this->throwException($exception));
 
         $fixture->storePreview($insecureURL, $filePath);
+    }
+
+    /**
+     * Test catching a real exception from the preview download.
+     */
+    public function testFilePreviewDownloadException()
+    {
+        $mak       = rand();
+        $message   = rand();
+        $fixture   = new TiVo\Download($mak, $this->guzzle, $this->logger);
+        $exception = new \Exception($message);
+
+        $this->guzzle->expects($this->at(1))
+                     ->method('get')
+                     ->will($this->throwException($exception));
+
+        $this->logger->expects($this->once())
+                     ->method('warning')
+                     ->with($this->equalTo($message));
+
+        $fixture->storePreview(rand(), rand());
     }
 }
