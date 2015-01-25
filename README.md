@@ -7,11 +7,18 @@
 
 ### 100% Code Coverage!
 ```sh
-phpunit --coverage-text
+composer install --dev
+vendor/bin/phpunit --coverage-text
+```
+### 100% Code Sniffed
+```sh
+composer install --dev
+vendor/bin/phpcs src --standard=vendor/ongr/ongr-strict-standard/ONGR/ruleset.xml
+vendor/bin/phpcs tests --standard=vendor/ongr/ongr-strict-standard/ONGR/ruleset.xml
 ```
 
 #### Guzzle Install
-To get Guzzle to work you'll need PHP's implementation of cURL
+To get Guzzle to work you might need PHP's implementation of cURL
 ```sh
 sudo apt-get install php5-curl
 ```
