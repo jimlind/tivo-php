@@ -7,12 +7,12 @@
 
 ### 100% Code Coverage!
 ```sh
-composer install --dev
+composer install
 vendor/bin/phpunit --coverage-text
 ```
 ### 100% Code Sniffed
 ```sh
-composer install --dev
+composer install
 vendor/bin/phpcs src --standard=vendor/ongr/ongr-strict-standard/ONGR/ruleset.xml
 vendor/bin/phpcs tests --standard=vendor/ongr/ongr-strict-standard/ONGR/ruleset.xml
 ```
