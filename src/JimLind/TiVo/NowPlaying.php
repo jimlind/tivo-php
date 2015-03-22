@@ -35,9 +35,9 @@ class NowPlaying
     /**
      * Constructor
      *
-     * @param string                  $ip     The IP for the TiVo
-     * @param string                  $mak    The MAK for the TiVo
-     * @param GuzzleHttp\Client       $guzzle A Guzzle Client
+     * @param string            $ip     The IP for the TiVo
+     * @param string            $mak    The MAK for the TiVo
+     * @param GuzzleHttp\Client $guzzle A Guzzle Client
      */
     public function __construct($ip, $mak, GuzzleClient $guzzle)
     {
@@ -54,7 +54,8 @@ class NowPlaying
      *
      * @param Psr\Log\LoggerInterface $logger
      */
-    public function setLogger(LoggerInterface $logger) {
+    public function setLogger(LoggerInterface $logger)
+    {
         $this->logger = $logger;
     }
 

@@ -29,7 +29,7 @@ class Decode
     /**
      * Constructor
      *
-     * @param string                            $mak    Your TiVo's Media Access Key.
+     * @param string                            $mak     Your TiVo's Media Access Key.
      * @param Symfony\Component\Process\Process $process The Symfony Process Component.
      */
     public function __construct($mak, Process $process)
@@ -46,7 +46,8 @@ class Decode
      *
      * @param Psr\Log\LoggerInterface $logger
      */
-    public function setLogger(LoggerInterface $logger) {
+    public function setLogger(LoggerInterface $logger)
+    {
         $this->logger = $logger;
     }
 
@@ -55,6 +56,8 @@ class Decode
      *
      * @param string $input  Where the raw TiVo file is.
      * @param string $output Where the decode Mpeg file goes.
+     *
+     * @return boolean
      */
     public function decode($input, $output)
     {
@@ -70,6 +73,8 @@ class Decode
         $this->process->setCommandLine($command);
         $this->process->setTimeout(0); // Remove timeout.
         $this->process->run();
+
+        return true;
     }
 
     /**

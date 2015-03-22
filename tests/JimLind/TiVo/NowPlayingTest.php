@@ -50,11 +50,11 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the download method of TiVo/NowPlaying. 
+     * Test the download method of TiVo/NowPlaying.
      *
      * @param string[]           $xmlList  Array of XML strings
      * @param SimpleXMLElement[] $expected Array of XML Elements
-     * 
+     *
      * @dataProvider nowPlayingDownloadProvider
      */
     public function testNowPlayingDownload($xmlList, $expected)
@@ -81,7 +81,6 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
 
         $count = 0;
         foreach ($xmlList as $index => $xml) {
-
             $optionReplace = array('query' => array('AnchorOffset' => $index));
             $optionInput = array_replace_recursive($options, $optionReplace);
 
@@ -107,7 +106,7 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Data provider for the test.
-     * 
+     *
      * @return mixed[]
      */
     public function nowPlayingDownloadProvider()

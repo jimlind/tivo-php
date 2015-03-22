@@ -87,7 +87,7 @@ class ShowFactory
         $this->show->setURL($urlString);
 
         $timestamp = hexdec($this->popXPath($detailXML, 'CaptureDate'));
-        $this->show->setDate(new \DateTime("@$timestamp"));
+        $this->show->setDate(new \DateTime('@' . $timestamp));
 
         return $this->show;
     }

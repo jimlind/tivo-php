@@ -58,11 +58,11 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
     public function testNormalDecode()
     {
         $input  = rand();
-        $output = rand();
+        $output    = rand();
 
         $this->process->expects($this->once())
                       ->method('getErrorOutput')
-                      ->will($this->returnValue("Copyright (c) 2006-2007, Jeremy Drake"));
+                      ->will($this->returnValue('Copyright (c) 2006-2007, Jeremy Drake'));
 
         $this->process->expects($this->exactly(2))
                       ->method('run');
@@ -71,7 +71,7 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
                       ->method('setCommandLine')
                       ->with($this->stringContains('tivodecode --version'));
 
-        $decodeCommand = "tivodecode $input -m $this->mak -n -o $output";
+        $decodeCommand = 'tivodecode '.$input.' -m '.$this->mak.' -n -o '.$output;
         $this->process->expects($this->at(4))
                       ->method('setCommandLine')
                       ->with($this->stringContains($decodeCommand));

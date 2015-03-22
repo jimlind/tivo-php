@@ -5,20 +5,24 @@
 [![Total Downloads](https://poser.pugx.org/jimlind/tivo-php/downloads.svg)](https://packagist.org/packages/jimlind/tivo-php)
 [![License](https://poser.pugx.org/jimlind/tivo-php/license.svg)](https://packagist.org/packages/jimlind/tivo-php)
 
+The following instructions are for Ubuntu so YMMV.
+
 ### 100% Code Coverage!
 ```sh
 composer install
 vendor/bin/phpunit --coverage-text
 ```
+
 ### 100% Code Sniffed
 ```sh
 composer install
-vendor/bin/phpcs src --standard=vendor/ongr/ongr-strict-standard/ONGR/ruleset.xml
-vendor/bin/phpcs tests --standard=vendor/ongr/ongr-strict-standard/ONGR/ruleset.xml
+vendor/bin/phpcs src --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ruleset.xml
+vendor/bin/phpcs tests --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ruleset.xml
 ```
 
 #### Guzzle Install
-To get Guzzle to work you might need PHP's implementation of cURL
+To get Guzzle to work you might need PHP's implementation of cURL.
+This comes with HHVM, my preferred run-time, by default.
 ```sh
 sudo apt-get install php5-curl
 ```
@@ -40,4 +44,5 @@ sudo ./configure
 sudo make
 sudo make install
 ```
-Alternately, there is a compressed binary in /tivo-php/files/ for /usr/local/bin/
+Alternately, there is a compressed binary (compiled for 64-bit Trusty) in the /tivo-php/files/ directory.
+It can be easily installed by copying the binary to /usr/local/bin/
