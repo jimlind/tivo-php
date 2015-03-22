@@ -58,7 +58,7 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
     public function testNormalDecode()
     {
         $input  = rand();
-        $output    = rand();
+        $output = rand();
 
         $this->process->expects($this->once())
                       ->method('getErrorOutput')
