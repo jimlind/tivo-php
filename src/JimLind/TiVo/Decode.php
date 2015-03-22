@@ -2,8 +2,8 @@
 
 namespace JimLind\TiVo;
 
-use JimLind\TiVo\Utilities;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Process\Process;
 
 /**
@@ -31,13 +31,23 @@ class Decode
      *
      * @param string                            $mak    Your TiVo's Media Access Key.
      * @param Symfony\Component\Process\Process $process The Symfony Process Component.
-     * @param Psr\Log\LoggerInterface           $logger  A PSR-0 Logger.
      */
-    public function __construct($mak, Process $process, LoggerInterface $logger = null)
+    public function __construct($mak, Process $process)
     {
         $this->mak     = $mak;
         $this->process = $process;
-        $this->logger  = $logger;
+
+        // Default to the NullLogger
+        $this->setLogger(new NullLogger());
+    }
+
+    /**
+     * Set the Logger
+     *
+     * @param Psr\Log\LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger) {
+        $this->logger = $logger;
     }
 
     /**
@@ -49,8 +59,8 @@ class Decode
     public function decode($input, $output)
     {
         if (!$this->checkDecoder()) {
-            $warning = 'The tivodecode tool can not be trusted or found. ';
-            Utilities\Log::warn($warning, $this->logger);
+            $message = 'The tivodecode tool can not be trusted or found.';
+            $this->logger->emergency($message);
             // Exit early.
             return false;
         }

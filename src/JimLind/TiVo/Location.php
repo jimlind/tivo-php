@@ -2,8 +2,8 @@
 
 namespace JimLind\TiVo;
 
-use JimLind\TiVo\Utilities;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Process\Process;
 
 /**
@@ -25,12 +25,22 @@ class Location
      * Constructor
      *
      * @param Symfony\Component\Process\Process $process The Symfony Process Component.
-     * @param Psr\Log\LoggerInterface           $logger  A PSR-0 Logger.
      */
-    public function __construct(Process $process, LoggerInterface $logger = null)
+    public function __construct(Process $process)
     {
         $this->process = $process;
-        $this->logger  = $logger;
+
+        // Default to the NullLogger
+        $this->setLogger(new NullLogger());
+    }
+
+    /**
+     * Set the Logger
+     *
+     * @param Psr\Log\LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger) {
+        $this->logger = $logger;
     }
 
     /**
@@ -43,9 +53,9 @@ class Location
         $avahiOutput = $this->fetchAvahi();
 
         if (empty($avahiOutput)) {
-            $warning = 'Problem locating a proper device on the network. ' .
+            $message = 'Problem locating a proper device on the network. ' .
                        'The avahi-browse tool may not be installed. ';
-            Utilities\Log::warn($warning, $this->logger);
+            $this->logger->emergency($message);
             // Exit early.
             return false;
         }
@@ -56,7 +66,9 @@ class Location
             return $ipMatch;
         }
 
-        Utilities\Log::warn('Unable to parse IP from Avahi.', $this->logger);
+        $message = 'Unable to parse IP from Avahi.';
+        $this->logger->emergency($message);
+
         // TiVo not found.
         return false;
     }

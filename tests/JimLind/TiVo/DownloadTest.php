@@ -78,15 +78,17 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
     {
         $mak       = rand();
         $message   = rand();
-        $fixture   = new TiVo\Download($mak, $this->guzzle, $this->logger);
+        $fixture   = new TiVo\Download($mak, $this->guzzle);
         $exception = new \Exception($message);
+
+        $fixture->setLogger($this->logger);
 
         $this->guzzle->expects($this->at(0))
                      ->method('get')
                      ->will($this->throwException($exception));
 
         $this->logger->expects($this->once())
-                     ->method('warning')
+                     ->method('emergency')
                      ->with($this->equalTo($message));
 
         $fixture->store(rand(), rand());
@@ -161,15 +163,17 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
     {
         $mak       = rand();
         $message   = rand();
-        $fixture   = new TiVo\Download($mak, $this->guzzle, $this->logger);
+        $fixture   = new TiVo\Download($mak, $this->guzzle);
         $exception = new \Exception($message);
+
+        $fixture->setLogger($this->logger);
 
         $this->guzzle->expects($this->at(1))
                      ->method('get')
                      ->will($this->throwException($exception));
 
         $this->logger->expects($this->once())
-                     ->method('warning')
+                     ->method('emergency')
                      ->with($this->equalTo($message));
 
         $fixture->storePreview(rand(), rand());

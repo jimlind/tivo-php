@@ -27,18 +27,16 @@ class LocationTest extends \PHPUnit_Framework_TestCase
                              ->disableOriginalConstructor()
                              ->getMock();
 
-        $this->fixture = new TiVo\Location(
-            $this->process,
-            $this->logger
-        );
+        $this->fixture = new TiVo\Location($this->process);
+        $this->fixture->setLogger($this->logger);
     }
 
     /**
      * Test the find method on TiVo/Location.
-     * 
+     *
      * @param null|string    $return   Simulated output from Avahi
      * @param boolean|string $expected Expected result from find
-     * 
+     *
      * @dataProvider locatorFindProvider
      */
     public function testLocatorFind($return, $expected)
@@ -50,10 +48,10 @@ class LocationTest extends \PHPUnit_Framework_TestCase
         // Expect something to be logged if bad output.
         if ($expected === false) {
             $this->logger->expects($this->once())
-                         ->method('warning');
+                         ->method('emergency');
         } else {
             $this->logger->expects($this->exactly(0))
-                         ->method('warning');
+                         ->method('emergency');
         }
 
         $actual = $this->fixture->find();
@@ -62,7 +60,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Data provider for the test.
-     * 
+     *
      * @return mixed[]
      */
     public function locatorFindProvider()

@@ -49,6 +49,7 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
             $this->process,
             $this->logger
         );
+        $this->fixture->setLogger($this->logger);
     }
 
     /**
@@ -76,7 +77,7 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
                       ->with($this->stringContains($decodeCommand));
 
         $this->logger->expects($this->never())
-                     ->method('warning');
+                     ->method('emergency');
 
         $this->fixture->decode($input, $output);
     }
@@ -101,7 +102,7 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
                       ->with($this->stringContains('tivodecode --version'));
 
         $this->logger->expects($this->once())
-                     ->method('warning');
+                     ->method('emergency');
 
         $this->fixture->decode($input, $output);
     }

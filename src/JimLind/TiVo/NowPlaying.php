@@ -4,8 +4,8 @@ namespace JimLind\TiVo;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\TransferException;
-use JimLind\TiVo\Utilities;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * NowPlaying is a service for downloading list of shows on a TiVo.
@@ -38,13 +38,23 @@ class NowPlaying
      * @param string                  $ip     The IP for the TiVo
      * @param string                  $mak    The MAK for the TiVo
      * @param GuzzleHttp\Client       $guzzle A Guzzle Client
-     * @param Psr\Log\LoggerInterface $logger A PSR-0 Logger
      */
-    public function __construct($ip, $mak, GuzzleClient $guzzle, LoggerInterface $logger = null)
+    public function __construct($ip, $mak, GuzzleClient $guzzle)
     {
         $this->url    = 'https://' . $ip . '/TiVoConnect';
         $this->mak    = $mak;
         $this->guzzle = $guzzle;
+
+        // Default to the NullLogger
+        $this->setLogger(new NullLogger());
+    }
+
+    /**
+     * Set the Logger
+     *
+     * @param Psr\Log\LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger) {
         $this->logger = $logger;
     }
 
@@ -95,7 +105,8 @@ class NowPlaying
             // Return response as XML.
             return $response->xml();
         } catch (TransferException $exception) {
-            Utilities\Log::warn($exception->getMessage(), $this->logger);
+            $message = $exception->getMessage();
+            $this->logger->emergency($message);
             // Return an empty XML element.
             return new \SimpleXMLElement('<xml />');
         }

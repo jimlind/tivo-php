@@ -5,6 +5,7 @@ namespace JimLind\TiVo;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Download is a service for fetching video files of a TiVo.
@@ -29,14 +30,24 @@ class Download
     /**
      * Constructor
      *
-     * @param string                  $mak    Your TiVo's Media Access Key.
-     * @param GuzzleHttp\Client       $guzzle Any Guzzle Client.
-     * @param Psr\Log\LoggerInterface $logger Any PSR-0 Logger.
+     * @param string            $mak    Your TiVo's Media Access Key.
+     * @param GuzzleHttp\Client $guzzle Any Guzzle Client.
      */
-    public function __construct($mak, GuzzleClient $guzzle, LoggerInterface $logger = null)
+    public function __construct($mak, GuzzleClient $guzzle)
     {
         $this->mak    = $mak;
         $this->guzzle = $guzzle;
+
+        // Default to the NullLogger
+        $this->setLogger(new NullLogger());
+    }
+
+    /**
+     * Set the Logger
+     *
+     * @param Psr\Log\LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger) {
         $this->logger = $logger;
     }
 
@@ -80,7 +91,7 @@ class Download
             // Connection timed out as expected.
         } catch (\Exception $exception) {
             $message = $exception->getMessage();
-            Utilities\Log::warn($message, $this->logger);
+            $this->logger->emergency($message);
         }
     }
 
@@ -111,7 +122,7 @@ class Download
             $this->guzzle->get($url, $options);
         } catch (\Exception $exception) {
             $message = $exception->getMessage();
-            Utilities\Log::warn($message, $this->logger);
+            $this->logger->emergency($message);
         }
     }
 
