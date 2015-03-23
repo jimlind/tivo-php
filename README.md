@@ -45,4 +45,4 @@ sudo make
 sudo make install
 ```
 Alternately, there is a compressed binary (compiled for 64-bit Trusty) in the /tivo-php/files/ directory.
-It can be easily installed by copying the binary to /usr/local/bin/
+You can extract the the file to where it belongs with the `sudo tar -xzf tivodecode.tar.gz -C /usr/local/bin/` command.
