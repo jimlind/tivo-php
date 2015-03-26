@@ -28,30 +28,120 @@ class LocationTest extends \PHPUnit_Framework_TestCase
                              ->getMock();
 
         $this->fixture = new TiVo\Location($this->process);
-        $this->fixture->setLogger($this->logger);
     }
 
     /**
-     * Test the find method on TiVo/Location.
-     *
-     * @param null|string    $return   Simulated output from Avahi
-     * @param boolean|string $expected Expected result from find
-     *
-     * @dataProvider locatorFindProvider
+     * Test Symfony/Process command setup.
      */
-    public function testLocatorFind($return, $expected)
+    public function testProcessSettingCommand()
     {
-        $this->process->expects($this->any())
-                      ->method('getOutput')
-                      ->will($this->returnValue($return));
+        $this->process->expects($this->once())
+                      ->method('setCommandLine')
+                      ->with('avahi-browse -l -r -t _tivo-videos._tcp');
 
-        // Expect something to be logged if bad output.
-        if ($expected === false) {
+        $this->fixture->find();
+    }
+
+    /**
+     * Test Symfony/Process timeout setup.
+     */
+    public function testProcessSettingTimeout()
+    {
+        $this->process->expects($this->once())
+                      ->method('setTimeout')
+                      ->with(60);
+
+        $this->fixture->find();
+    }
+
+    /**
+     * Test Symfony/Process run method.
+     */
+    public function testProcessRun()
+    {
+        $this->process->expects($this->once())
+                      ->method('run');
+
+        $this->fixture->find();
+    }
+
+    /**
+     * Test commands are run in the preferred order.
+     */
+    public function testProcessState()
+    {
+        $this->process->expects($this->at(0))->method('setCommandLine');
+        $this->process->expects($this->at(1))->method('setTimeout');
+        $this->process->expects($this->at(2))->method('run');
+
+        $this->fixture->find();
+    }
+
+    /**
+     * Test proper behavior if process is successful.
+     */
+    public function testProccessSuccess()
+    {
+        $this->process->method('isSuccessful')->willReturn(true);
+        $this->process->expects($this->once())->method('getOutput');
+
+        $this->fixture->find();
+    }
+
+    /**
+     * Test proper behavior if process is not successful.
+     */
+    public function testProcessFailure()
+    {
+        $this->process->method('isSuccessful')->willReturn(false);
+        $this->process->expects($this->never())->method('getOutput');
+
+        $this->fixture->setLogger($this->logger);
+        $this->logger->expects($this->at(0))
+                     ->method('warning')
+                     ->with('Problem executing avahi-browse. Tool may not be installed.');
+
+        $actual = $this->fixture->find();
+        $this->assertEquals('', $actual);
+    }
+
+    /**
+     * Test proper behavior if process is successfully empty.
+     */
+    public function testEmptyProcessSuccess()
+    {
+        $this->process->method('isSuccessful')->willReturn(true);
+        $this->process->method('getOutput')->willReturn('');
+
+        $this->fixture->setLogger($this->logger);
+        $this->logger->expects($this->at(0))
+                     ->method('warning')
+                     ->with('Unable to locate a TiVo device on the network.');
+
+        $actual = $this->fixture->find();
+        $this->assertEquals('', $actual);
+    }
+
+    /**
+     * Test that non-empty return values are properly parsed.
+     *
+     * @param string $return   Simulated output from Avahi
+     * @param string $info     Logged as info.
+     * @param string $expected Expected result from find
+     *
+     * @dataProvider testParsingProvider
+     */
+    public function testParsing($return, $info, $expected)
+    {
+        $this->process->method('isSuccessful')->willReturn(true);
+        $this->process->method('getOutput')->willReturn($return);
+
+        $this->fixture->setLogger($this->logger);
+
+        if ($info) {
             $this->logger->expects($this->once())
-                         ->method('emergency');
-        } else {
-            $this->logger->expects($this->exactly(0))
-                         ->method('emergency');
+                         ->method('warning')
+                         ->with($info);
         }
 
         $actual = $this->fixture->find();
@@ -59,32 +149,27 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for the test.
+     * Data provider for the parsing test.
      *
      * @return mixed[]
      */
-    public function locatorFindProvider()
+    public function testParsingProvider()
     {
         return array(
             array(
-                'return' => null,
-                'expected' => false,
-            ),
-            array(
-                'return' => 0,
-                'expected' => false,
-            ),
-            array(
-                'return' => '',
-                'expected' => false,
+                'return' => ' ',
+                'info' => 'Unable to parse IP from Avahi output.',
+                'expected' => '',
             ),
             array(
                 'return' => ' address = [192.168.1.187]',
+                'info' => null,
                 'expected' => '192.168.1.187',
             ),
             array(
                 'return' => ' address = [192.168.1.X]',
-                'expected' => false,
+                'info' => 'Unable to parse IP from Avahi output.',
+                'expected' => '',
             ),
             array(
                 'return' => '+ eth0 IPv4 Living Room _tivo-videos._tcp' . PHP_EOL .
@@ -93,6 +178,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase
                 ' address = [192.168.0.42]' . PHP_EOL .
                 ' port = [443]' . PHP_EOL .
                 ' txt = ["TSN=65200118047F449" "platform=tcd/Series3"]',
+                'info' => null,
                 'expected' => '192.168.0.42',
             )
         );

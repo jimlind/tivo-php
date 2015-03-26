@@ -47,67 +47,70 @@ class Location
     /**
      * Attempt to find the TiVo and log any problems.
      *
-     * @return string|boolean
+     * @return string
      */
     public function find()
     {
-        $avahiOutput = $this->fetchAvahi();
+        $avahiResults = $this->getAvahiResults();
 
-        if (empty($avahiOutput)) {
-            $message = 'Problem locating a proper device on the network. ' .
-                       'The avahi-browse tool may not be installed. ';
-            $this->logger->emergency($message);
-            // Exit early.
-            return false;
+        if (empty($avahiResults)) {
+            // Failure. Log and exit early.
+            $message = 'Unable to locate a TiVo device on the network.';
+            $this->logger->warning($message);
+
+            return '';
         }
 
-        $ipMatch = $this->parseAvahi($avahiOutput);
-        if ($ipMatch) {
-            // IP successfully parsed.
-            return $ipMatch;
-        }
-
-        $message = 'Unable to parse IP from Avahi.';
-        $this->logger->emergency($message);
-
-        // TiVo not found.
-        return false;
+        return $this->parseAvahiResults($avahiResults);
     }
 
     /**
-     * Get string output from Avahi attempting to locate TiVo.
+     * Get string output from Avahi attempting to locate a TiVo.
      *
      * @return string
      */
-    protected function fetchAvahi()
+    protected function getAvahiResults()
     {
         $command = 'avahi-browse -l -r -t _tivo-videos._tcp';
 
         $this->process->setCommandLine($command);
         $this->process->setTimeout(60); // 1 minute
         $this->process->run();
+
+        if ($this->process->isSuccessful() === false) {
+            // Failure. Log and exit early.
+            $message = 'Problem executing avahi-browse. Tool may not be installed.';
+            $this->logger->warning($message);
+
+            return '';
+        }
+
         // Command line output.
         return $this->process->getOutput();
     }
 
     /**
-     * Regular expression to find IP in Avahi output.
+     * Regular expression to find IP in Avahi Output.
      *
-     * @param string $avahiOutput Output of the call to Avahi
+     * @param string $avahiResult Output of the call to Avahi
      *
-     * @return string|boolean
+     * @return string
      */
-    protected function parseAvahi($avahiOutput)
+    protected function parseAvahiResults($avahiResult)
     {
         $matches = array();
         $pattern = '/^\s+address = \[(\d+\.\d+\.\d+\.\d+)\]$/m';
-        preg_match($pattern, $avahiOutput, $matches);
-        if (!empty($matches) && isset($matches[1])) {
-            // Successfully parsed.
-            return $matches[1];
+        preg_match($pattern, $avahiResult, $matches);
+
+        if (empty($matches) || count($matches) < 2) {
+            // Failure. Log and exit early.
+            $message = 'Unable to parse IP from Avahi output.';
+            $this->logger->warning($message);
+
+            return '';
         }
-        // Nothing parsed.
-        return false;
+
+        return $matches[1];
     }
 
 }
