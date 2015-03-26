@@ -20,7 +20,7 @@ vendor/bin/phpcs src --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/p
 vendor/bin/phpcs tests --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ruleset.xml
 ```
 
-#### Guzzle Install
+#### cURL Install
 To get Guzzle to work you might need PHP's implementation of cURL.
 This comes with HHVM, my preferred run-time, by default.
 ```sh
