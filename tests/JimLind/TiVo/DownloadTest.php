@@ -112,6 +112,39 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test that URL escapes any odd characters for Guzzle.
+     *
+     * @param string $input
+     * @param string $expected
+     *
+     * @dataProvider testEscapingURLProvider
+     */
+    public function testEscapingURL($input, $expected)
+    {
+        $spy = $this->any();
+        $this->guzzle->expects($spy)->method('get');
+
+        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture->storePreview($input, null);
+
+        $invocationList = $spy->getInvocations();
+        $actual         = $invocationList[1]->parameters[0];
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Data provider for the parsing test.
+     *
+     * @return mixed[]
+     */
+    public function testEscapingURLProvider()
+    {
+        return [
+            ['http://1.1.1.1:80/The Beatles - Help!', 'http://1.1.1.1:80/The Beatles - Help\!'],
+        ];
+    }
+
+    /**
      * Test the IP parsing.
      *
      * @param string $input
