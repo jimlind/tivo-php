@@ -2,13 +2,13 @@
 
 namespace JimLind\TiVo;
 
-use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\ClientInterface as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
- * Download is a service for fetching video files of a TiVo.
+ * Download is a service for fetching video files off of a TiVo.
  */
 class Download
 {
@@ -18,7 +18,7 @@ class Download
     private $mak;
 
     /**
-     * @var GuzzleHttp\Client
+     * @var GuzzleHttp\ClientInterface
      */
     private $guzzle;
 
@@ -53,16 +53,54 @@ class Download
     }
 
     /**
+     * Download a complete video file.
+     *
+     * @param string $url
+     * @param string $filePath
+     */
+    public function store($url, $filePath)
+    {
+        try {
+            $this->getFile($url, $filePath);
+        } catch (\Exception $exception) {
+            // Something went wrong with Guzzle.
+            $this->logger->warning('Unable to download a complete video file.');
+            $this->logger->warning($exception->getMessage());
+        }
+    }
+
+    /**
+     * Download a partial video file.
+     *
+     * @param string $url
+     * @param string $filePath
+     */
+    public function storePreview($url, $filePath)
+    {
+        try {
+            $this->getFile($url, $filePath, 60);
+        } catch (RequestException $requestException) {
+            // Connection timed out as expected.
+            $this->logger->info('Intentional timeout caught.');
+            $this->logger->info($requestException->getMessage());
+        } catch (\Exception $exception) {
+            // Something went wrong with Guzzle.
+            $this->logger->warning('Unable to download a partial video file.');
+            $this->logger->warning($exception->getMessage());
+        }
+    }
+
+    /**
      * Store the video file to the local file system.
      *
-     * @param string  $urlPath  Download file from here.
+     * @param string  $url      Download file from here.
      * @param string  $filePath Download file to here.
      * @param integer $timeout  Timeout download. Default 0 (never).
+     *
      */
-    public function store($urlPath, $filePath, $timeout = 0)
+    protected function getFile($url, $filePath, $timeout = 0)
     {
-        $this->escapePath($urlPath);
-        $this->touchSecureServer($urlPath);
+        $this->touchSecureServer($url);
 
         $options = array(
             'auth'    => ['tivo', $this->mak, 'digest'],
@@ -72,28 +110,10 @@ class Download
             'timeout' => $timeout,
         );
 
-        $this->guzzle->get($urlPath, $options);
-    }
-
-    /**
-     * Store a quick piece of a file to the local file system.
-     *
-     * Timeout to only grab a piece of the full file.
-     *
-     * @param string $urlPath
-     * @param string $filePath
-     */
-    public function storePreview($urlPath, $filePath)
-    {
-        $timeout = 60; // 60 seconds
-        try {
-            $this->store($urlPath, $filePath, $timeout);
-        } catch (RequestException $requestException) {
-            // Connection timed out as expected.
-        } catch (\Exception $exception) {
-            $message = $exception->getMessage();
-            $this->logger->emergency($message);
-        }
+        $this->guzzle->get(
+            $this->escapeURL($url),
+            $options
+        );
     }
 
     /**
@@ -101,9 +121,9 @@ class Download
      *
      * @param string $url
      */
-    protected function escapePath(&$url)
+    protected function escapeURL($url)
     {
-        $url = str_replace('!', '\!', $url);
+        return str_replace('!', '\!', $url);
     }
 
     /**
@@ -122,8 +142,9 @@ class Download
         try {
             $this->guzzle->get($url, $options);
         } catch (\Exception $exception) {
-            $message = $exception->getMessage();
-            $this->logger->emergency($message);
+            // Something went wrong with Guzzle.
+            $this->logger->warning('Unable to access the TiVo via HTTPS');
+            $this->logger->warning($exception->getMessage());
         }
     }
 
@@ -139,12 +160,16 @@ class Download
         $matches = array();
         $pattern = '/http:..(\d+\.\d+\.\d+\.\d+):80/';
         preg_match($pattern, $urlPath, $matches);
-        if (!empty($matches) && isset($matches[1])) {
-            // Successfully parsed.
-            return $matches[1];
+
+        if (empty($matches) && count($matches) < 2) {
+            // Failure. Log and exit early.
+            $message = 'Unable to parse IP from URL.';
+            $this->logger->warning($message);
+
+            return '';
         }
-        // Nothing parsed.
-        return '';
+
+        return $matches[1];
     }
 
 }
