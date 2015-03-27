@@ -2,7 +2,7 @@
 
 namespace JimLind\TiVo;
 
-use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\ClientInterface as GuzzleClient;
 use GuzzleHttp\Exception\TransferException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -23,7 +23,7 @@ class NowPlaying
     private $mak;
 
     /**
-     * @var GuzzleHttp\Client
+     * @var GuzzleHttp\ClientInterface
      */
     private $guzzle;
 

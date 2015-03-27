@@ -20,13 +20,8 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->guzzle = $this->getMockBuilder('\GuzzleHttp\Client')
-                              ->disableOriginalConstructor()
-                              ->getMock();
-
-        $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface');
+        $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
 
         $this->response = $this->getMockBuilder('\GuzzleHttp\Message\Response')
                                ->disableOriginalConstructor()

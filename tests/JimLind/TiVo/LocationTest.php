@@ -23,9 +23,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase
                               ->disableOriginalConstructor()
                               ->getMock();
 
-        $this->logger = $this->getMockBuilder('\Psr\Log\LoggerInterface')
-                             ->disableOriginalConstructor()
-                             ->getMock();
+        $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
 
         $this->fixture = new TiVo\Location($this->process);
     }
