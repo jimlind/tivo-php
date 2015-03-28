@@ -115,15 +115,22 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessFailure()
     {
+        $mak    = rand();
+        $input  = rand();
+        $output = rand();
+
         $this->process->method('isSuccessful')->willReturn(false);
 
         $this->logger->expects($this->at(0))
                      ->method('warning')
                      ->with('Problem executing tivodecode. Tool may not be installed.');
+        $this->logger->expects($this->at(1))
+                     ->method('warning')
+                     ->with('Command: tivodecode ' . $input . ' -m ' . $mak . ' -n -o ' . $output);
 
-        $this->fixture = new TiVo\Decode(null, $this->process);
+        $this->fixture = new TiVo\Decode($mak, $this->process);
         $this->fixture->setLogger($this->logger);
-        $output = $this->fixture->decode(null, null);
+        $output = $this->fixture->decode($input, $output);
 
         $this->assertFalse($output);
     }

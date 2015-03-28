@@ -98,6 +98,9 @@ class LocationTest extends \PHPUnit_Framework_TestCase
         $this->logger->expects($this->at(0))
                      ->method('warning')
                      ->with('Problem executing avahi-browse. Tool may not be installed.');
+        $this->logger->expects($this->at(1))
+                     ->method('warning')
+                     ->with('Command: avahi-browse -l -r -t _tivo-videos._tcp');
 
         $actual = $this->fixture->find();
         $this->assertEquals('', $actual);

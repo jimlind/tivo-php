@@ -81,6 +81,7 @@ class Location
             // Failure. Log and exit early.
             $message = 'Problem executing avahi-browse. Tool may not be installed.';
             $this->logger->warning($message);
+            $this->logger->warning('Command: ' . $command);
 
             return '';
         }

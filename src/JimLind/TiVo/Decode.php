@@ -71,7 +71,7 @@ class Decode
             // Failure. Log and exit early.
             $message = 'Problem executing tivodecode. Tool may not be installed.';
             $this->logger->warning($message);
-            $this->logger->warning($command);
+            $this->logger->warning('Command: ' . $command);
 
             return false;
         }
