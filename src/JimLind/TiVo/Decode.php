@@ -17,20 +17,20 @@ class Decode
     private $mak;
 
     /**
-     * @var Symfony\Component\Process\Process
+     * @var Process
      */
     protected $process = null;
 
     /**
-     * @var Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     protected $logger  = null;
 
     /**
      * Constructor
      *
-     * @param string                            $mak     Your TiVo's Media Access Key.
-     * @param Symfony\Component\Process\Process $process The Symfony Process Component.
+     * @param string  $mak     Your TiVo's Media Access Key.
+     * @param Process $process The Symfony Process Component.
      */
     public function __construct($mak, Process $process)
     {
@@ -44,7 +44,7 @@ class Decode
     /**
      * Set the Logger
      *
-     * @param Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      */
     public function setLogger(LoggerInterface $logger)
     {
@@ -61,39 +61,21 @@ class Decode
      */
     public function decode($input, $output)
     {
-        if (!$this->checkDecoder()) {
-            $message = 'The tivodecode tool can not be trusted or found.';
-            $this->logger->emergency($message);
-            // Exit early.
-            return false;
-        }
-
         $command = 'tivodecode ' . $input . ' -m ' . $this->mak . ' -n -o ' . $output;
 
         $this->process->setCommandLine($command);
         $this->process->setTimeout(0); // Remove timeout.
         $this->process->run();
 
+        if ($this->process->isSuccessful() === false) {
+            // Failure. Log and exit early.
+            $message = 'Problem executing tivodecode. Tool may not be installed.';
+            $this->logger->warning($message);
+            $this->logger->warning($command);
+
+            return false;
+        }
+
         return true;
-    }
-
-    /**
-     * Check if a reasonable version of TiVo File Decoder is installed.
-     *
-     * Oddly enough the version information is written to the error output.
-     *
-     * @return boolean
-     */
-    protected function checkDecoder()
-    {
-        $command = 'tivodecode --version';
-
-        $this->process->setCommandLine($command);
-        $this->process->setTimeout(1); // 1 second
-        $this->process->run();
-
-        $output = $this->process->getErrorOutput();
-        // TiVo File Decoder reports "Copyright (c) 2006-2007, Jeremy Drake"
-        return strpos($output, 'Jeremy Drake') !== false;
     }
 }
