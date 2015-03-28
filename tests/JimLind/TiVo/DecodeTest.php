@@ -10,11 +10,6 @@ use JimLind\TiVo;
 class DecodeTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var string
-     */
-    private $mak;
-
-    /**
      * @var Symfony\Component\Process\Process
      */
     private $process;
@@ -23,11 +18,6 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
      * @var Psr\Log\LoggerInterface
      */
     private $logger;
-
-    /**
-     * @var JimLind\TiVo\Decode
-     */
-    private $fixture;
 
     /**
      * Setup the PHPUnit test.
@@ -55,8 +45,8 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
                       ->method('setCommandLine')
                       ->with('tivodecode ' . $input . ' -m ' . $mak . ' -n -o ' . $output);
 
-        $this->fixture = new TiVo\Decode($mak, $this->process);
-        $this->fixture->decode($input, $output);
+        $fixture = new TiVo\Decode($mak, $this->process);
+        $fixture->decode($input, $output);
     }
 
     /**
@@ -68,8 +58,8 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
                       ->method('setTimeout')
                       ->with(0);
 
-        $this->fixture = new TiVo\Decode(null, $this->process);
-        $this->fixture->decode(null, null);
+        $fixture = new TiVo\Decode(null, $this->process);
+        $fixture->decode(null, null);
     }
 
     /**
@@ -80,8 +70,8 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
         $this->process->expects($this->once())
                       ->method('run');
 
-        $this->fixture = new TiVo\Decode(null, $this->process);
-        $this->fixture->decode(null, null);
+        $fixture = new TiVo\Decode(null, $this->process);
+        $fixture->decode(null, null);
     }
 
     /**
@@ -93,8 +83,8 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
         $this->process->expects($this->at(1))->method('setTimeout');
         $this->process->expects($this->at(2))->method('run');
 
-        $this->fixture = new TiVo\Decode(null, $this->process);
-        $this->fixture->decode(null, null);
+        $fixture = new TiVo\Decode(null, $this->process);
+        $fixture->decode(null, null);
     }
 
     /**
@@ -104,8 +94,8 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
     {
         $this->process->method('isSuccessful')->willReturn(true);
 
-        $this->fixture = new TiVo\Decode(null, $this->process);
-        $output = $this->fixture->decode(null, null);
+        $fixture = new TiVo\Decode(null, $this->process);
+        $output = $fixture->decode(null, null);
 
         $this->assertTrue($output);
     }
@@ -128,9 +118,9 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
                      ->method('warning')
                      ->with('Command: tivodecode ' . $input . ' -m ' . $mak . ' -n -o ' . $output);
 
-        $this->fixture = new TiVo\Decode($mak, $this->process);
-        $this->fixture->setLogger($this->logger);
-        $output = $this->fixture->decode($input, $output);
+        $fixture = new TiVo\Decode($mak, $this->process);
+        $fixture->setLogger($this->logger);
+        $output = $fixture->decode($input, $output);
 
         $this->assertFalse($output);
     }
