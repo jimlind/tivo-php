@@ -2,7 +2,7 @@
 
 namespace JimLind\TiVo;
 
-use GuzzleHttp\ClientInterface as GuzzleClient;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -18,7 +18,7 @@ class Download
     private $mak;
 
     /**
-     * @var GuzzleHttp\ClientInterface
+     * @var ClientInterface
      */
     private $guzzle;
 
@@ -30,10 +30,10 @@ class Download
     /**
      * Constructor
      *
-     * @param string            $mak    Your TiVo's Media Access Key.
-     * @param GuzzleHttp\Client $guzzle Any Guzzle Client.
+     * @param string          $mak    Your TiVo's Media Access Key.
+     * @param ClientInterface $guzzle Any Guzzle Client.
      */
-    public function __construct($mak, GuzzleClient $guzzle)
+    public function __construct($mak, ClientInterface $guzzle)
     {
         $this->mak    = $mak;
         $this->guzzle = $guzzle;
@@ -45,7 +45,7 @@ class Download
     /**
      * Set the Logger
      *
-     * @param Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      */
     public function setLogger(LoggerInterface $logger)
     {

@@ -12,19 +12,19 @@ use Symfony\Component\Process\Process;
 class Location
 {
     /**
-     * @var Symfony\Component\Process\Process
+     * @var Process
      */
     protected $process = null;
 
     /**
-     * @var Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     protected $logger  = null;
 
     /**
      * Constructor
      *
-     * @param Symfony\Component\Process\Process $process The Symfony Process Component.
+     * @param Process $process The Symfony Process Component.
      */
     public function __construct(Process $process)
     {
@@ -37,7 +37,7 @@ class Location
     /**
      * Set the Logger
      *
-     * @param Psr\Log\LoggerInterface $logger
+     * @param LoggerInterface $logger
      */
     public function setLogger(LoggerInterface $logger)
     {
