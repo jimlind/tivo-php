@@ -10,32 +10,100 @@ use JimLind\TiVo;
  */
 class NowPlayingTest extends \PHPUnit_Framework_TestCase
 {
-
+    /**
+     * @var GuzzleHttp\ClientInterface
+     */
     private $guzzle;
-    private $logger;
+
+    /**
+     * @var GuzzleHttp\Message\ResponseInterface
+     */
     private $response;
+
+    /**
+     * @var Psr\Log\LoggerInterface
+     */
+    private $logger;
 
     /**
      * Setup the PHPUnit test.
      */
     public function setUp()
     {
-        $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface');
-        $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
-
-        $this->response = $this->getMockBuilder('\GuzzleHttp\Message\Response')
-                               ->disableOriginalConstructor()
-                               ->getMock();
+        $this->guzzle   = $this->getMock('\GuzzleHttp\ClientInterface');
+        $this->logger   = $this->getMock('\Psr\Log\LoggerInterface');
+        $this->response = $this->getMock('\GuzzleHttp\Message\ResponseInterface');
     }
 
     /**
-     * Test what happens when Guzzle throws an exception.
+     * Test that IP gets passed through to Guzzle.
+     */
+    public function testIPPathPassThroughOnStore()
+    {
+        $ip       = rand();
+        $expected = 'https://' . $ip . '/TiVoConnect';
+
+        $spy = $this->any();
+        $this->guzzle->expects($spy)->method('get');
+
+        $fixture = new TiVo\NowPlaying($ip, null, $this->guzzle);
+        $fixture->download();
+
+        $invocationList = $spy->getInvocations();
+        $actual         = $invocationList[0]->parameters[0];
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Test that MAC gets passed through to Guzzle.
+     */
+    public function testMacPassThroughOnStore()
+    {
+        $mac      = rand();
+        $expected = ['tivo', $mac, 'digest'];
+
+        $spy = $this->any();
+        $this->guzzle->expects($spy)->method('get');
+
+        $fixture = new TiVo\NowPlaying(null, $mac, $this->guzzle);
+        $fixture->download();
+
+        $invocationList = $spy->getInvocations();
+        $actual         = $invocationList[0]->parameters[1]['auth'];
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Test that AnchorOffset increments on successful Guzzle call.
+     */
+    public function testAnchorOffsetIncrement()
+    {
+        $xmlElement = new \SimpleXMLElement('<xml><Item /></xml>');
+        $this->response->method('xml')
+                       ->will($this->returnValue($xmlElement));
+
+        $spy = $this->any();
+        $this->guzzle->expects($spy)
+                     ->method('get')
+                     ->will($this->onConsecutiveCalls($this->response));
+
+        $fixture = new TiVo\NowPlaying(null, null, $this->guzzle);
+        $fixture->download();
+
+        $invocationList = $spy->getInvocations();
+
+        $firstAnchor = $invocationList[0]->parameters[1]['query']['AnchorOffset'];
+        $this->assertEquals(0, $firstAnchor);
+        $secondAnchor = $invocationList[1]->parameters[1]['query']['AnchorOffset'];
+        $this->assertEquals(1, $secondAnchor);
+    }
+
+    /**
+     * Test what happens when Guzzle only throws an exception.
      */
     public function testNowPlayingException()
     {
-        $nowPlaying = new TiVo\NowPlaying(
-            rand(), rand(), $this->guzzle, $this->logger
-        );
+        $nowPlaying = new TiVo\NowPlaying(null, null, $this->guzzle);
 
         $this->guzzle->method('get')
                      ->will($this->throwException(new TransferException));
@@ -45,66 +113,38 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the download method of TiVo/NowPlaying.
+     * Test the NowPlaying string to SimpleXML parsing.
      *
      * @param string[]           $xmlList  Array of XML strings
      * @param SimpleXMLElement[] $expected Array of XML Elements
      *
-     * @dataProvider nowPlayingDownloadProvider
+     * @dataProvider guzzleReturnParsingProvider
      */
-    public function testNowPlayingDownload($xmlList, $expected)
+    public function testGuzzleReturnParsing($xmlList, $expected)
     {
-        $ip  = rand();
-        $mak = rand();
+        $fixture = new TiVo\NowPlaying(null, null, $this->guzzle);
 
-        // Constructor
-        $nowPlaying = new TiVo\NowPlaying(
-            $ip, $mak, $this->guzzle, $this->logger
-        );
-
-        // Setup Options
-        $options = array(
-            'auth' =>  ['tivo', $mak, 'digest'],
-            'query' => array(
-                'Command' => 'QueryContainer',
-                'Container' => '/NowPlaying',
-                'Recurse' => 'Yes',
-                'AnchorOffset' => 0,
-            ),
-            'verify' => false,
-        );
-
-        $count = 0;
-        foreach ($xmlList as $index => $xml) {
-            $optionReplace = array('query' => array('AnchorOffset' => $index));
-            $optionInput = array_replace_recursive($options, $optionReplace);
-
-            $this->guzzle->expects($this->at($count))
-                         ->method('get')
-                         ->with(
-                             $this->equalTo('https://' . $ip . '/TiVoConnect'),
-                             $this->equalTo($optionInput)
-                         )
-                         ->will($this->returnValue($this->response));
-
-            $simpleXml = simplexml_load_string($xml);
-            $this->response->expects($this->at($count))
+        foreach ($xmlList as $index => $xmlString) {
+            $simpleXml = simplexml_load_string($xmlString);
+            $this->response->expects($this->at($index))
                            ->method('xml')
                            ->will($this->returnValue($simpleXml));
-            $count++;
+
+            $this->guzzle->expects($this->at($index))
+                         ->method('get')
+                         ->will($this->returnValue($this->response));
         }
 
-        // Download
-        $actual = $nowPlaying->download();
+        $actual = $fixture->download();
         $this->assertEquals($expected, $actual);
     }
 
     /**
-     * Data provider for the test.
+     * Data provider for the XML parsing test.
      *
      * @return mixed[]
      */
-    public function nowPlayingDownloadProvider()
+    public function guzzleReturnParsingProvider()
     {
         return array(
             array(
@@ -119,9 +159,9 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
             ),
             array(
                 'xmlList' => array(
-                    0 => '<xml><ItemCount>2</ItemCount><Item /><Item /></xml>',
-                    2 => '<xml><ItemCount>1</ItemCount><Item /></xml>',
-                    3 => '<xml><ItemCount>0</ItemCount></xml>',
+                    '<xml><ItemCount>2</ItemCount><Item /><Item /></xml>',
+                    '<xml><ItemCount>1</ItemCount><Item /></xml>',
+                    '<xml><ItemCount>0</ItemCount></xml>',
                 ),
                 'expected' => array(
                     new \SimpleXMLElement('<Item />'),

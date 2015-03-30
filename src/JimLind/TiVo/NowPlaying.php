@@ -2,7 +2,7 @@
 
 namespace JimLind\TiVo;
 
-use GuzzleHttp\ClientInterface as GuzzleClient;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\TransferException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -23,23 +23,23 @@ class NowPlaying
     private $mak;
 
     /**
-     * @var GuzzleHttp\ClientInterface
+     * @var ClientInterface
      */
     private $guzzle;
 
     /**
-     * @var Psr\Log\LoggerInterface
+     * @var LoggerInterface
      */
     private $logger;
 
     /**
      * Constructor
      *
-     * @param string            $ip     The IP for the TiVo
-     * @param string            $mak    The MAK for the TiVo
-     * @param GuzzleHttp\Client $guzzle A Guzzle Client
+     * @param string          $ip     The IP for the TiVo
+     * @param string          $mak    The MAK for the TiVo
+     * @param ClientInterface $guzzle A Guzzle Client
      */
-    public function __construct($ip, $mak, GuzzleClient $guzzle)
+    public function __construct($ip, $mak, ClientInterface $guzzle)
     {
         $this->url    = 'https://' . $ip . '/TiVoConnect';
         $this->mak    = $mak;
@@ -90,27 +90,42 @@ class NowPlaying
      */
     private function downloadXmlFile($anchorOffset)
     {
-        $options = array(
+        try {
+            $response = $this->guzzle->get(
+                $this->url,
+                $this->buildGuzzleOptions($anchorOffset)
+            );
+        } catch (TransferException $exception) {
+            $this->logger->warning($exception->getMessage());
+            return new \SimpleXMLElement('<xml />');
+        }
+
+        if (empty($response)) {
+            $this->logger->warning('Empty response from Guzzle.');
+            return new \SimpleXMLElement('<xml />');
+        }
+
+        return $response->xml();
+    }
+
+    /**
+     * Create an option array for Guzzle.
+     *
+     * @param integer $offset
+     * @return mixed[][]
+     */
+    private function buildGuzzleOptions($offset)
+    {
+        return array(
             'auth'  =>  ['tivo', $this->mak, 'digest'],
             'query' => array(
                 'Command'      => 'QueryContainer',
                 'Container'    => '/NowPlaying',
                 'Recurse'      => 'Yes',
-                'AnchorOffset' => $anchorOffset,
+                'AnchorOffset' => $offset,
             ),
             'verify' => false,
         );
-
-        try {
-            $response = $this->guzzle->get($this->url, $options);
-            // Return response as XML.
-            return $response->xml();
-        } catch (TransferException $exception) {
-            $message = $exception->getMessage();
-            $this->logger->emergency($message);
-            // Return an empty XML element.
-            return new \SimpleXMLElement('<xml />');
-        }
     }
 
 }
