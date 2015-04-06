@@ -3,7 +3,6 @@
 namespace JimLind\TiVo\Tests\Factory;
 
 use JimLind\TiVo\Factory;
-use JimLind\TiVo\Model;
 
 /**
  * Test the factory for show models.
@@ -17,121 +16,160 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function setup()
     {
-        $this->fixture = new Factory\ShowFactory(new Model\Show());
+        $this->fixture = new Factory\ShowFactory();
     }
 
     /**
-     * Test logging with a logger.
+     * Test parsing Show ID.
      */
-    public function testNormal()
+    public function testShowId()
     {
-        $xml  = simplexml_load_string($this->returnXml());
-        $show = $this->fixture->createFromXml($xml);
+        $actual     = rand();
+        $xmlString  = '<xml><Links><Content><Url>url?id=' . $actual . '</Url></Content></Links><Details /></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
 
-        $this->assertEquals(1234, $show->getId());
-        $this->assertEquals('url?id=1234', $show->getURL());
-        $this->assertEquals('Title A01', $show->getShowTitle());
-        $this->assertEquals('Episode B02', $show->getEpisodeTitle());
-        $this->assertEquals(2345, $show->getEpisodeNumber());
-        $this->assertEquals(3456, $show->getDuration());
-        $this->assertEquals('Description C03', $show->getDescription());
-        $this->assertEquals(4567, $show->getChannel());
-        $this->assertEquals('Station D04', $show->getStation());
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertEquals($show->getId(), $actual);
     }
 
     /**
-     * Creates a nice big XML string.
-     *
-     * @return string
+     * Test parsing Show URL.
      */
-    public function returnXml()
+    public function testShowUrl()
     {
-        $return = '<xml>'
-                . '<Links><Content><Url>url?id=1234</Url></Content></Links>'
-                . '<Details>'
-                . '<Title>Title A01</Title>'
-                . '<EpisodeTitle>Episode B02</EpisodeTitle>'
-                . '<EpisodeNumber>2345</EpisodeNumber>'
-                . '<Duration>3456</Duration>'
-                . '<Description>Description C03</Description>'
-                . '<SourceChannel>4567</SourceChannel>'
-                . '<SourceStation>Station D04</SourceStation>'
-                . '</Details>'
-                . '</xml>';
+        $actual     = rand();
+        $xmlString  = '<xml><Links><Content><Url>' . $actual . '</Url></Content></Links><Details /></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
 
-        return $return;
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertEquals($show->getUrl(), $actual);
     }
 
     /**
-     * Test setting HighDefinition true and false.
+     * Test parsing Show Title.
      */
-    public function testHighDefinition()
+    public function testShowTitle()
     {
-        $xmlHd = '<xml>'
-               . '<Details>'
-               . '<HighDefinition>yes</HighDefinition>'
-               . '</Details>'
-               . '</xml>';
+        $actual     = rand();
+        $xmlString  = '<xml><Details><Title>' . $actual . '</Title></Details></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
 
-        $simpleXmlHd  = simplexml_load_string($xmlHd);
-        $showHd       = $this->fixture->createFromXml($simpleXmlHd);
-
-        $this->assertTrue($showHd->getHd());
-
-        $xmlSd = '<xml>'
-               . '<Details>'
-               . '<HighDefinition>no</HighDefinition>'
-               . '</Details>'
-               . '</xml>';
-
-        $simpleXmlSd  = simplexml_load_string($xmlSd);
-        $showSd       = $this->fixture->createFromXml($simpleXmlSd);
-
-        $this->assertFalse($showSd->getHd());
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertEquals($show->getShowTitle(), $actual);
     }
 
     /**
-     * Test setting CaptureDate.
+     * Test parsing Episode Title.
+     */
+    public function testEpisodeTitle()
+    {
+        $actual     = rand();
+        $xmlString  = '<xml><Details><EpisodeTitle>' . $actual . '</EpisodeTitle></Details></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
+
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertEquals($show->getEpisodeTitle(), $actual);
+    }
+
+    /**
+     * Test parsing Episode Number.
+     */
+    public function testEpisodeNumber()
+    {
+        $actual     = rand();
+        $xmlString  = '<xml><Details><EpisodeNumber>' . $actual . '</EpisodeNumber></Details></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
+
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertEquals($show->getEpisodeNumber(), $actual);
+    }
+
+    /**
+     * Test parsing Show Duration.
+     */
+    public function testShowDuration()
+    {
+        $actual     = rand();
+        $xmlString  = '<xml><Details><Duration>' . $actual . '</Duration></Details></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
+
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertEquals($show->getDuration(), $actual);
+    }
+
+    /**
+     * Test parsing Show Description.
+     */
+    public function testShowDescription()
+    {
+        $actual     = rand();
+        $xmlString  = '<xml><Details><Description>' . $actual . '</Description></Details></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
+
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertEquals($show->getDescription(), $actual);
+    }
+
+    /**
+     * Test parsing Show Channel.
+     */
+    public function testShowChannel()
+    {
+        $actual     = rand();
+        $xmlString  = '<xml><Details><SourceChannel>' . $actual . '</SourceChannel></Details></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
+
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertEquals($show->getChannel(), $actual);
+    }
+
+    /**
+     * Test parsing Show Station.
+     */
+    public function testShowStation()
+    {
+        $actual     = rand();
+        $xmlString  = '<xml><Details><SourceStation>' . $actual . '</SourceStation></Details></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
+
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertEquals($show->getStation(), $actual);
+    }
+
+    /**
+     * Test parsing positive Show HD status.
+     */
+    public function testHighDefinitionTrue()
+    {
+        $xmlString  = '<xml><Details><HighDefinition>yes</HighDefinition></Details></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
+
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertTrue($show->getHd());
+    }
+
+    /**
+     * Test parsing negative Show HD status.
+     */
+    public function testHighDefinitionFalse()
+    {
+        $xmlString  = '<xml><Details><HighDefinition>no</HighDefinition></Details></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
+
+        $show = $this->fixture->createShowFromXml($xmlElement);
+        $this->assertFalse($show->getHd());
+    }
+
+    /**
+     * Test parsing Show Date.
      */
     public function testCaptureDate()
     {
-        $xml2K = '<xml>'
-               . '<Details>'
-               . '<CaptureDate>3a4f1fc0</CaptureDate>'
-               . '</Details>'
-               . '</xml>';
+        $xmlString  = '<xml><Details><CaptureDate>ffffffff</CaptureDate></Details></xml>';
+        $xmlElement = simplexml_load_string($xmlString);
 
-        $simpleXml2K  = simplexml_load_string($xml2K);
-        $show2K       = $this->fixture->createFromXml($simpleXml2K);
-
-        $this->assertEquals(new \DateTime('2000-12-31 12:00:00 GMT'), $show2K->getDate());
-
-        $xmlEpoch = '<xml>'
-               . '<Details>'
-               . '<CaptureDate>0</CaptureDate>'
-               . '</Details>'
-               . '</xml>';
-
-        $simpleXmlEpoch  = simplexml_load_string($xmlEpoch);
-        $showEpoch       = $this->fixture->createFromXml($simpleXmlEpoch);
-
-        $this->assertEquals(new \DateTime('1970-01-01 00:00:00 GMT'), $showEpoch->getDate());
+        $show     = $this->fixture->createShowFromXml($xmlElement);
+        $expected = new \DateTime('2106-02-07 06:28:15 GMT');
+        $this->assertEquals($show->getDate(), $expected);
     }
-
-    /**
-     * Test running factory on an XML list.
-     */
-    public function testList()
-    {
-        $xmlList = array();
-        $xmlList[] = simplexml_load_string('<xml><Details><Title>Title A01</Title></Details></xml>');
-        $xmlList[] = simplexml_load_string('<xml><Details><Title>Title B02</Title></Details></xml>');
-
-        $showList = $this->fixture->createFromXmlList($xmlList);
-        $this->assertCount(2, $showList);
-
-        $this->assertEquals('Title A01', $showList[0]->getShowTitle());
-        $this->assertEquals('Title B02', $showList[1]->getShowTitle());
-    }
-
 }

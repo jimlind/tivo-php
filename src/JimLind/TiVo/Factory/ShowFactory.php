@@ -6,7 +6,7 @@ use JimLind\TiVo\Model\Show;
 use JimLind\TiVo\Utilities;
 
 /**
- * Build a show model.
+ * Default show factory to build a show model.
  */
 class ShowFactory
 {
@@ -16,30 +16,11 @@ class ShowFactory
     protected $show = null;
 
     /**
-     * Constructor
-     *
-     * @param JimLind\TiVo\Model\Show $show An empty show model to be filled in.
+     * Constructs the Show Factory.
      */
-    public function __construct(Show $show)
+    public function __construct()
     {
-        $this->show = $show;
-    }
-
-    /**
-     * Create a list of shows from a list of XML Elements.
-     *
-     * @param SimpleXMLElement[] $xmlList XML Element from the TiVo.
-     *
-     * @return JimLind\TiVo\Model\Show[]
-     */
-    public function createFromXmlList($xmlList)
-    {
-        $showList = array();
-        foreach ($xmlList as $xmlElement) {
-            $showList[] = $this->createFromXml($xmlElement);
-        }
-        // Array of created shows.
-        return $showList;
+        $this->show = new Show();
     }
 
     /**
@@ -49,18 +30,20 @@ class ShowFactory
      *
      * @return JimLind\TiVo\Model\Show
      */
-    public function createFromXml($xml)
+    public function createShowFromXml($xml)
     {
-        $this->show = clone $this->show;
         Utilities\XmlNamespace::addTiVoNamespace($xml);
 
-        $detailList = $xml->xpath('tivo:Details');
-        $urlList = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
-
-        $detailXml = array_pop($detailList);
+        $urlList   = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
         $urlString = (string) array_pop($urlList);
+        $this->show->setId($this->parseID($urlString));
+        $this->show->setURL($urlString);
 
-        return $this->populateWithXMLPieces($detailXml, $urlString);
+        $detailList = $xml->xpath('tivo:Details');
+        $detailXml  = array_pop($detailList);
+        $this->populateWithXMLPieces($detailXml, $urlString);
+
+        return $this->show;
     }
 
     /**
@@ -75,7 +58,6 @@ class ShowFactory
     {
         Utilities\XmlNamespace::addTiVoNamespace($detailXML);
 
-        $this->show->setId($this->parseID($urlString));
         $this->show->setShowTitle($this->popXPath($detailXML, 'Title'));
         $this->show->setEpisodeTitle($this->popXPath($detailXML, 'EpisodeTitle'));
         $this->show->setEpisodeNumber($this->popXPath($detailXML, 'EpisodeNumber'));
@@ -84,30 +66,9 @@ class ShowFactory
         $this->show->setChannel($this->popXPath($detailXML, 'SourceChannel'));
         $this->show->setStation($this->popXPath($detailXML, 'SourceStation'));
         $this->show->setHD(strtoupper($this->popXPath($detailXML, 'HighDefinition')) == 'YES');
-        $this->show->setURL($urlString);
 
         $timestamp = hexdec($this->popXPath($detailXML, 'CaptureDate'));
         $this->show->setDate(new \DateTime('@' . $timestamp));
-
-        return $this->show;
-    }
-
-    /**
-     * Return a string represented from the XPath.
-     *
-     * @param SimpleXMLElement $xml  The XML element that hopefully contains the XPath.
-     * @param string           $path The XPath string to parse the XML with.
-     *
-     * @return string
-     */
-    protected function popXPath($xml, $path)
-    {
-        $pathList = $xml->xpath('tivo:' . $path);
-        if (count($pathList) == 1) {
-            return (string) array_pop($pathList);
-        }
-
-        return '';
     }
 
     /**
@@ -126,5 +87,23 @@ class ShowFactory
         }
 
         return 0;
+    }
+
+    /**
+     * Return a string represented from the XPath.
+     *
+     * @param SimpleXMLElement $xml  The XML element that hopefully contains the XPath.
+     * @param string           $path The XPath string to parse the XML with.
+     *
+     * @return string
+     */
+    protected function popXPath($xml, $path)
+    {
+        $pathList = $xml->xpath('tivo:' . $path);
+        if (count($pathList) == 1) {
+            return (string) array_pop($pathList);
+        }
+
+        return '';
     }
 }

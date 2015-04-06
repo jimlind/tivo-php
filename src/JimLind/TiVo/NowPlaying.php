@@ -97,11 +97,13 @@ class NowPlaying
             );
         } catch (TransferException $exception) {
             $this->logger->warning($exception->getMessage());
+
             return new \SimpleXMLElement('<xml />');
         }
 
         if (empty($response)) {
             $this->logger->warning('Empty response from Guzzle.');
+
             return new \SimpleXMLElement('<xml />');
         }
 

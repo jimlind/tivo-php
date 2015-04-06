@@ -80,7 +80,7 @@ class Show
      */
     public function setId($id)
     {
-        $this->id = intval($id);
+        $this->id = (integer) ($id);
     }
 
     /**
@@ -120,7 +120,7 @@ class Show
      */
     public function setEpisodeNumber($episodeNumber)
     {
-        $this->episodeNumber = intval($episodeNumber);
+        $this->episodeNumber = (integer) ($episodeNumber);
     }
 
     /**
@@ -140,7 +140,7 @@ class Show
      */
     public function setEpisodeTitle($episodeTitle)
     {
-        $this->episodeTitle = $episodeTitle;
+        $this->episodeTitle = (string) $episodeTitle;
     }
 
     /**
@@ -160,7 +160,7 @@ class Show
      */
     public function setDuration($duration)
     {
-        $this->duration = intval($duration);
+        $this->duration = (integer) $duration;
     }
 
     /**
@@ -203,7 +203,7 @@ class Show
      */
     public function setDescription($description)
     {
-        $this->description = $description;
+        $this->description = (string) $description;
     }
 
     /**
@@ -223,7 +223,7 @@ class Show
      */
     public function setChannel($channel)
     {
-        $this->channel = intval($channel);
+        $this->channel = (integer) $channel;
     }
 
     /**
