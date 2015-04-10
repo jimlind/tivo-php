@@ -2,7 +2,7 @@
 
 namespace JimLind\TiVo\Tests;
 
-use JimLind\TiVo;
+use JimLind\TiVo\Location;
 
 /**
  * Test the TiVo\Location service.
@@ -25,7 +25,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase
 
         $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
 
-        $this->fixture = new TiVo\Location($this->process);
+        $this->fixture = new Location($this->process);
     }
 
     /**

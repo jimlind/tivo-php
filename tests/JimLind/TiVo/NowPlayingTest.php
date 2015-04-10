@@ -3,7 +3,7 @@
 namespace JimLind\TiVo\Tests;
 
 use GuzzleHttp\Exception\TransferException;
-use JimLind\TiVo;
+use JimLind\TiVo\NowPlaying;
 
 /**
  * Test the TiVo\NowPlaying service.
@@ -46,7 +46,7 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new TiVo\NowPlaying($ip, null, $this->guzzle);
+        $fixture = new NowPlaying($ip, null, $this->guzzle);
         $fixture->download();
 
         $invocationList = $spy->getInvocations();
@@ -65,7 +65,7 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new TiVo\NowPlaying(null, $mac, $this->guzzle);
+        $fixture = new NowPlaying(null, $mac, $this->guzzle);
         $fixture->download();
 
         $invocationList = $spy->getInvocations();
@@ -87,7 +87,7 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
                      ->method('get')
                      ->will($this->onConsecutiveCalls($this->response));
 
-        $fixture = new TiVo\NowPlaying(null, null, $this->guzzle);
+        $fixture = new NowPlaying(null, null, $this->guzzle);
         $fixture->download();
 
         $invocationList = $spy->getInvocations();
@@ -103,12 +103,12 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
      */
     public function testNowPlayingException()
     {
-        $nowPlaying = new TiVo\NowPlaying(null, null, $this->guzzle);
+        $fixture = new NowPlaying(null, null, $this->guzzle);
 
         $this->guzzle->method('get')
                      ->will($this->throwException(new TransferException));
 
-        $actual = $nowPlaying->download();
+        $actual = $fixture->download();
         $this->assertEquals(array(), $actual);
     }
 
@@ -122,7 +122,7 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
      */
     public function testGuzzleReturnParsing($xmlList, $expected)
     {
-        $fixture = new TiVo\NowPlaying(null, null, $this->guzzle);
+        $fixture = new NowPlaying(null, null, $this->guzzle);
 
         foreach ($xmlList as $index => $xmlString) {
             $simpleXml = simplexml_load_string($xmlString);

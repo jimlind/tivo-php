@@ -2,7 +2,7 @@
 
 namespace JimLind\TiVo\Tests\Utilities;
 
-use JimLind\TiVo\Utilities;
+use JimLind\TiVo\Utilities\XmlNamespace;
 
 /**
  * Test the TiVo\Utilities\Log class.
@@ -16,7 +16,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<items xmlns="http://www.example.org/schema"><item id="1" /></items>';
         $simpleXml = simplexml_load_string($xml);
-        Utilities\XmlNamespace::addTiVoNamespace($simpleXml);
+        XmlNamespace::addTiVoNamespace($simpleXml);
 
         $itemList = $simpleXml->xpath('tivo:item[@id = 1]');
         $this->assertCount(1, $itemList);
@@ -34,7 +34,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<items><item id="1" /></items>';
         $simpleXml = simplexml_load_string($xml);
-        Utilities\XmlNamespace::addTiVoNamespace($simpleXml);
+        XmlNamespace::addTiVoNamespace($simpleXml);
 
         $itemList = $simpleXml->xpath('tivo:item[@id = 1]');
         $this->assertCount(1, $itemList);
@@ -47,14 +47,14 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test empty XML attempt.
-     * 
+     *
      * @expectedException Exception
      */
     public function testEmptyXMLString()
     {
         $xml = '';
         $simpleXml = simplexml_load_string($xml);
-        Utilities\XmlNamespace::addTiVoNamespace($simpleXml);
+        XmlNamespace::addTiVoNamespace($simpleXml);
     }
 
     /**
@@ -64,7 +64,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<item/>';
         $simpleXml = simplexml_load_string($xml);
-        Utilities\XmlNamespace::addTiVoNamespace($simpleXml);
+        XmlNamespace::addTiVoNamespace($simpleXml);
 
         $xmlString = $simpleXml->asXml();
 
@@ -81,7 +81,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<items><item /></items>';
         $simpleXml = simplexml_load_string($xml);
-        Utilities\XmlNamespace::addTiVoNamespace($simpleXml);
+        XmlNamespace::addTiVoNamespace($simpleXml);
 
         $xmlString = $simpleXml->asXml();
 

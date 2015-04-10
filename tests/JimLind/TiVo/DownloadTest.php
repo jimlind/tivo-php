@@ -2,7 +2,7 @@
 
 namespace JimLind\TiVo\Tests;
 
-use JimLind\TiVo;
+use JimLind\TiVo\Download;
 
 /**
  * Test the TiVo\Download service.
@@ -33,7 +33,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
      */
     public function testDoubleGetOnStorePreview()
     {
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $this->guzzle->expects($this->exactly(2))
                      ->method('get');
 
@@ -51,7 +51,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new TiVo\Download($mac, $this->guzzle);
+        $fixture = new Download($mac, $this->guzzle);
         $fixture->storePreview(null, null);
 
         $invocationList = $spy->getInvocations();
@@ -71,7 +71,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $fixture->storePreview(null, $filePath);
 
         $invocationList = $spy->getInvocations();
@@ -87,7 +87,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $fixture->storePreview(null, null);
 
         $invocationList = $spy->getInvocations();
@@ -103,7 +103,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $fixture->store(null, null);
 
         $invocationList = $spy->getInvocations();
@@ -124,7 +124,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $fixture->storePreview($input, null);
 
         $invocationList = $spy->getInvocations();
@@ -158,7 +158,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $fixture->storePreview($input, null);
 
         $invocationList = $spy->getInvocations();
@@ -205,7 +205,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $this->logger->method('warning')
                      ->with('Unable to parse IP from URL.');
 
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $fixture->setLogger($this->logger);
         $fixture->storePreview(null, null);
     }
@@ -228,7 +228,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
                      ->method('warning')
                      ->with($this->equalTo($message));
 
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $fixture->setLogger($this->logger);
         $fixture->storePreview('http://1.1.1.1:80', null);
     }
@@ -253,7 +253,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
                      ->method('info')
                      ->with($this->equalTo($message));
 
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $fixture->setLogger($this->logger);
         $fixture->storePreview('http://0.0.0.0:80', null);
     }
@@ -276,7 +276,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
                      ->method('warning')
                      ->with($this->equalTo($message));
 
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $fixture->setLogger($this->logger);
         $fixture->storePreview('http://0.0.0.0:80', null);
     }
@@ -299,7 +299,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
                      ->method('warning')
                      ->with($this->equalTo($message));
 
-        $fixture = new TiVo\Download(null, $this->guzzle);
+        $fixture = new Download(null, $this->guzzle);
         $fixture->setLogger($this->logger);
         $fixture->store('http://0.0.0.0:80', null);
     }

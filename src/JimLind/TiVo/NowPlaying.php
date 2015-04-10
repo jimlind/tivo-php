@@ -4,6 +4,7 @@ namespace JimLind\TiVo;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\TransferException;
+use JimLind\TiVo\Utilities\XmlNamespace;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -69,7 +70,7 @@ class NowPlaying
     public function download($previousShowList = array())
     {
         $xmlFile = $this->downloadXmlFile(count($previousShowList));
-        Utilities\XmlNamespace::addTiVoNamespace($xmlFile);
+        XmlNamespace::addTiVoNamespace($xmlFile);
 
         $showList = $xmlFile->xpath('//tivo:Item');
         if (count($showList) > 0) {

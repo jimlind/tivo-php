@@ -2,7 +2,7 @@
 
 namespace JimLind\TiVo\Tests\Factory;
 
-use JimLind\TiVo\Factory;
+use JimLind\TiVo\Factory\ShowFactory;
 
 /**
  * Test the factory for show models.
@@ -16,7 +16,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function setup()
     {
-        $this->fixture = new Factory\ShowFactory();
+        $this->fixture = new ShowFactory();
     }
 
     /**
