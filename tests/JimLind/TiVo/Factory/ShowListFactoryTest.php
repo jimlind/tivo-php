@@ -19,9 +19,12 @@ class ShowFactoryListTest extends \PHPUnit_Framework_TestCase
         $this->fixture = new ShowListFactory();
     }
 
-    public function testNothing()
+    /**
+     * Tests that list of shows is created.
+     */
+    public function testCreate()
     {
-        $count     = rand(1,10);
+        $count     = rand(1, 10);
         $simpleXml = simplexml_load_string('<xml><Details /></xml>');
         $xmlList   = array_fill(0, $count, $simpleXml);
 
