@@ -16,9 +16,8 @@ $xmlList    = $nowPlaying->download();
 $xmlSlice   = array_slice($xmlList, 0, 2);
 
 // Build a list of show models.
-$origin   = new JimLind\TiVo\Model\Show();
-$factory  = new JimLind\TiVo\Factory\ShowFactory($origin);
-$showList = $factory->createFromXmlList($xmlSlice);
+$factory  = new JimLind\TiVo\Factory\ShowListFactory();
+$showList = $factory->createShowListFromXmlList($xmlSlice);
 
 // Download the video file.
 $show       = array_pop($showList);
