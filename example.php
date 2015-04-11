@@ -3,8 +3,8 @@
 include 'vendor/autoload.php';
 
 // Locate the TiVo.
-$process   = new Symfony\Component\Process\Process('');
-$location  = new JimLind\TiVo\Location($process);
+$builder   = new Symfony\Component\Process\ProcessBuilder();
+$location  = new JimLind\TiVo\Location($builder);
 $ipAddress = $location->find();
 
 // Download a list of XML elements.

@@ -3,6 +3,9 @@
 namespace JimLind\TiVo\Tests;
 
 use JimLind\TiVo\Location;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessBuilder;
 
 /**
  * Test the TiVo\Location service.
@@ -10,8 +13,24 @@ use JimLind\TiVo\Location;
 class LocationTest extends \PHPUnit_Framework_TestCase
 {
 
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
+
+    /**
+     * @var Process
+     */
     private $process;
+
+    /**
+     * @var ProcessBuilder
+     */
+    private $builder;
+
+    /**
+     * @var Location
+     */
     private $fixture;
 
     /**
@@ -19,23 +38,45 @@ class LocationTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        $this->logger  = $this->getMock('\Psr\Log\LoggerInterface');
         $this->process = $this->getMockBuilder('\Symfony\Component\Process\Process')
                               ->disableOriginalConstructor()
                               ->getMock();
 
-        $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $this->builder = $this->getMock('\Symfony\Component\Process\ProcessBuilder');
+        $this->builder->method('getProcess')
+                      ->willReturn($this->process);
 
-        $this->fixture = new Location($this->process);
+        $this->fixture = new Location($this->builder);
     }
 
     /**
-     * Test Symfony/Process command setup.
+     * Test Symfony/ProcessBuilder prefix setup.
      */
-    public function testProcessSettingCommand()
+    public function testBuilderSettingPrefix()
     {
-        $this->process->expects($this->once())
-                      ->method('setCommandLine')
-                      ->with('avahi-browse -l -r -t _tivo-videos._tcp');
+        $this->builder->expects($this->once())
+                      ->method('setPrefix')
+                      ->with('avahi-browse');
+
+        $this->fixture->find();
+    }
+
+    /**
+     * Test Symfony/ProcessBuilder arguments setup.
+     */
+    public function testBuilderSettingArguments()
+    {
+        $arguments = [
+            '--ignore-local',
+            '--resolve',
+            '--terminate',
+            '_tivo-videos._tcp',
+        ];
+
+        $this->builder->expects($this->once())
+                      ->method('setArguments')
+                      ->with($arguments);
 
         $this->fixture->find();
     }
@@ -43,9 +84,9 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     /**
      * Test Symfony/Process timeout setup.
      */
-    public function testProcessSettingTimeout()
+    public function testBuilderSettingTimeout()
     {
-        $this->process->expects($this->once())
+        $this->builder->expects($this->once())
                       ->method('setTimeout')
                       ->with(60);
 
@@ -59,18 +100,6 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     {
         $this->process->expects($this->once())
                       ->method('run');
-
-        $this->fixture->find();
-    }
-
-    /**
-     * Test commands are run in the preferred order.
-     */
-    public function testProcessState()
-    {
-        $this->process->expects($this->at(0))->method('setCommandLine');
-        $this->process->expects($this->at(1))->method('setTimeout');
-        $this->process->expects($this->at(2))->method('run');
 
         $this->fixture->find();
     }
@@ -91,7 +120,10 @@ class LocationTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessFailure()
     {
+        $command = rand();
+
         $this->process->method('isSuccessful')->willReturn(false);
+        $this->process->method('getCommandLine')->willReturn($command);
         $this->process->expects($this->never())->method('getOutput');
 
         $this->fixture->setLogger($this->logger);
@@ -100,7 +132,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase
                      ->with('Problem executing avahi-browse. Tool may not be installed.');
         $this->logger->expects($this->at(1))
                      ->method('warning')
-                     ->with('Command: avahi-browse -l -r -t _tivo-videos._tcp');
+                     ->with('Command: ' . $command);
 
         $actual = $this->fixture->find();
         $this->assertEquals('', $actual);

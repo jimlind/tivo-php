@@ -4,7 +4,7 @@ namespace JimLind\TiVo;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessBuilder;
 
 /**
  * Location is a service for finding a TiVo on your local network.
@@ -12,9 +12,9 @@ use Symfony\Component\Process\Process;
 class Location
 {
     /**
-     * @var Process
+     * @var ProcessBuilder
      */
-    protected $process = null;
+    protected $builder = null;
 
     /**
      * @var LoggerInterface
@@ -24,11 +24,11 @@ class Location
     /**
      * Constructor
      *
-     * @param Process $process The Symfony Process Component.
+     * @param ProcessBuilder $builder The Symfony ProcessBuilder Component.
      */
-    public function __construct(Process $process)
+    public function __construct(ProcessBuilder $builder)
     {
-        $this->process = $process;
+        $this->builder = $builder;
 
         // Default to the NullLogger
         $this->setLogger(new NullLogger());
@@ -71,23 +71,29 @@ class Location
      */
     protected function getAvahiResults()
     {
-        $command = 'avahi-browse -l -r -t _tivo-videos._tcp';
+        $this->builder->setPrefix('avahi-browse');
+        $this->builder->setArguments([
+            '--ignore-local',
+            '--resolve',
+            '--terminate',
+            '_tivo-videos._tcp',
+        ]);
+        $this->builder->setTimeout(60);
 
-        $this->process->setCommandLine($command);
-        $this->process->setTimeout(60); // 1 minute
-        $this->process->run();
+        $process = $this->builder->getProcess();
+        $process->run();
 
-        if ($this->process->isSuccessful() === false) {
+        if ($process->isSuccessful() === false) {
             // Failure. Log and exit early.
             $message = 'Problem executing avahi-browse. Tool may not be installed.';
             $this->logger->warning($message);
-            $this->logger->warning('Command: ' . $command);
+            $this->logger->warning('Command: ' . $process->getCommandLine());
 
             return '';
         }
 
         // Command line output.
-        return $this->process->getOutput();
+        return $process->getOutput();
     }
 
     /**
