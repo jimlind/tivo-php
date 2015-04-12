@@ -16,8 +16,7 @@ vendor/bin/phpunit --coverage-text
 ### 100% Code Sniffed
 ```sh
 composer install
-vendor/bin/phpcs src --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ruleset.xml
-vendor/bin/phpcs tests --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ruleset.xml
+bash sniff.sh
 ```
 
 #### cURL Install
