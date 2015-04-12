@@ -2,8 +2,10 @@
 
 include 'vendor/autoload.php';
 
+// Setup the ProcessBuilder dependency.
+$builder = new Symfony\Component\Process\ProcessBuilder();
+
 // Locate the TiVo.
-$builder   = new Symfony\Component\Process\ProcessBuilder();
 $location  = new JimLind\TiVo\Location($builder);
 $ipAddress = $location->find();
 
@@ -28,5 +30,5 @@ $downloader->store($show->getURL(), '/tmp/video.tivo');
 $downloader->storePreview($show->getURL(), '/tmp/preview.tivo');
 
 // Decode the video file.
-$decoder = new JimLind\TiVo\Decode($mak, $process);
+$decoder = new JimLind\TiVo\Decode($mak, $builder);
 $decoder->decode('/tmp/preview.tivo', '/tmp/preview.mpeg');

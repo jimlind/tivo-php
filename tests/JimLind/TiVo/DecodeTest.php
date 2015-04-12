@@ -3,6 +3,9 @@
 namespace JimLind\TiVo\Tests;
 
 use JimLind\TiVo\Decode;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessBuilder;
 
 /**
  * Test the TiVo\Decode service.
@@ -10,55 +13,82 @@ use JimLind\TiVo\Decode;
 class DecodeTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Symfony\Component\Process\Process
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var Process
      */
     private $process;
 
     /**
-     * @var Psr\Log\LoggerInterface
+     * @var ProcessBuilder
      */
-    private $logger;
+    private $builder;
 
     /**
      * Setup the PHPUnit test.
      */
     public function setUp()
     {
+        $this->logger  = $this->getMock('\Psr\Log\LoggerInterface');
         $this->process = $this->getMockBuilder('\Symfony\Component\Process\Process')
                               ->disableOriginalConstructor()
                               ->getMock();
 
-        $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $this->builder = $this->getMock('\Symfony\Component\Process\ProcessBuilder');
+        $this->builder->method('getProcess')
+                      ->willReturn($this->process);
     }
 
+    /**
+     * Test Symfony/ProcessBuilder prefix setup.
+     */
+    public function testBuilderSettingPrefix()
+    {
+        $this->builder->expects($this->once())
+                      ->method('setPrefix')
+                      ->with('tivodecode');
+
+        $fixture = new Decode(null, $this->builder);
+        $fixture->decode(null, null);
+    }
 
     /**
-     * Test Symfony/Process command setup.
+     * Test Symfony/ProcessBuilder arguments setup.
      */
-    public function testProcessSettingCommand()
+    public function testBuilderSettingArguments()
     {
         $mak    = rand();
         $input  = rand();
         $output = rand();
 
-        $this->process->expects($this->once())
-                      ->method('setCommandLine')
-                      ->with('tivodecode ' . $input . ' -m ' . $mak . ' -n -o ' . $output);
+        $arguments = [
+            $input,
+            '--mak=' . $mak,
+            '--no-verify',
+            '--out=' . $output,
+        ];
 
-        $fixture = new Decode($mak, $this->process);
+        $this->builder->expects($this->once())
+                      ->method('setArguments')
+                      ->with($arguments);
+
+        $fixture = new Decode($mak, $this->builder);
         $fixture->decode($input, $output);
     }
 
     /**
-     * Test Symfony/Process timeout setup.
+     * Test Symfony/ProcessBuilder timeout setup.
      */
-    public function testProcessSettingTimeout()
+    public function testBuilderSettingTimeout()
     {
-        $this->process->expects($this->once())
+        $this->builder->expects($this->once())
                       ->method('setTimeout')
-                      ->with(0);
+                      ->with(null);
 
-        $fixture = new Decode(null, $this->process);
+        $fixture = new Decode(null, $this->builder);
         $fixture->decode(null, null);
     }
 
@@ -70,20 +100,7 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
         $this->process->expects($this->once())
                       ->method('run');
 
-        $fixture = new Decode(null, $this->process);
-        $fixture->decode(null, null);
-    }
-
-    /**
-     * Test commands are run in the preferred order.
-     */
-    public function testProcessState()
-    {
-        $this->process->expects($this->at(0))->method('setCommandLine');
-        $this->process->expects($this->at(1))->method('setTimeout');
-        $this->process->expects($this->at(2))->method('run');
-
-        $fixture = new Decode(null, $this->process);
+        $fixture = new Decode(null, $this->builder);
         $fixture->decode(null, null);
     }
 
@@ -94,7 +111,7 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
     {
         $this->process->method('isSuccessful')->willReturn(true);
 
-        $fixture = new Decode(null, $this->process);
+        $fixture = new Decode(null, $this->builder);
         $output = $fixture->decode(null, null);
 
         $this->assertTrue($output);
@@ -105,22 +122,21 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessFailure()
     {
-        $mak    = rand();
-        $input  = rand();
-        $output = rand();
+        $command = rand();
 
         $this->process->method('isSuccessful')->willReturn(false);
+        $this->process->method('getCommandLine')->willReturn($command);
 
         $this->logger->expects($this->at(0))
                      ->method('warning')
                      ->with('Problem executing tivodecode. Tool may not be installed.');
         $this->logger->expects($this->at(1))
                      ->method('warning')
-                     ->with('Command: tivodecode ' . $input . ' -m ' . $mak . ' -n -o ' . $output);
+                     ->with('Command: ' . $command);
 
-        $fixture = new Decode($mak, $this->process);
+        $fixture = new Decode(null, $this->builder);
         $fixture->setLogger($this->logger);
-        $actual = $fixture->decode($input, $output);
+        $actual = $fixture->decode(null, null);
 
         $this->assertFalse($actual);
     }
