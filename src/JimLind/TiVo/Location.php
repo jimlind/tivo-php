@@ -4,6 +4,7 @@ namespace JimLind\TiVo;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
@@ -24,7 +25,7 @@ class Location
     /**
      * Constructor
      *
-     * @param ProcessBuilder $builder The Symfony ProcessBuilder Component.
+     * @param ProcessBuilder $builder The Symfony ProcessBuilder component.
      */
     public function __construct(ProcessBuilder $builder)
     {
@@ -71,16 +72,7 @@ class Location
      */
     protected function getAvahiResults()
     {
-        $this->builder->setPrefix('avahi-browse');
-        $this->builder->setArguments([
-            '--ignore-local',
-            '--resolve',
-            '--terminate',
-            '_tivo-videos._tcp',
-        ]);
-        $this->builder->setTimeout(60);
-
-        $process = $this->builder->getProcess();
+        $process = $this->buildLocationProcess();
         $process->run();
 
         if ($process->isSuccessful() === false) {
@@ -94,6 +86,25 @@ class Location
 
         // Command line output.
         return $process->getOutput();
+    }
+
+    /**
+     * Builds the SymfonyProcess.
+     *
+     * @return Process
+     */
+    protected function buildLocationProcess()
+    {
+        $this->builder->setPrefix('avahi-browse');
+        $this->builder->setArguments([
+            '--ignore-local',
+            '--resolve',
+            '--terminate',
+            '_tivo-videos._tcp',
+        ]);
+        $this->builder->setTimeout(60);
+
+        return $this->builder->getProcess();
     }
 
     /**
