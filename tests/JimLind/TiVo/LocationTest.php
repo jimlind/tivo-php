@@ -118,7 +118,8 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     /**
      * Test proper behavior if process is not successful.
      */
-    public function testProcessFailure(){
+    public function testProcessFailure()
+    {
         $command = rand();
 
         $this->process->method('isSuccessful')->willReturn(false);
