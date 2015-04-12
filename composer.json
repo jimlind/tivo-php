@@ -11,6 +11,7 @@
         }
     ],
     "require": {
+        "apix/log": "~1.0",
         "guzzlehttp/guzzle": "~5.2",
         "psr/log": "~1.0",
         "symfony/process": "~2.6"
