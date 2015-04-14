@@ -1,28 +1,29 @@
 <?php
 
+$argumentList = $argv;
+if (count($argumentList) < 2) {
+    print(" > You need to supply your MAK as an argument.");
+    finishRun();
+} else {
+    $mak = $argumentList[1];
+}
+
 // Require the Composer autoload file.
 require 'vendor/autoload.php';
 
-// Setup the ProcessBuilder
-if (class_exists('Symfony\Component\Process\ProcessBuilder') === false) {
-    print(" >  Can't load Symfony\Component\Process\ProcessBuilder.\n");
-    print(" >  Did you run `composer install` already?\n");
-    die;
-}
+// Setup the ProcessBuilder.
+validateClass('Symfony\Component\Process\ProcessBuilder');
 $builder = new Symfony\Component\Process\ProcessBuilder();
 
-$loggerFile = '/tmp/tivo_verify.log';
+// Setup the File Logger
+$logFile = '/tmp/tivo_verify.log';
 $logger     = new Apix\Log\Logger();
 $logger->add(
-    new Apix\Log\Logger\File($loggerFile)
+    new Apix\Log\Logger\File($logFile)
 );
 
 // Locate the TiVo.
-if (class_exists('JimLind\TiVo\Location') === false) {
-    print(" >  Can't load JimLind\TiVo\Location.\n");
-    print(" >  Did you run `composer install` already?\n");
-    die;
-}
+validateClass('JimLind\TiVo\Location');
 $location  = new JimLind\TiVo\Location($builder);
 $location->setLogger($logger);
 $ipAddress = $location->find();
@@ -35,7 +36,115 @@ if (empty($ipAddress) === false) {
     print(" >  Do you have an odd network setup like virtual machines or the like?\n");
 }
 
-print("\n::::Logger Contents::::\n");
-readfile($loggerFile);
-print("\n");
-unlink($loggerFile);
+// Exit if no IP can be used.
+if (empty($ipAddress) && count($argumentList) < 3) {
+    print(" >  No IP available. You can supply one manually if neccessary.\n");
+    finishRun($logFile);
+}
+
+// Use the manually entered IP.
+if (count($argumentList) > 2) {
+    $ipAddress = $argumentList[2];
+    print(" >  Using the manually entered IP of `{$ipAddress}` for your TiVo.\n");
+}
+
+// Setup the Guzzle client.
+validateClass('GuzzleHttp\Client');
+$guzzle = new GuzzleHttp\Client();
+
+// Download a NowPlaying list.
+validateClass('JimLind\TiVo\NowPlaying');
+print(" >  Downloading the Now Playing list from your TiVo.\n");
+$nowPlaying = new JimLind\TiVo\NowPlaying($ipAddress, $mak, $guzzle);
+$xmlList    = $nowPlaying->download();
+if (empty($xmlList)) {
+    print(" >  No proper response from your TiVo. Something is wrong.\n");
+    finishRun($logFile);
+} else {
+    $xmlCount = count($xmlList);
+    print(" >  Now Playing list of {$xmlCount} shows downloaded.\n");
+}
+
+// Translate an XML list to a Show list.
+validateClass('JimLind\TiVo\Factory\ShowListFactory');
+$listFactory = new JimLind\TiVo\Factory\ShowListFactory();
+$showList    = $listFactory->createShowListFromXmlList($xmlList);
+$showCount   = count($showList);
+print(" >  Now Playing list of {$showCount} shows translated.\n");
+
+// Grab a random Show.
+$key          = rand(1, $showCount - 1);
+$show         = $showList->offsetGet($key);
+$showTitle    = $show->getShowTitle();
+$episodeTitle = $show->getEpisodeTitle();
+$showURL      = $show->getURL();
+
+print(" >  Picked a random show from the list.\n");
+print(" >  - {$showTitle} {$episodeTitle}\n");
+print(" >  - {$showURL}\n");
+
+// Identify local file locations to be deleted later.
+$tivoFile = '/tmp/' . rand() . '.tivo';
+$mpegFile = '/tmp/' . rand() . '.mpeg';
+
+// Download a preview file.
+validateClass('JimLind\TiVo\Download');
+print(" >  Downloading a preview of the show locally.\n");
+$downloader = new JimLind\TiVo\Download($mak, $guzzle);
+$downloader->storePreview($showURL, $tivoFile);
+
+// Verify file exists and has contents.
+if (file_exists($tivoFile) && filesize($tivoFile) > 0) {
+    print(" >  Preview file was sucessfully downloaded.\n");
+} else {
+    print(" >  Preview file was not sucessfully downloaded.\n");
+    finishRun($logFile);
+}
+
+// Decode the preview file.
+validateClass('JimLind\TiVo\Download');
+print(" >  Decoding the preview of the local show file.\n");
+$decoder = new JimLind\TiVo\Decode($mak, $builder);
+$decoder->decode($tivoFile, $mpegFile);
+
+// Verify file exists and has contents.
+if (file_exists($mpegFile) && filesize($mpegFile) > 0) {
+    print(" >  Preview file was sucessfully decoded.\n");
+} else {
+    print(" >  Preview file was not sucessfully decoded.\n");
+    finishRun($logFile);
+}
+
+// Delete raw tivo file.
+unlink($tivoFile);
+unlink($mpegFile);
+
+print(" >  Verification completed successfully.\n");
+finishRun($logFile);
+
+/*
+ * Helper function to make sure everything is properly autoloaded.
+ */
+function validateClass($className)
+{
+    if (class_exists($className) === false) {
+        print(" >  Can't load {$className}.\n");
+        print(" >  Did you run `composer install` already?\n");
+        finishRun();
+    }
+}
+
+/**
+ * Helper function to display log and exit early.
+ */
+function finishRun($logFile = false)
+{
+    if ($logFile) {
+        print("\n::::Log Contents::::\n");
+        readfile($logFile);
+        print("\n");
+        unlink($logFile);
+    }
+
+    die;
+}
