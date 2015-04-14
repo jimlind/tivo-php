@@ -38,9 +38,11 @@ class ShowListFactory
     public function createShowListFromXmlList($xmlList)
     {
         foreach ($xmlList as $xmlElement) {
-            $showList[] = $this->showFactory->createShowFromXml($xmlElement);
+            $show = $this->showFactory->createShowFromXml($xmlElement);
+            $this->showList->append($show);
         }
+
         // Array of created shows.
-        return $showList;
+        return $this->showList;
     }
 }

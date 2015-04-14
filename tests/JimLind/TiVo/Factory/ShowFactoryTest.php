@@ -172,4 +172,23 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
         $expected = new \DateTime('2106-02-07 06:28:15 GMT');
         $this->assertEquals($show->getDate(), $expected);
     }
+
+    /**
+     * Test that the Factory isn't stateful.
+     */
+    public function testRepeatCreates()
+    {
+        $firstTitle  = rand();
+        $firstString = '<xml><Details><Title>' . $firstTitle . '</Title></Details></xml>';
+        $firstXML    = simplexml_load_string($firstString);
+        $firstShow   = $this->fixture->createShowFromXml($firstXML);
+
+        $secondTitle  = rand();
+        $secondString = '<xml><Details><Title>' . $secondTitle . '</Title></Details></xml>';
+        $secondXML    = simplexml_load_string($secondString);
+        $secondShow   = $this->fixture->createShowFromXml($secondXML);
+
+        $this->assertEquals($firstTitle, $firstShow->getShowTitle());
+        $this->assertEquals($secondTitle, $secondShow->getShowTitle());
+    }
 }

@@ -16,14 +16,6 @@ class ShowFactory
     protected $show = null;
 
     /**
-     * Constructs the Show Factory.
-     */
-    public function __construct()
-    {
-        $this->show = new Show();
-    }
-
-    /**
      * Create a show from an XML Element.
      *
      * @param SimpleXMLElement $xml XML Element from the TiVo.
@@ -36,6 +28,8 @@ class ShowFactory
 
         $urlList   = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
         $urlString = (string) array_pop($urlList);
+
+        $this->show = new Show();
         $this->show->setId($this->parseID($urlString));
         $this->show->setURL($urlString);
 

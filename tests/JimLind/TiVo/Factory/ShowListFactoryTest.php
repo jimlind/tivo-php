@@ -20,6 +20,17 @@ class ShowFactoryListTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests that an ArrayObject was returned.
+     */
+    public function testReturnType()
+    {
+        $xmlList  = [simplexml_load_string('<xml><Details /></xml>')];
+        $showList = $this->fixture->createShowListFromXmlList($xmlList);
+
+        $this->assertInstanceOf('ArrayObject', $showList);
+    }
+
+    /**
      * Tests that list of shows is created.
      */
     public function testCreate()
