@@ -1,25 +1,9 @@
-##tivo-php: Communicate with a S3 TiVo via Guzzle
+## Installs and Dependencies
 
-[![Build Status](https://travis-ci.org/jimlind/tivo-php.png?branch=master)](https://travis-ci.org/jimlind/tivo-php)
-[![Latest Stable Version](https://poser.pugx.org/jimlind/tivo-php/v/stable.svg)](https://packagist.org/packages/jimlind/tivo-php)
-[![Total Downloads](https://poser.pugx.org/jimlind/tivo-php/downloads.svg)](https://packagist.org/packages/jimlind/tivo-php)
-[![License](https://poser.pugx.org/jimlind/tivo-php/license.svg)](https://packagist.org/packages/jimlind/tivo-php)
+### PHP Install
+Obviously you need it or the whole idea is shot. PHP 5.4 and greater is supported.
 
-The following instructions are for Ubuntu so YMMV.
-
-### 100% Code Coverage!
-```sh
-composer install
-vendor/bin/phpunit --coverage-text
-```
-
-### 100% Code Sniffed
-```sh
-composer install
-bash sniff.sh
-```
-
-#### cURL Install
+### cURL Install
 To get Guzzle to work you might need PHP's implementation of cURL.
 This comes with HHVM, my preferred run-time, by default.
 ```sh
