@@ -3,32 +3,48 @@
 include 'vendor/autoload.php';
 
 // Setup the ProcessBuilder dependency.
+// This is part of the the Process component from Symfony for executing commands.
 $builder = new Symfony\Component\Process\ProcessBuilder();
 
-// Locate the TiVo.
+// Setup the Guzzle dependency.
+// This is the best PHP HTTP library around.
+$guzzle = new GuzzleHttp\Client();
+
+// Use the Location service to find a TiVo on your local network.
+// If it can't find a TiVo for whatever reason it'll return an empty string.
+// If you have more than one TiVo it'll return the IP of the first one it sees.
 $location  = new JimLind\TiVo\Location($builder);
 $ipAddress = $location->find();
 
-// Download a list of XML elements.
+// Use the NowPlaying service to download a list of strings representing XML show documents.
+// Each show is a self contained valid XML string.
+// The TiVo IP address and MAK (Media Access Key) are needed here.
 $ip         = '192.168.0.1';
 $mak        = '7678999999';
-$guzzle     = new GuzzleHttp\Client();
 $nowPlaying = new JimLind\TiVo\NowPlaying($ip, $mak, $guzzle);
 $xmlList    = $nowPlaying->download();
-$xmlSlice   = array_slice($xmlList, 0, 2);
 
-// Build a list of show models.
+// Use the ShowListFactory to create a list of Show objects.
+// The factory is setup specifically to use the data output from the NowPlaying service.
 $factory  = new JimLind\TiVo\Factory\ShowListFactory();
-$showList = $factory->createShowListFromXmlList($xmlSlice);
+$showList = $factory->createShowListFromXmlList($xmlList);
 
-// Download the video file.
-$show       = array_pop($showList);
+// Grab one Show off the top.
+$show = $showList->offsetGet(0);
+
+// Setup the Download service.
+// The TiVo IP address and MAK (Media Access Key) are needed here.
 $downloader = new JimLind\TiVo\Download($mak, $guzzle);
-$downloader->store($show->getURL(), '/tmp/video.tivo');
 
-// Download a portion of the video file.
-$downloader->storePreview($show->getURL(), '/tmp/preview.tivo');
+// Download preview and complete files from the TiVo.
+$downloader->storePreview($show->getURL(), '/home/user/videos/raw_video_preview.tivo');
+$downloader->store($show->getURL(), '/home/user/videos/raw_video_complete.tivo');
 
-// Decode the video file.
+// Use the Decode service to create an MPEG file from the encoded raw TiVo file.
+// It just writes the file to the new location. Doesn't touch the old file.
+// The MAK (Media Access Key) is needed here.
 $decoder = new JimLind\TiVo\Decode($mak, $builder);
-$decoder->decode('/tmp/preview.tivo', '/tmp/preview.mpeg');
+$decoder->decode(
+    '/home/user/videos/raw_video_preview.tivo',
+    '/home/user/videos/raw_video_preview.mpeg'
+);
