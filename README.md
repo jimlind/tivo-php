@@ -17,7 +17,12 @@ There are a few prerequisites you can find documented in the provided [installat
 #### Verification
 
 I wrote a [verification script](verify.php) for you to test your setup.
-TODO: Usage Directions
+```
+Usage: php verify.php MAK [IP Address]
+
+Where 'MAK' is the Media Access Key for your TiVo and the optional 'IP Address' is the IP address of your TiVo.
+Example: php verify.php 7678999999 192.168.0.1
+```
 
 ## Code Quality Metrics
 
