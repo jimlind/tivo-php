@@ -20,7 +20,9 @@ I wrote a [verification script](verify.php) for you to test your setup.
 ```
 Usage: php verify.php MAK [IP Address]
 
-Where 'MAK' is the Media Access Key for your TiVo and the optional 'IP Address' is the IP address of your TiVo.
+Arguments:
+- Required -- 'MAK' is the Media Access Key for your TiVo
+- Optional -- 'IP Address' is the IP address of your TiVo
 Example: php verify.php 7678999999 192.168.0.1
 ```
 
