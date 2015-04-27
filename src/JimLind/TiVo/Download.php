@@ -171,5 +171,4 @@ class Download
 
         return $matches[1];
     }
-
 }

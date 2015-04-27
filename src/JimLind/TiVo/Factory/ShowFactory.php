@@ -20,7 +20,7 @@ class ShowFactory
      *
      * @param SimpleXMLElement $xml XML Element from the TiVo.
      *
-     * @return JimLind\TiVo\Model\Show
+     * @return Show
      */
     public function createShowFromXml($xml)
     {
@@ -29,7 +29,7 @@ class ShowFactory
         $urlList   = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
         $urlString = (string) array_pop($urlList);
 
-        $this->show = new Show();
+        $this->show = $this->newShow();
         $this->show->setId($this->parseID($urlString));
         $this->show->setURL($urlString);
 
@@ -38,6 +38,16 @@ class ShowFactory
         $this->populateWithXMLPieces($detailXml, $urlString);
 
         return $this->show;
+    }
+
+    /**
+     * Create a new show with an easily replaceable method.
+     *
+     * @return Show
+     */
+    protected function newShow()
+    {
+        return new Show();
     }
 
     /**

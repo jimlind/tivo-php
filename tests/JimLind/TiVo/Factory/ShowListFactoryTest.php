@@ -44,5 +44,4 @@ class ShowFactoryListTest extends \PHPUnit_Framework_TestCase
         $this->assertCount($count, $showList);
         $this->assertContainsOnlyInstancesOf('JimLind\TiVo\Model\Show', $showList);
     }
-
 }

@@ -91,4 +91,3 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $xmlString);
     }
 }
-

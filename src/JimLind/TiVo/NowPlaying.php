@@ -130,5 +130,4 @@ class NowPlaying
             'verify' => false,
         );
     }
-
 }
