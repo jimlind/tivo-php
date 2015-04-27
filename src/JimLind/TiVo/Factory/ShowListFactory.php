@@ -12,7 +12,7 @@ class ShowListFactory
     /**
      * @var ShowFactory
      */
-    private $showFactory = null;
+    protected $showFactory = null;
 
     /**
      * @var ArrayObject
