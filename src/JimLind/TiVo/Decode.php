@@ -86,7 +86,7 @@ class Decode
      */
     protected function buildDecodeProcess($mak, $input, $output)
     {
-        $this->builder->setPrefix('tivodecode');
+        $this->builder->setPrefix('/usr/local/bin/tivodecode');
         $this->builder->setArguments([
             $input,
             '--mak=' . $mak,
