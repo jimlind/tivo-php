@@ -2,22 +2,23 @@
 
 namespace JimLind\TiVo\Tests;
 
-use JimLind\TiVo\Download;
+use GuzzleHttp\ClientInterface;
+use JimLind\TiVo\VideoDownloader;
 
 /**
- * Test the TiVo\Download service.
+ * Test the TiVo\VideoDownloader service.
  */
-class DownloadTest extends \PHPUnit_Framework_TestCase
+class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var GuzzleHttp\Client
+     * @var ClientInterface
      */
     private $guzzle = null;
 
     /**
-     * @var Psr\Log\LoggerInterface
+     * @var VideoDownloader
      */
-    private $logger = null;
+    private $fixture = null;
 
     /**
      * Setup the PHPUnit test.
@@ -25,7 +26,8 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface');
-        $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
+
+        $this->fixture = new VideoDownloader(null, $this->guzzle);
     }
 
     /**
@@ -33,11 +35,10 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
      */
     public function testDoubleGetOnStorePreview()
     {
-        $fixture = new Download(null, $this->guzzle);
         $this->guzzle->expects($this->exactly(2))
-                     ->method('get');
+            ->method('get');
 
-        $fixture->storePreview(null, null);
+        $this->fixture->downloadPreview(null, null);
     }
 
     /**
@@ -51,8 +52,8 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new Download($mac, $this->guzzle);
-        $fixture->storePreview(null, null);
+        $this->fixture = new VideoDownloader($mac, $this->guzzle);
+        $this->fixture->downloadPreview(null, null);
 
         $invocationList = $spy->getInvocations();
         foreach ($invocationList as $invocation) {
@@ -71,8 +72,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new Download(null, $this->guzzle);
-        $fixture->storePreview(null, $filePath);
+        $this->fixture->downloadPreview(null, $filePath);
 
         $invocationList = $spy->getInvocations();
         $actual         = $invocationList[1]->parameters[1]['save_to'];
@@ -87,8 +87,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new Download(null, $this->guzzle);
-        $fixture->storePreview(null, null);
+        $this->fixture->downloadPreview(null, null);
 
         $invocationList = $spy->getInvocations();
         $actual         = $invocationList[1]->parameters[1]['timeout'];
@@ -103,8 +102,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new Download(null, $this->guzzle);
-        $fixture->store(null, null);
+        $this->fixture->download(null, null);
 
         $invocationList = $spy->getInvocations();
         $actual         = $invocationList[1]->parameters[1]['timeout'];
@@ -124,8 +122,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new Download(null, $this->guzzle);
-        $fixture->storePreview($input, null);
+        $this->fixture->downloadPreview($input, null);
 
         $invocationList = $spy->getInvocations();
         $actual         = $invocationList[1]->parameters[0];
@@ -158,8 +155,7 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new Download(null, $this->guzzle);
-        $fixture->storePreview($input, null);
+        $this->fixture->downloadPreview($input, null);
 
         $invocationList = $spy->getInvocations();
         $this->assertEquals($expectedSecure, $invocationList[0]->parameters[0]);
@@ -202,12 +198,11 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
      */
     public function testLoggedBadParsing()
     {
-        $this->logger->method('warning')
-                     ->with('Unable to parse IP from URL.');
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger->method('warning')->with('Unable to parse IP from URL.');
 
-        $fixture = new Download(null, $this->guzzle);
-        $fixture->setLogger($this->logger);
-        $fixture->storePreview(null, null);
+        $this->fixture->setLogger($logger);
+        $this->fixture->downloadPreview(null, null);
     }
 
     /**
@@ -218,19 +213,19 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $message   = rand();
         $exception = new \Exception($message);
         $this->guzzle->expects($this->at(0))
-                     ->method('get')
-                     ->will($this->throwException($exception));
+            ->method('get')
+            ->will($this->throwException($exception));
 
-        $this->logger->expects($this->at(0))
-                     ->method('warning')
-                     ->with($this->equalTo('Unable to access the TiVo via HTTPS'));
-        $this->logger->expects($this->at(1))
-                     ->method('warning')
-                     ->with($this->equalTo($message));
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger->expects($this->at(0))
+            ->method('warning')
+            ->with($this->equalTo('Unable to access the TiVo via HTTPS'));
+        $logger->expects($this->at(1))
+            ->method('warning')
+            ->with($this->equalTo($message));
 
-        $fixture = new Download(null, $this->guzzle);
-        $fixture->setLogger($this->logger);
-        $fixture->storePreview('http://1.1.1.1:80', null);
+        $this->fixture->setLogger($logger);
+        $this->fixture->downloadPreview('http://1.1.1.1:80', null);
     }
 
     /**
@@ -243,19 +238,19 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $exception   = new \GuzzleHttp\Exception\RequestException($message, $mockRequest);
 
         $this->guzzle->expects($this->at(1))
-                     ->method('get')
-                     ->will($this->throwException($exception));
+            ->method('get')
+            ->will($this->throwException($exception));
 
-        $this->logger->expects($this->at(0))
-                     ->method('info')
-                     ->with($this->equalTo('Intentional timeout caught.'));
-        $this->logger->expects($this->at(1))
-                     ->method('info')
-                     ->with($this->equalTo($message));
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger->expects($this->at(0))
+            ->method('info')
+            ->with($this->equalTo('Intentional timeout caught.'));
+        $logger->expects($this->at(1))
+            ->method('info')
+            ->with($this->equalTo($message));
 
-        $fixture = new Download(null, $this->guzzle);
-        $fixture->setLogger($this->logger);
-        $fixture->storePreview('http://0.0.0.0:80', null);
+        $this->fixture->setLogger($logger);
+        $this->fixture->downloadPreview('http://0.0.0.0:80', null);
     }
 
     /**
@@ -266,19 +261,19 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $message   = rand();
 
         $this->guzzle->expects($this->at(1))
-                     ->method('get')
-                     ->will($this->throwException(new \Exception($message)));
+            ->method('get')
+            ->will($this->throwException(new \Exception($message)));
 
-        $this->logger->expects($this->at(0))
-                     ->method('warning')
-                     ->with($this->equalTo('Unable to download a partial video file.'));
-        $this->logger->expects($this->at(1))
-                     ->method('warning')
-                     ->with($this->equalTo($message));
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger->expects($this->at(0))
+            ->method('warning')
+            ->with($this->equalTo('Unable to download a partial video file.'));
+        $logger->expects($this->at(1))
+            ->method('warning')
+            ->with($this->equalTo($message));
 
-        $fixture = new Download(null, $this->guzzle);
-        $fixture->setLogger($this->logger);
-        $fixture->storePreview('http://0.0.0.0:80', null);
+        $this->fixture->setLogger($logger);
+        $this->fixture->downloadPreview('http://0.0.0.0:80', null);
     }
 
     /**
@@ -289,18 +284,18 @@ class DownloadTest extends \PHPUnit_Framework_TestCase
         $message   = rand();
 
         $this->guzzle->expects($this->at(1))
-                     ->method('get')
-                     ->will($this->throwException(new \Exception($message)));
+            ->method('get')
+            ->will($this->throwException(new \Exception($message)));
 
-        $this->logger->expects($this->at(0))
-                     ->method('warning')
-                     ->with($this->equalTo('Unable to download a complete video file.'));
-        $this->logger->expects($this->at(1))
-                     ->method('warning')
-                     ->with($this->equalTo($message));
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger->expects($this->at(0))
+            ->method('warning')
+            ->with($this->equalTo('Unable to download a complete video file.'));
+        $logger->expects($this->at(1))
+            ->method('warning')
+            ->with($this->equalTo($message));
 
-        $fixture = new Download(null, $this->guzzle);
-        $fixture->setLogger($this->logger);
-        $fixture->store('http://0.0.0.0:80', null);
+        $this->fixture->setLogger($logger);
+        $this->fixture->download('http://0.0.0.0:80', null);
     }
 }

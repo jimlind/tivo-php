@@ -8,9 +8,9 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Location is a service for finding a TiVo on your local network.
+ * Service for finding a TiVo on your local network.
  */
-class Location
+class TiVoFinder
 {
     /**
      * @var ProcessBuilder

@@ -2,52 +2,44 @@
 
 namespace JimLind\TiVo\Tests;
 
-use JimLind\TiVo\Location;
-use Psr\Log\LoggerInterface;
+use JimLind\TiVo\TiVoFinder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Test the TiVo\Location service.
+ * Test the TiVo\TiVoFinder service.
  */
-class LocationTest extends \PHPUnit_Framework_TestCase
+class TiVoFinderTest extends \PHPUnit_Framework_TestCase
 {
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
     /**
      * @var Process
      */
-    private $process;
+    private $process = null;
 
     /**
      * @var ProcessBuilder
      */
-    private $builder;
+    private $builder = null;
 
     /**
-     * @var Location
+     * @var TiVoFinder
      */
-    private $fixture;
+    private $fixture = null;
 
     /**
      * Setup the PHPUnit test.
      */
     public function setUp()
     {
-        $this->logger  = $this->getMock('\Psr\Log\LoggerInterface');
         $this->process = $this->getMockBuilder('\Symfony\Component\Process\Process')
-                              ->disableOriginalConstructor()
-                              ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->builder = $this->getMock('\Symfony\Component\Process\ProcessBuilder');
         $this->builder->method('getProcess')
-                      ->willReturn($this->process);
+            ->willReturn($this->process);
 
-        $this->fixture = new Location($this->builder);
+        $this->fixture = new TiVoFinder($this->builder);
     }
 
     /**
@@ -56,8 +48,8 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     public function testBuilderSettingPrefix()
     {
         $this->builder->expects($this->once())
-                      ->method('setPrefix')
-                      ->with('avahi-browse');
+            ->method('setPrefix')
+            ->with('avahi-browse');
 
         $this->fixture->find();
     }
@@ -75,8 +67,8 @@ class LocationTest extends \PHPUnit_Framework_TestCase
         ];
 
         $this->builder->expects($this->once())
-                      ->method('setArguments')
-                      ->with($arguments);
+            ->method('setArguments')
+            ->with($arguments);
 
         $this->fixture->find();
     }
@@ -87,8 +79,8 @@ class LocationTest extends \PHPUnit_Framework_TestCase
     public function testBuilderSettingTimeout()
     {
         $this->builder->expects($this->once())
-                      ->method('setTimeout')
-                      ->with(60);
+            ->method('setTimeout')
+            ->with(60);
 
         $this->fixture->find();
     }
@@ -98,8 +90,7 @@ class LocationTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessRun()
     {
-        $this->process->expects($this->once())
-                      ->method('run');
+        $this->process->expects($this->once())->method('run');
 
         $this->fixture->find();
     }
@@ -126,13 +117,15 @@ class LocationTest extends \PHPUnit_Framework_TestCase
         $this->process->method('getCommandLine')->willReturn($command);
         $this->process->expects($this->never())->method('getOutput');
 
-        $this->fixture->setLogger($this->logger);
-        $this->logger->expects($this->at(0))
-                     ->method('warning')
-                     ->with('Problem executing avahi-browse. Tool may not be installed.');
-        $this->logger->expects($this->at(1))
-                     ->method('warning')
-                     ->with('Command: ' . $command);
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+
+        $this->fixture->setLogger($logger);
+        $logger->expects($this->at(0))
+            ->method('warning')
+            ->with('Problem executing avahi-browse. Tool may not be installed.');
+        $logger->expects($this->at(1))
+            ->method('warning')
+            ->with('Command: ' . $command);
 
         $actual = $this->fixture->find();
         $this->assertEquals('', $actual);
@@ -146,10 +139,12 @@ class LocationTest extends \PHPUnit_Framework_TestCase
         $this->process->method('isSuccessful')->willReturn(true);
         $this->process->method('getOutput')->willReturn('');
 
-        $this->fixture->setLogger($this->logger);
-        $this->logger->expects($this->at(0))
-                     ->method('warning')
-                     ->with('Unable to locate a TiVo device on the network.');
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+
+        $this->fixture->setLogger($logger);
+        $logger->expects($this->at(0))
+            ->method('warning')
+            ->with('Unable to locate a TiVo device on the network.');
 
         $actual = $this->fixture->find();
         $this->assertEquals('', $actual);
@@ -169,12 +164,14 @@ class LocationTest extends \PHPUnit_Framework_TestCase
         $this->process->method('isSuccessful')->willReturn(true);
         $this->process->method('getOutput')->willReturn($return);
 
-        $this->fixture->setLogger($this->logger);
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+
+        $this->fixture->setLogger($logger);
 
         if ($info) {
-            $this->logger->expects($this->once())
-                         ->method('warning')
-                         ->with($info);
+            $logger->expects($this->once())
+                ->method('warning')
+                ->with($info);
         }
 
         $actual = $this->fixture->find();

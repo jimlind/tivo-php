@@ -2,28 +2,24 @@
 
 namespace JimLind\TiVo\Tests;
 
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\TransferException;
-use JimLind\TiVo\NowPlaying;
+use JimLind\TiVo\XmlDownloader;
 
 /**
- * Test the TiVo\NowPlaying service.
+ * Test the TiVo\XmlDownloader service.
  */
-class NowPlayingTest extends \PHPUnit_Framework_TestCase
+class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var GuzzleHttp\ClientInterface
+     * @var ClientInterface
      */
     private $guzzle;
 
     /**
-     * @var GuzzleHttp\Message\ResponseInterface
+     * @var XmlDownloader
      */
-    private $response;
-
-    /**
-     * @var Psr\Log\LoggerInterface
-     */
-    private $logger;
+    private $fixture = null;
 
     /**
      * Setup the PHPUnit test.
@@ -31,8 +27,8 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->guzzle   = $this->getMock('\GuzzleHttp\ClientInterface');
-        $this->logger   = $this->getMock('\Psr\Log\LoggerInterface');
-        $this->response = $this->getMock('\GuzzleHttp\Message\ResponseInterface');
+
+        $this->fixture = new XmlDownloader(null, null, $this->guzzle);
     }
 
     /**
@@ -46,8 +42,8 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new NowPlaying($ip, null, $this->guzzle);
-        $fixture->download();
+        $this->fixture = new XmlDownloader($ip, null, $this->guzzle);
+        $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
         $actual         = $invocationList[0]->parameters[0];
@@ -65,8 +61,8 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
 
-        $fixture = new NowPlaying(null, $mac, $this->guzzle);
-        $fixture->download();
+        $this->fixture = new XmlDownloader(null, $mac, $this->guzzle);
+        $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
         $actual         = $invocationList[0]->parameters[1]['auth'];
@@ -79,16 +75,17 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
     public function testAnchorOffsetIncrement()
     {
         $xmlElement = new \SimpleXMLElement('<xml><Item /></xml>');
-        $this->response->method('xml')
-                       ->will($this->returnValue($xmlElement));
+
+        $response = $this->getMock('\GuzzleHttp\Message\ResponseInterface');
+        $response->method('xml')
+            ->will($this->returnValue($xmlElement));
 
         $spy = $this->any();
         $this->guzzle->expects($spy)
-                     ->method('get')
-                     ->will($this->onConsecutiveCalls($this->response));
+            ->method('get')
+            ->will($this->onConsecutiveCalls($response));
 
-        $fixture = new NowPlaying(null, null, $this->guzzle);
-        $fixture->download();
+        $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
 
@@ -103,12 +100,10 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
      */
     public function testNowPlayingException()
     {
-        $fixture = new NowPlaying(null, null, $this->guzzle);
-
         $this->guzzle->method('get')
-                     ->will($this->throwException(new TransferException));
+            ->will($this->throwException(new TransferException));
 
-        $actual = $fixture->download();
+        $actual = $this->fixture->download();
         $this->assertEquals(array(), $actual);
     }
 
@@ -122,20 +117,20 @@ class NowPlayingTest extends \PHPUnit_Framework_TestCase
      */
     public function testGuzzleReturnParsing($xmlList, $expected)
     {
-        $fixture = new NowPlaying(null, null, $this->guzzle);
-
         foreach ($xmlList as $index => $xmlString) {
             $simpleXml = simplexml_load_string($xmlString);
-            $this->response->expects($this->at($index))
-                           ->method('xml')
-                           ->will($this->returnValue($simpleXml));
+
+            $response = $this->getMock('\GuzzleHttp\Message\ResponseInterface');
+            $response->expects($this->at($index))
+                ->method('xml')
+                ->will($this->returnValue($simpleXml));
 
             $this->guzzle->expects($this->at($index))
-                         ->method('get')
-                         ->will($this->returnValue($this->response));
+                ->method('get')
+                ->will($this->returnValue($response));
         }
 
-        $actual = $fixture->download();
+        $actual = $this->fixture->download();
         $this->assertEquals($expected, $actual);
     }
 

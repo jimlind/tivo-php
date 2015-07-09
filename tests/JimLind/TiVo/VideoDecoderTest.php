@@ -2,44 +2,44 @@
 
 namespace JimLind\TiVo\Tests;
 
-use JimLind\TiVo\Decode;
-use Psr\Log\LoggerInterface;
+use JimLind\TiVo\VideoDecoder;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Test the TiVo\Decode service.
+ * Test the TiVo\VideoDecoder service.
  */
-class DecodeTest extends \PHPUnit_Framework_TestCase
+class VideoDecoderTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
     /**
      * @var Process
      */
-    private $process;
+    private $process = null;
 
     /**
      * @var ProcessBuilder
      */
-    private $builder;
+    private $builder = null;
+
+    /**
+     * @var VideoDecoder
+     */
+    private $fixture = null;
 
     /**
      * Setup the PHPUnit test.
      */
     public function setUp()
     {
-        $this->logger  = $this->getMock('\Psr\Log\LoggerInterface');
         $this->process = $this->getMockBuilder('\Symfony\Component\Process\Process')
-                              ->disableOriginalConstructor()
-                              ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->builder = $this->getMock('\Symfony\Component\Process\ProcessBuilder');
         $this->builder->method('getProcess')
-                      ->willReturn($this->process);
+            ->willReturn($this->process);
+
+        $this->fixture = new VideoDecoder(null, $this->builder);
     }
 
     /**
@@ -48,11 +48,10 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
     public function testBuilderSettingPrefix()
     {
         $this->builder->expects($this->once())
-                      ->method('setPrefix')
-                      ->with('tivodecode');
+            ->method('setPrefix')
+            ->with('/usr/local/bin/tivodecode');
 
-        $fixture = new Decode(null, $this->builder);
-        $fixture->decode(null, null);
+        $this->fixture->decode(null, null);
     }
 
     /**
@@ -72,11 +71,11 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
         ];
 
         $this->builder->expects($this->once())
-                      ->method('setArguments')
-                      ->with($arguments);
+            ->method('setArguments')
+            ->with($arguments);
 
-        $fixture = new Decode($mak, $this->builder);
-        $fixture->decode($input, $output);
+        $this->fixture = new VideoDecoder($mak, $this->builder);
+        $this->fixture->decode($input, $output);
     }
 
     /**
@@ -85,11 +84,10 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
     public function testBuilderSettingTimeout()
     {
         $this->builder->expects($this->once())
-                      ->method('setTimeout')
-                      ->with(null);
+            ->method('setTimeout')
+            ->with(null);
 
-        $fixture = new Decode(null, $this->builder);
-        $fixture->decode(null, null);
+        $this->fixture->decode(null, null);
     }
 
     /**
@@ -97,11 +95,9 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessRun()
     {
-        $this->process->expects($this->once())
-                      ->method('run');
+        $this->process->expects($this->once())->method('run');
 
-        $fixture = new Decode(null, $this->builder);
-        $fixture->decode(null, null);
+        $this->fixture->decode(null, null);
     }
 
     /**
@@ -111,8 +107,7 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
     {
         $this->process->method('isSuccessful')->willReturn(true);
 
-        $fixture = new Decode(null, $this->builder);
-        $output = $fixture->decode(null, null);
+        $output = $this->fixture->decode(null, null);
 
         $this->assertTrue($output);
     }
@@ -127,16 +122,16 @@ class DecodeTest extends \PHPUnit_Framework_TestCase
         $this->process->method('isSuccessful')->willReturn(false);
         $this->process->method('getCommandLine')->willReturn($command);
 
-        $this->logger->expects($this->at(0))
-                     ->method('warning')
-                     ->with('Problem executing tivodecode. Tool may not be installed.');
-        $this->logger->expects($this->at(1))
-                     ->method('warning')
-                     ->with('Command: ' . $command);
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger->expects($this->at(0))
+            ->method('warning')
+            ->with('Problem executing tivodecode. Tool may not be installed.');
+        $logger->expects($this->at(1))
+            ->method('warning')
+            ->with('Command: ' . $command);
 
-        $fixture = new Decode(null, $this->builder);
-        $fixture->setLogger($this->logger);
-        $actual = $fixture->decode(null, null);
+        $this->fixture->setLogger($logger);
+        $actual = $this->fixture->decode(null, null);
 
         $this->assertFalse($actual);
     }

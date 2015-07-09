@@ -7,9 +7,9 @@ use Psr\Log\NullLogger;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Decode is a service for decoding raw TiVo video files.
+ * Service for decoding raw TiVo video files.
  */
-class Decode
+class VideoDecoder
 {
     /**
      * @var string

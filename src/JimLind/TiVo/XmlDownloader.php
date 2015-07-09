@@ -9,9 +9,9 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
- * NowPlaying is a service for downloading list of shows on a TiVo.
+ * Service for downloading list of shows on a TiVo.
  */
-class NowPlaying
+class XmlDownloader
 {
     /**
      * @var string
@@ -69,7 +69,7 @@ class NowPlaying
      */
     public function download($previousShowList = array())
     {
-        $xmlFile = $this->downloadXmlFile(count($previousShowList));
+        $xmlFile = $this->downloadXmlPiece(count($previousShowList));
         XmlNamespace::addTiVoNamespace($xmlFile);
 
         $showList = $xmlFile->xpath('//tivo:Item');
@@ -83,13 +83,13 @@ class NowPlaying
     }
 
     /**
-     * Downloads a single file as SimpleXML
+     * Downloads a single piece of list as SimpleXML
      *
      * @param integer $anchorOffset Count of previous shows
      *
      * @return GuzzleHttp\Message\Response
      */
-    private function downloadXmlFile($anchorOffset)
+    private function downloadXmlPiece($anchorOffset)
     {
         try {
             $response = $this->guzzle->get(

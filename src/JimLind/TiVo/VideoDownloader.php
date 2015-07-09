@@ -8,9 +8,9 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 /**
- * Download is a service for fetching video files off of a TiVo.
+ * Service for fetching video files off of a TiVo.
  */
-class Download
+class VideoDownloader
 {
     /**
      * @var string
@@ -58,7 +58,7 @@ class Download
      * @param string $url
      * @param string $filePath
      */
-    public function store($url, $filePath)
+    public function download($url, $filePath)
     {
         try {
             $this->getFile($url, $filePath);
@@ -75,7 +75,7 @@ class Download
      * @param string $url
      * @param string $filePath
      */
-    public function storePreview($url, $filePath)
+    public function downloadPreview($url, $filePath)
     {
         try {
             $this->getFile($url, $filePath, 60);
