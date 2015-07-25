@@ -121,7 +121,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
             $simpleXml = simplexml_load_string($xmlString);
 
             $response = $this->getMock('\GuzzleHttp\Message\ResponseInterface');
-            $response->expects($this->at($index))
+            $response->expects($this->once())
                 ->method('xml')
                 ->will($this->returnValue($simpleXml));
 
