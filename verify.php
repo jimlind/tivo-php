@@ -23,10 +23,10 @@ $logger->add(
 );
 
 // Locate the TiVo.
-validateClass('JimLind\TiVo\Location');
-$location  = new JimLind\TiVo\Location($builder);
-$location->setLogger($logger);
-$ipAddress = $location->find();
+validateClass('JimLind\TiVo\TiVoFinder');
+$finder = new JimLind\TiVo\TiVoFinder($builder);
+$finder->setLogger($logger);
+$ipAddress = $finder->find();
 
 // Report the results of locating the TiVo.
 if (empty($ipAddress) === false) {
@@ -53,10 +53,11 @@ validateClass('GuzzleHttp\Client');
 $guzzle = new GuzzleHttp\Client();
 
 // Download a NowPlaying list.
-validateClass('JimLind\TiVo\NowPlaying');
+validateClass('JimLind\TiVo\XmlDownloader');
 print(" >  Downloading the Now Playing list from your TiVo.\n");
-$nowPlaying = new JimLind\TiVo\NowPlaying($ipAddress, $mak, $guzzle);
-$xmlList    = $nowPlaying->download();
+$xmlDownloader = new JimLind\TiVo\XmlDownloader($ipAddress, $mak, $guzzle);
+$xmlDownloader->setLogger($logger);
+$xmlList = $xmlDownloader->download();
 if (empty($xmlList)) {
     print(" >  No proper response from your TiVo. Something is wrong.\n");
     finishRun($logFile);
@@ -88,10 +89,10 @@ $tivoFile = '/tmp/' . rand() . '.tivo';
 $mpegFile = '/tmp/' . rand() . '.mpeg';
 
 // Download a preview file.
-validateClass('JimLind\TiVo\Download');
+validateClass('JimLind\TiVo\VideoDownloader');
 print(" >  Downloading a preview of the show locally.\n");
-$downloader = new JimLind\TiVo\Download($mak, $guzzle);
-$downloader->storePreview($showURL, $tivoFile);
+$downloader = new JimLind\TiVo\VideoDownloader($mak, $guzzle);
+$downloader->downloadPreview($showURL, $tivoFile);
 
 // Verify file exists and has contents.
 if (file_exists($tivoFile) && filesize($tivoFile) > 0) {
@@ -102,9 +103,9 @@ if (file_exists($tivoFile) && filesize($tivoFile) > 0) {
 }
 
 // Decode the preview file.
-validateClass('JimLind\TiVo\Download');
+validateClass('JimLind\TiVo\VideoDecoder');
 print(" >  Decoding the preview of the local show file.\n");
-$decoder = new JimLind\TiVo\Decode($mak, $builder);
+$decoder = new JimLind\TiVo\VideoDecoder($mak, $builder);
 $decoder->decode($tivoFile, $mpegFile);
 
 // Verify file exists and has contents.
