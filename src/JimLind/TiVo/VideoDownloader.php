@@ -133,7 +133,7 @@ class VideoDownloader
      */
     protected function touchSecureServer($urlPath)
     {
-        $url     = 'https://' . $this->parseIpAddress($urlPath);
+        $url     = 'https://'.$this->parseIpAddress($urlPath);
         $options = array(
             'auth'   =>  ['tivo', $this->mak, 'digest'],
             'verify' => false,

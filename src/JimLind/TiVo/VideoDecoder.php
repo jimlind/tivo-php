@@ -68,7 +68,7 @@ class VideoDecoder
             // Failure. Log and exit early.
             $message = 'Problem executing tivodecode. Tool may not be installed.';
             $this->logger->warning($message);
-            $this->logger->warning('Command: ' . $process->getCommandLine());
+            $this->logger->warning('Command: '.$process->getCommandLine());
 
             return false;
         }
@@ -89,9 +89,9 @@ class VideoDecoder
         $this->builder->setPrefix('/usr/local/bin/tivodecode');
         $this->builder->setArguments([
             $input,
-            '--mak=' . $mak,
+            '--mak='.$mak,
             '--no-verify',
-            '--out=' . $output,
+            '--out='.$output,
         ]);
         $this->builder->setTimeout(null);
 

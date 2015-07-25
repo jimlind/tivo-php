@@ -24,7 +24,7 @@ class XmlNamespace
         } else {
             $namespaceUrl = 'http://www.w3.org/2001/XMLSchema';
             $pattern      = '/(?<!\?)(\/*>)/';
-            $replace      = ' xmlns="' . $namespaceUrl . '"$0';
+            $replace      = ' xmlns="'.$namespaceUrl.'"$0';
             $xmlString    = preg_replace($pattern, $replace, $simpleXml->asXml(), 1);
             $simpleXml    = simplexml_load_string($xmlString);
         }

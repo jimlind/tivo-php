@@ -68,8 +68,8 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
 
         $xmlString = $simpleXml->asXml();
 
-        $expected = '<?xml version="1.0"?>' . "\n"
-                  . '<item xmlns="http://www.w3.org/2001/XMLSchema"/>' . "\n" ;
+        $expected = '<?xml version="1.0"?>'."\n";
+        $expected .= '<item xmlns="http://www.w3.org/2001/XMLSchema"/>'."\n";
 
         $this->assertEquals($expected, $xmlString);
     }
@@ -85,8 +85,8 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
 
         $xmlString = $simpleXml->asXml();
 
-        $expected = '<?xml version="1.0"?>' . "\n"
-                  . '<items xmlns="http://www.w3.org/2001/XMLSchema"><item/></items>' . "\n" ;
+        $expected = '<?xml version="1.0"?>'."\n";
+        $expected .= '<items xmlns="http://www.w3.org/2001/XMLSchema"><item/></items>'."\n";
 
         $this->assertEquals($expected, $xmlString);
     }

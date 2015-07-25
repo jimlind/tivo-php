@@ -84,7 +84,7 @@ class ShowTest extends \PHPUnit_Framework_TestCase
      */
     public function testShowDate()
     {
-        $dayObject = new \DateTime(rand(0, 100) . ' days');
+        $dayObject = new \DateTime(rand(0, 100).' days');
         $this->fixture->setDate($dayObject);
 
         $actual = $this->fixture->getDate();
@@ -96,7 +96,7 @@ class ShowTest extends \PHPUnit_Framework_TestCase
      */
     public function testShowDateAsString()
     {
-        $dayString = rand(0, 100) . ' days';
+        $dayString = rand(0, 100).' days';
         $this->fixture->setDate($dayString);
 
         $expected = new \DateTime($dayString);

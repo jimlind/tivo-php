@@ -25,7 +25,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testShowId()
     {
         $actual     = rand();
-        $xmlString  = '<xml><Links><Content><Url>url?id=' . $actual . '</Url></Content></Links><Details /></xml>';
+        $xmlString  = '<xml><Links><Content><Url>url?id='.$actual.'</Url></Content></Links><Details /></xml>';
         $xmlElement = simplexml_load_string($xmlString);
 
         $show = $this->fixture->createShowFromXml($xmlElement);
@@ -38,7 +38,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testShowUrl()
     {
         $actual     = rand();
-        $xmlString  = '<xml><Links><Content><Url>' . $actual . '</Url></Content></Links><Details /></xml>';
+        $xmlString  = '<xml><Links><Content><Url>'.$actual.'</Url></Content></Links><Details /></xml>';
         $xmlElement = simplexml_load_string($xmlString);
 
         $show = $this->fixture->createShowFromXml($xmlElement);
@@ -51,7 +51,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testShowTitle()
     {
         $actual     = rand();
-        $xmlString  = '<xml><Details><Title>' . $actual . '</Title></Details></xml>';
+        $xmlString  = '<xml><Details><Title>'.$actual.'</Title></Details></xml>';
         $xmlElement = simplexml_load_string($xmlString);
 
         $show = $this->fixture->createShowFromXml($xmlElement);
@@ -64,7 +64,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testEpisodeTitle()
     {
         $actual     = rand();
-        $xmlString  = '<xml><Details><EpisodeTitle>' . $actual . '</EpisodeTitle></Details></xml>';
+        $xmlString  = '<xml><Details><EpisodeTitle>'.$actual.'</EpisodeTitle></Details></xml>';
         $xmlElement = simplexml_load_string($xmlString);
 
         $show = $this->fixture->createShowFromXml($xmlElement);
@@ -77,7 +77,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testEpisodeNumber()
     {
         $actual     = rand();
-        $xmlString  = '<xml><Details><EpisodeNumber>' . $actual . '</EpisodeNumber></Details></xml>';
+        $xmlString  = '<xml><Details><EpisodeNumber>'.$actual.'</EpisodeNumber></Details></xml>';
         $xmlElement = simplexml_load_string($xmlString);
 
         $show = $this->fixture->createShowFromXml($xmlElement);
@@ -90,7 +90,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testShowDuration()
     {
         $actual     = rand();
-        $xmlString  = '<xml><Details><Duration>' . $actual . '</Duration></Details></xml>';
+        $xmlString  = '<xml><Details><Duration>'.$actual.'</Duration></Details></xml>';
         $xmlElement = simplexml_load_string($xmlString);
 
         $show = $this->fixture->createShowFromXml($xmlElement);
@@ -103,7 +103,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testShowDescription()
     {
         $actual     = rand();
-        $xmlString  = '<xml><Details><Description>' . $actual . '</Description></Details></xml>';
+        $xmlString  = '<xml><Details><Description>'.$actual.'</Description></Details></xml>';
         $xmlElement = simplexml_load_string($xmlString);
 
         $show = $this->fixture->createShowFromXml($xmlElement);
@@ -116,7 +116,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testShowChannel()
     {
         $actual     = rand();
-        $xmlString  = '<xml><Details><SourceChannel>' . $actual . '</SourceChannel></Details></xml>';
+        $xmlString  = '<xml><Details><SourceChannel>'.$actual.'</SourceChannel></Details></xml>';
         $xmlElement = simplexml_load_string($xmlString);
 
         $show = $this->fixture->createShowFromXml($xmlElement);
@@ -129,7 +129,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testShowStation()
     {
         $actual     = rand();
-        $xmlString  = '<xml><Details><SourceStation>' . $actual . '</SourceStation></Details></xml>';
+        $xmlString  = '<xml><Details><SourceStation>'.$actual.'</SourceStation></Details></xml>';
         $xmlElement = simplexml_load_string($xmlString);
 
         $show = $this->fixture->createShowFromXml($xmlElement);
@@ -179,12 +179,12 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
     public function testRepeatCreates()
     {
         $firstTitle  = rand();
-        $firstString = '<xml><Details><Title>' . $firstTitle . '</Title></Details></xml>';
+        $firstString = '<xml><Details><Title>'.$firstTitle.'</Title></Details></xml>';
         $firstXML    = simplexml_load_string($firstString);
         $firstShow   = $this->fixture->createShowFromXml($firstXML);
 
         $secondTitle  = rand();
-        $secondString = '<xml><Details><Title>' . $secondTitle . '</Title></Details></xml>';
+        $secondString = '<xml><Details><Title>'.$secondTitle.'</Title></Details></xml>';
         $secondXML    = simplexml_load_string($secondString);
         $secondShow   = $this->fixture->createShowFromXml($secondXML);
 

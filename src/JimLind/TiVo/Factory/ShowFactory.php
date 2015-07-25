@@ -72,7 +72,7 @@ class ShowFactory
         $this->show->setHD(strtoupper($this->popXPath($detailXML, 'HighDefinition')) == 'YES');
 
         $timestamp = hexdec($this->popXPath($detailXML, 'CaptureDate'));
-        $this->show->setDate(new \DateTime('@' . $timestamp));
+        $this->show->setDate(new \DateTime('@'.$timestamp));
     }
 
     /**
@@ -103,7 +103,7 @@ class ShowFactory
      */
     protected function popXPath($xml, $path)
     {
-        $pathList = $xml->xpath('tivo:' . $path);
+        $pathList = $xml->xpath('tivo:'.$path);
         if (count($pathList) == 1) {
             return (string) array_pop($pathList);
         }

@@ -125,7 +125,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
             ->with('Problem executing avahi-browse. Tool may not be installed.');
         $logger->expects($this->at(1))
             ->method('warning')
-            ->with('Command: ' . $command);
+            ->with('Command: '.$command);
 
         $actual = $this->fixture->find();
         $this->assertEquals('', $actual);
@@ -185,6 +185,15 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
      */
     public function testParsingProvider()
     {
+        $realResponseLineList = array(
+            '+ eth0 IPv4 Living Room _tivo-videos._tcp',
+            '= eth0 IPv4 Living Room _tivo-videos._tcp',
+            ' hostname = [DVR-F449.local]',
+            ' address = [192.168.0.42]',
+            ' port = [443]',
+            ' txt = ["TSN=65200118047F449" "platform=tcd/Series3"]',
+        );
+
         return array(
             array(
                 'return' => ' ',
@@ -202,15 +211,10 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
                 'expected' => '',
             ),
             array(
-                'return' => '+ eth0 IPv4 Living Room _tivo-videos._tcp' . PHP_EOL .
-                '= eth0 IPv4 Living Room _tivo-videos._tcp' . PHP_EOL .
-                ' hostname = [DVR-F449.local]' . PHP_EOL .
-                ' address = [192.168.0.42]' . PHP_EOL .
-                ' port = [443]' . PHP_EOL .
-                ' txt = ["TSN=65200118047F449" "platform=tcd/Series3"]',
+                'return' => implode(PHP_EOL, $realResponseLineList),
                 'info' => null,
                 'expected' => '192.168.0.42',
-            )
+            ),
         );
     }
 }

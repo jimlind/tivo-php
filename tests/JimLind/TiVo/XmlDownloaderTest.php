@@ -37,7 +37,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     public function testIPPathPassThroughOnStore()
     {
         $ip       = rand();
-        $expected = 'https://' . $ip . '/TiVoConnect';
+        $expected = 'https://'.$ip.'/TiVoConnect';
 
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('get');
@@ -101,7 +101,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     public function testNowPlayingException()
     {
         $this->guzzle->method('get')
-            ->will($this->throwException(new TransferException));
+            ->will($this->throwException(new TransferException()));
 
         $actual = $this->fixture->download();
         $this->assertEquals(array(), $actual);

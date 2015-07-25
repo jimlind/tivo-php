@@ -65,9 +65,9 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
 
         $arguments = [
             $input,
-            '--mak=' . $mak,
+            '--mak='.$mak,
             '--no-verify',
-            '--out=' . $output,
+            '--out='.$output,
         ];
 
         $this->builder->expects($this->once())
@@ -128,7 +128,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
             ->with('Problem executing tivodecode. Tool may not be installed.');
         $logger->expects($this->at(1))
             ->method('warning')
-            ->with('Command: ' . $command);
+            ->with('Command: '.$command);
 
         $this->fixture->setLogger($logger);
         $actual = $this->fixture->decode(null, null);

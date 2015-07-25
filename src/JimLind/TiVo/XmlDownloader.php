@@ -42,7 +42,7 @@ class XmlDownloader
      */
     public function __construct($ip, $mak, ClientInterface $guzzle)
     {
-        $this->url    = 'https://' . $ip . '/TiVoConnect';
+        $this->url    = 'https://'.$ip.'/TiVoConnect';
         $this->mak    = $mak;
         $this->guzzle = $guzzle;
 
