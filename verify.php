@@ -91,8 +91,11 @@ $mpegFile = '/tmp/' . rand() . '.mpeg';
 // Download a preview file.
 validateClass('JimLind\TiVo\VideoDownloader');
 print(" >  Downloading a preview of the show locally.\n");
-$downloader = new JimLind\TiVo\VideoDownloader($mak, $guzzle);
-$downloader->downloadPreview($showURL, $tivoFile);
+$videoDownloader = new JimLind\TiVo\VideoDownloader($mak, $guzzle);
+$videoDownloader->setLogger($logger);
+$videoDownloader->downloadPreview($showURL, $tivoFile);
+
+//readfile($tivoFile);
 
 // Verify file exists and has contents.
 if (file_exists($tivoFile) && filesize($tivoFile) > 0) {
@@ -105,8 +108,9 @@ if (file_exists($tivoFile) && filesize($tivoFile) > 0) {
 // Decode the preview file.
 validateClass('JimLind\TiVo\VideoDecoder');
 print(" >  Decoding the preview of the local show file.\n");
-$decoder = new JimLind\TiVo\VideoDecoder($mak, $builder);
-$decoder->decode($tivoFile, $mpegFile);
+$videoDecoder = new JimLind\TiVo\VideoDecoder($mak, $builder);
+$videoDecoder->setLogger($logger);
+$videoDecoder->decode($tivoFile, $mpegFile);
 
 // Verify file exists and has contents.
 if (file_exists($mpegFile) && filesize($mpegFile) > 0) {
