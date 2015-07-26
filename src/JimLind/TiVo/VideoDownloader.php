@@ -3,6 +3,7 @@
 namespace JimLind\TiVo;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -100,12 +101,13 @@ class VideoDownloader
      */
     protected function getFile($url, $filePath, $timeout = 0)
     {
-        $this->touchSecureServer($url);
+        $cookieJar     = $this->touchSecureServer($url);
+        $authorization = array('tivo', $this->mak, 'digest');
 
         $options = array(
-            'auth'    => ['tivo', $this->mak, 'digest'],
+            'auth'    => $authorization,
             'verify'  => false,
-            'cookies' => ['sid' => 'SESSIONID'],
+            'cookies' => $cookieJar,
             'save_to' => $filePath,
             'timeout' => $timeout,
         );
@@ -130,13 +132,19 @@ class VideoDownloader
      * Touch the server via HTTPS.
      *
      * @param string $urlPath
+     *
+     * @return CookieJar
      */
     protected function touchSecureServer($urlPath)
     {
+        $cookieJar     = new CookieJar();
+        $authorization = array('tivo', $this->mak, 'digest');
+
         $url     = 'https://'.$this->parseIpAddress($urlPath);
         $options = array(
-            'auth'   =>  ['tivo', $this->mak, 'digest'],
-            'verify' => false,
+            'auth'    => $authorization,
+            'verify'  => false,
+            'cookies' => $cookieJar,
         );
 
         try {
@@ -146,6 +154,8 @@ class VideoDownloader
             $this->logger->warning('Unable to access the TiVo via HTTPS');
             $this->logger->warning($exception->getMessage());
         }
+
+        return $cookieJar;
     }
 
     /**
