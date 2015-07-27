@@ -92,7 +92,8 @@ class XmlDownloader
     private function downloadXmlPiece($anchorOffset)
     {
         try {
-            $response = $this->guzzle->get(
+            $response = $this->guzzle->request(
+                'GET',
                 $this->url,
                 $this->buildGuzzleOptions($anchorOffset)
             );

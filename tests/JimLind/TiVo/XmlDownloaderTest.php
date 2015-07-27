@@ -26,48 +26,61 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $clientMethodList = ['get', 'send', 'sendAsync', 'request', 'requestAsync', 'getConfig'];
-
-        $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface', $clientMethodList);
+        $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface');
 
         $this->fixture = new XmlDownloader(null, null, $this->guzzle);
     }
 
     /**
+     * Test that request type passed through to Guzzle.
+     */
+    public function testRequesttypePassThroughOnDownload()
+    {
+        $spy = $this->any();
+        $this->guzzle->expects($spy)->method('request');
+
+        $this->fixture->download();
+
+        $invocationList = $spy->getInvocations();
+        $actual         = $invocationList[0]->parameters[0];
+        $this->assertEquals('GET', $actual);
+    }
+
+    /**
      * Test that IP gets passed through to Guzzle.
      */
-    public function testIPPathPassThroughOnStore()
+    public function testIPPathPassThroughOnDownload()
     {
         $ip       = rand();
         $expected = 'https://'.$ip.'/TiVoConnect';
 
         $spy = $this->any();
-        $this->guzzle->expects($spy)->method('get');
+        $this->guzzle->expects($spy)->method('request');
 
         $this->fixture = new XmlDownloader($ip, null, $this->guzzle);
         $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
-        $actual         = $invocationList[0]->parameters[0];
+        $actual         = $invocationList[0]->parameters[1];
         $this->assertEquals($expected, $actual);
     }
 
     /**
-     * Test that MAC gets passed through to Guzzle.
+     * Test that MAK gets passed through to Guzzle.
      */
-    public function testMacPassThroughOnStore()
+    public function testMacPassThroughOnDownload()
     {
-        $mac      = rand();
-        $expected = ['tivo', $mac, 'digest'];
+        $mak      = rand();
+        $expected = ['tivo', $mak, 'digest'];
 
         $spy = $this->any();
-        $this->guzzle->expects($spy)->method('get');
+        $this->guzzle->expects($spy)->method('request');
 
-        $this->fixture = new XmlDownloader(null, $mac, $this->guzzle);
+        $this->fixture = new XmlDownloader(null, $mak, $this->guzzle);
         $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
-        $actual         = $invocationList[0]->parameters[1]['auth'];
+        $actual         = $invocationList[0]->parameters[2]['auth'];
         $this->assertEquals($expected, $actual);
     }
 
@@ -84,16 +97,16 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
 
         $spy = $this->any();
         $this->guzzle->expects($spy)
-            ->method('get')
+            ->method('request')
             ->will($this->onConsecutiveCalls($response));
 
         $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
 
-        $firstAnchor = $invocationList[0]->parameters[1]['query']['AnchorOffset'];
+        $firstAnchor = $invocationList[0]->parameters[2]['query']['AnchorOffset'];
         $this->assertEquals(0, $firstAnchor);
-        $secondAnchor = $invocationList[1]->parameters[1]['query']['AnchorOffset'];
+        $secondAnchor = $invocationList[1]->parameters[2]['query']['AnchorOffset'];
         $this->assertEquals(1, $secondAnchor);
     }
 
@@ -126,7 +139,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
                 ->will($this->returnValue($xmlString));
 
             $this->guzzle->expects($this->at($index))
-                ->method('get')
+                ->method('request')
                 ->will($this->returnValue($response));
         }
 
