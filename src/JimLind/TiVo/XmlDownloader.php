@@ -4,7 +4,6 @@ namespace JimLind\TiVo;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\TransferException;
-use GuzzleHttp\Psr7\Response;
 use JimLind\TiVo\Utilities\XmlNamespace;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -129,13 +128,13 @@ class XmlDownloader
     /**
      * Parse XML from the Guzzle Response
      *
-     * @param Response $response
+     * @param mixed $response
      *
      * @return \SimpleXMLElement
      */
-    private function parseXmlFromResponse(Response $response)
+    private function parseXmlFromResponse($response)
     {
-        if (empty($response)) {
+        if (false === is_a($response, 'GuzzleHttp\Psr7\Response')){
             $this->logger->warning('Empty response from Guzzle.');
 
             return new \SimpleXMLElement('<xml />');
