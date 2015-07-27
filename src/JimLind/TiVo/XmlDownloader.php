@@ -141,9 +141,7 @@ class XmlDownloader
             return new \SimpleXMLElement('<xml />');
         }
 
-        set_error_handler(function($errno, $errstr) {
-            throw new \Exception($errstr, $errno);
-        });
+        set_error_handler([$this, 'throwException']);
 
         try {
             $responseBody = $response->getBody();
@@ -157,5 +155,17 @@ class XmlDownloader
         }
 
         restore_error_handler();
+    }
+
+    /**
+     * Upgrade an error to an Exception for easy catching.
+     *
+     * @param string $code
+     * @param int $message
+     * @throws \Exception
+     */
+    private function throwException($code, $message)
+    {
+        throw new \Exception($message, $code);
     }
 }
