@@ -25,7 +25,9 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface');
+        $clientMethodList = ['get', 'send', 'sendAsync', 'request', 'requestAsync', 'getConfig'];
+
+        $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface', $clientMethodList);
 
         $this->fixture = new VideoDownloader(null, $this->guzzle);
     }
@@ -234,7 +236,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     public function testStorePreviewTimeout()
     {
         $message     = rand();
-        $mockRequest = $this->getMock('\GuzzleHttp\Message\RequestInterface');
+        $mockRequest = $this->getMock('\Psr\Http\Message\RequestInterface');
         $exception   = new \GuzzleHttp\Exception\RequestException($message, $mockRequest);
 
         $this->guzzle->expects($this->at(1))
