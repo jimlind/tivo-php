@@ -26,7 +26,9 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->guzzle   = $this->getMock('\GuzzleHttp\ClientInterface');
+        $clientMethodList = ['get', 'send', 'sendAsync', 'request', 'requestAsync', 'getConfig'];
+
+        $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface', $clientMethodList);
 
         $this->fixture = new XmlDownloader(null, null, $this->guzzle);
     }
@@ -74,11 +76,11 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testAnchorOffsetIncrement()
     {
-        $xmlElement = new \SimpleXMLElement('<xml><Item /></xml>');
+        $xmlString = '<xml><Item /></xml>';
 
-        $response = $this->getMock('\GuzzleHttp\Message\ResponseInterface');
-        $response->method('xml')
-            ->will($this->returnValue($xmlElement));
+        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $response->method('getBody')
+            ->will($this->returnValue($xmlString));
 
         $spy = $this->any();
         $this->guzzle->expects($spy)
@@ -118,12 +120,10 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     public function testGuzzleReturnParsing($xmlList, $expected)
     {
         foreach ($xmlList as $index => $xmlString) {
-            $simpleXml = simplexml_load_string($xmlString);
-
-            $response = $this->getMock('\GuzzleHttp\Message\ResponseInterface');
+            $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
             $response->expects($this->once())
-                ->method('xml')
-                ->will($this->returnValue($simpleXml));
+                ->method('getBody')
+                ->will($this->returnValue($xmlString));
 
             $this->guzzle->expects($this->at($index))
                 ->method('get')

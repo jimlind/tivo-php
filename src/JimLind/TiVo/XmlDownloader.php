@@ -134,7 +134,7 @@ class XmlDownloader
      */
     private function parseXmlFromResponse($response)
     {
-        if (false === is_a($response, 'GuzzleHttp\Psr7\Response')){
+        if (false === is_a($response, '\Psr\Http\Message\ResponseInterface')){
             $this->logger->warning('Empty response from Guzzle.');
 
             return new \SimpleXMLElement('<xml />');
