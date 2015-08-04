@@ -120,7 +120,7 @@ if (file_exists($mpegFile) && filesize($mpegFile) > 0) {
     finishRun($logFile);
 }
 
-// Delete raw tivo file.
+// Delete video files.
 unlink($tivoFile);
 unlink($mpegFile);
 
