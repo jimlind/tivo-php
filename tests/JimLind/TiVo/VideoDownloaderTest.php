@@ -25,9 +25,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $clientMethodList = ['get', 'send', 'sendAsync', 'request', 'requestAsync', 'getConfig'];
-
-        $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface', $clientMethodList);
+        $this->guzzle = $this->getMock('\\GuzzleHttp\\ClientInterface');
 
         $this->fixture = new VideoDownloader(null, $this->guzzle);
     }
@@ -35,10 +33,10 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     /**
      * A single call to get a file should perform two guzzle requests.
      */
-    public function testDoubleGetOnStorePreview()
+    public function testDoubleRequestOnDownloadPreview()
     {
         $this->guzzle->expects($this->exactly(2))
-            ->method('get');
+            ->method('request');
 
         $this->fixture->downloadPreview(null, null);
     }
@@ -46,20 +44,20 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     /**
      * Test that MAC gets passed through to Guzzle.
      */
-    public function testMacPassThroughOnStore()
+    public function testMacPassThroughOnDownload()
     {
         $mac      = rand();
         $expected = ['tivo', $mac, 'digest'];
 
         $spy = $this->any();
-        $this->guzzle->expects($spy)->method('get');
+        $this->guzzle->expects($spy)->method('request');
 
         $this->fixture = new VideoDownloader($mac, $this->guzzle);
         $this->fixture->downloadPreview(null, null);
 
         $invocationList = $spy->getInvocations();
         foreach ($invocationList as $invocation) {
-            $authentication = $invocation->parameters[1]['auth'];
+            $authentication = $invocation->parameters[2]['auth'];
             $this->assertEquals($expected, $authentication);
         }
     }
@@ -67,47 +65,47 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     /**
      * Test that filePath gets passed through to Guzzle.
      */
-    public function testFilePathPassThroughOnStore()
+    public function testFilePathPassThroughOnDownload()
     {
         $filePath = rand();
 
         $spy = $this->any();
-        $this->guzzle->expects($spy)->method('get');
+        $this->guzzle->expects($spy)->method('request');
 
         $this->fixture->downloadPreview(null, $filePath);
 
         $invocationList = $spy->getInvocations();
-        $actual         = $invocationList[1]->parameters[1]['save_to'];
+        $actual         = $invocationList[1]->parameters[2]['save_to'];
         $this->assertEquals($filePath, $actual);
     }
 
     /**
      * Test the timeout for storePreview is passed through to Guzzle.
      */
-    public function testStorePreviewGuzzleTimeout()
+    public function testDownloadPreviewGuzzleTimeout()
     {
         $spy = $this->any();
-        $this->guzzle->expects($spy)->method('get');
+        $this->guzzle->expects($spy)->method('request');
 
         $this->fixture->downloadPreview(null, null);
 
         $invocationList = $spy->getInvocations();
-        $actual         = $invocationList[1]->parameters[1]['timeout'];
+        $actual         = $invocationList[1]->parameters[2]['timeout'];
         $this->assertEquals(60, $actual);
     }
 
     /**
-     * Test the timeout for store is passed through to Guzzle.
+     * Test the timeout for download is passed through to Guzzle.
      */
-    public function testStoreGuzzleTimeout()
+    public function testDownloadGuzzleTimeout()
     {
         $spy = $this->any();
-        $this->guzzle->expects($spy)->method('get');
+        $this->guzzle->expects($spy)->method('request');
 
         $this->fixture->download(null, null);
 
         $invocationList = $spy->getInvocations();
-        $actual         = $invocationList[1]->parameters[1]['timeout'];
+        $actual         = $invocationList[1]->parameters[2]['timeout'];
         $this->assertEquals(0, $actual);
     }
 
@@ -122,12 +120,12 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     public function testEscapingURL($input, $expected)
     {
         $spy = $this->any();
-        $this->guzzle->expects($spy)->method('get');
+        $this->guzzle->expects($spy)->method('request');
 
         $this->fixture->downloadPreview($input, null);
 
         $invocationList = $spy->getInvocations();
-        $actual         = $invocationList[1]->parameters[0];
+        $actual         = $invocationList[1]->parameters[1];
         $this->assertEquals($expected, $actual);
     }
 
@@ -155,13 +153,13 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     public function testParsing($input, $expectedSecure, $expectedInsecure)
     {
         $spy = $this->any();
-        $this->guzzle->expects($spy)->method('get');
+        $this->guzzle->expects($spy)->method('request');
 
         $this->fixture->downloadPreview($input, null);
 
         $invocationList = $spy->getInvocations();
-        $this->assertEquals($expectedSecure, $invocationList[0]->parameters[0]);
-        $this->assertEquals($expectedInsecure, $invocationList[1]->parameters[0]);
+        $this->assertEquals($expectedSecure, $invocationList[0]->parameters[1]);
+        $this->assertEquals($expectedInsecure, $invocationList[1]->parameters[1]);
     }
 
     /**
@@ -215,7 +213,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
         $message   = rand();
         $exception = new \Exception($message);
         $this->guzzle->expects($this->at(0))
-            ->method('get')
+            ->method('request')
             ->will($this->throwException($exception));
 
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
@@ -233,14 +231,14 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     /**
      * Test logging expected timeout on storePreview.
      */
-    public function testStorePreviewTimeout()
+    public function testDownloadPreviewTimeout()
     {
         $message     = rand();
         $mockRequest = $this->getMock('\Psr\Http\Message\RequestInterface');
         $exception   = new \GuzzleHttp\Exception\RequestException($message, $mockRequest);
 
         $this->guzzle->expects($this->at(1))
-            ->method('get')
+            ->method('request')
             ->will($this->throwException($exception));
 
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
@@ -263,7 +261,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
         $message   = rand();
 
         $this->guzzle->expects($this->at(1))
-            ->method('get')
+            ->method('request')
             ->will($this->throwException(new \Exception($message)));
 
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
@@ -286,7 +284,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
         $message   = rand();
 
         $this->guzzle->expects($this->at(1))
-            ->method('get')
+            ->method('request')
             ->will($this->throwException(new \Exception($message)));
 
         $logger = $this->getMock('\Psr\Log\LoggerInterface');

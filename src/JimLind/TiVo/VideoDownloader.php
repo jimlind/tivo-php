@@ -112,7 +112,8 @@ class VideoDownloader
             'timeout' => $timeout,
         );
 
-        $this->guzzle->get(
+        $this->guzzle->request(
+            'GET',
             $this->escapeURL($url),
             $options
         );
@@ -148,7 +149,7 @@ class VideoDownloader
         );
 
         try {
-            $this->guzzle->get($url, $options);
+            $this->guzzle->request('GET', $url, $options);
         } catch (\Exception $exception) {
             // Something went wrong with Guzzle.
             $this->logger->warning('Unable to access the TiVo via HTTPS');
