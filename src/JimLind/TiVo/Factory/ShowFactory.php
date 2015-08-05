@@ -84,7 +84,7 @@ class ShowFactory
      */
     protected function parseID($urlString)
     {
-        $matches = array();
+        $matches = [];
         preg_match('/.+?id=([0-9]+)$/', $urlString, $matches);
         if (count($matches) == 2) {
             return (integer) $matches[1];

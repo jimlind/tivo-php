@@ -67,7 +67,7 @@ class XmlDownloader
      *
      * @return SimpleXMLElement[]
      */
-    public function download($previousShowList = array())
+    public function download($previousShowList = [])
     {
         $xmlFile = $this->downloadXmlPiece(count($previousShowList));
         XmlNamespace::addTiVoNamespace($xmlFile);
@@ -126,16 +126,16 @@ class XmlDownloader
      */
     private function buildGuzzleOptions($offset)
     {
-        return array(
-            'auth'  =>  ['tivo', $this->mak, 'digest'],
-            'query' => array(
+        return [
+            'auth'  => ['tivo', $this->mak, 'digest'],
+            'query' => [
                 'Command'      => 'QueryContainer',
                 'Container'    => '/NowPlaying',
                 'Recurse'      => 'Yes',
                 'AnchorOffset' => $offset,
-            ),
+            ],
             'verify' => false,
-        );
+        ];
     }
 
     /**

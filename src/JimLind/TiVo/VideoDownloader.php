@@ -102,15 +102,15 @@ class VideoDownloader
     protected function getFile($url, $filePath, $timeout = 0)
     {
         $cookieJar     = $this->touchSecureServer($url);
-        $authorization = array('tivo', $this->mak, 'digest');
+        $authorization = ['tivo', $this->mak, 'digest'];
 
-        $options = array(
+        $options = [
             'auth'    => $authorization,
             'verify'  => false,
             'cookies' => $cookieJar,
             'save_to' => $filePath,
             'timeout' => $timeout,
-        );
+        ];
 
         $this->guzzle->request(
             'GET',
@@ -139,14 +139,14 @@ class VideoDownloader
     protected function touchSecureServer($urlPath)
     {
         $cookieJar     = new CookieJar();
-        $authorization = array('tivo', $this->mak, 'digest');
+        $authorization = ['tivo', $this->mak, 'digest'];
 
         $url     = 'https://'.$this->parseIpAddress($urlPath);
-        $options = array(
+        $options = [
             'auth'    => $authorization,
             'verify'  => false,
             'cookies' => $cookieJar,
-        );
+        ];
 
         try {
             $this->guzzle->request('GET', $url, $options);
@@ -168,7 +168,7 @@ class VideoDownloader
      */
     protected function parseIpAddress($urlPath)
     {
-        $matches = array();
+        $matches = [];
         $pattern = '/http:..(\d+\.\d+\.\d+\.\d+):80/';
         preg_match($pattern, $urlPath, $matches);
 

@@ -185,36 +185,36 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
      */
     public function testParsingProvider()
     {
-        $realResponseLineList = array(
+        $realResponseLineList = [
             '+ eth0 IPv4 Living Room _tivo-videos._tcp',
             '= eth0 IPv4 Living Room _tivo-videos._tcp',
             ' hostname = [DVR-F449.local]',
             ' address = [192.168.0.42]',
             ' port = [443]',
             ' txt = ["TSN=65200118047F449" "platform=tcd/Series3"]',
-        );
+        ];
 
-        return array(
-            array(
+        return [
+            [
                 'return' => ' ',
                 'info' => 'Unable to parse IP from Avahi output.',
                 'expected' => '',
-            ),
-            array(
+            ],
+            [
                 'return' => ' address = [192.168.1.187]',
                 'info' => null,
                 'expected' => '192.168.1.187',
-            ),
-            array(
+            ],
+            [
                 'return' => ' address = [192.168.1.X]',
                 'info' => 'Unable to parse IP from Avahi output.',
                 'expected' => '',
-            ),
-            array(
+            ],
+            [
                 'return' => implode(PHP_EOL, $realResponseLineList),
                 'info' => null,
                 'expected' => '192.168.0.42',
-            ),
-        );
+            ],
+        ];
     }
 }

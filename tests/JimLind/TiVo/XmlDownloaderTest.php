@@ -154,33 +154,33 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function guzzleReturnParsingProvider()
     {
-        return array(
+        return [
             [
                 'xmlList' => ['Not Valid XML'],
                 'expected' => [],
             ],
-            array(
-                'xmlList' => array('<xml />'),
-                'expected' => array(),
-            ),
-            array(
-                'xmlList' => array(
+            [
+                'xmlList' => ['<xml />'],
+                'expected' => [],
+            ],
+            [
+                'xmlList' => [
                     '<xml><NorseWords>Ragnarok</NorseWords></xml>',
-                ),
-                'expected' => array(),
-            ),
-            array(
-                'xmlList' => array(
+                ],
+                'expected' => [],
+            ],
+            [
+                'xmlList' => [
                     '<xml><ItemCount>2</ItemCount><Item /><Item /></xml>',
                     '<xml><ItemCount>1</ItemCount><Item /></xml>',
                     '<xml><ItemCount>0</ItemCount></xml>',
-                ),
-                'expected' => array(
+                ],
+                'expected' => [
                     new \SimpleXMLElement('<Item />'),
                     new \SimpleXMLElement('<Item />'),
                     new \SimpleXMLElement('<Item />'),
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 }

@@ -116,7 +116,7 @@ class TiVoFinder
      */
     protected function parseAvahiResults($avahiResult)
     {
-        $matches = array();
+        $matches = [];
         $pattern = '/^\s+address = \[(\d+\.\d+\.\d+\.\d+)\]$/m';
         preg_match($pattern, $avahiResult, $matches);
 
