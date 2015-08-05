@@ -83,6 +83,18 @@ class XmlDownloader
     }
 
     /**
+     * Upgrade an error to an Exception for easy catching.
+     *
+     * @param string $code
+     * @param int    $message
+     * @throws \Exception
+     */
+    public function throwException($code, $message)
+    {
+        throw new \Exception($message, $code);
+    }
+
+    /**
      * Downloads a single piece of list as SimpleXML
      *
      * @param integer $anchorOffset Count of previous shows
@@ -135,7 +147,7 @@ class XmlDownloader
      */
     private function parseXmlFromResponse($response)
     {
-        if (false === is_a($response, '\Psr\Http\Message\ResponseInterface')){
+        if (false === is_a($response, '\Psr\Http\Message\ResponseInterface')) {
             $this->logger->warning('Empty response from Guzzle.');
 
             return new \SimpleXMLElement('<xml />');
@@ -155,17 +167,5 @@ class XmlDownloader
         }
 
         restore_error_handler();
-    }
-
-    /**
-     * Upgrade an error to an Exception for easy catching.
-     *
-     * @param string $code
-     * @param int $message
-     * @throws \Exception
-     */
-    public function throwException($code, $message)
-    {
-        throw new \Exception($message, $code);
     }
 }
