@@ -164,7 +164,7 @@ class XmlDownloader
      * @param int $message
      * @throws \Exception
      */
-    private function throwException($code, $message)
+    public function throwException($code, $message)
     {
         throw new \Exception($message, $code);
     }

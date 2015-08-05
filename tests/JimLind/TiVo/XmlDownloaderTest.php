@@ -34,7 +34,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     /**
      * Test that request type passed through to Guzzle.
      */
-    public function testRequesttypePassThroughOnDownload()
+    public function testRequestTypePassThroughOnDownload()
     {
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('request');
@@ -115,11 +115,11 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testNowPlayingException()
     {
-        $this->guzzle->method('get')
+        $this->guzzle->method('request')
             ->will($this->throwException(new TransferException()));
 
         $actual = $this->fixture->download();
-        $this->assertEquals(array(), $actual);
+        $this->assertEquals([], $actual);
     }
 
     /**
@@ -155,6 +155,10 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     public function guzzleReturnParsingProvider()
     {
         return array(
+            [
+                'xmlList' => ['Not Valid XML'],
+                'expected' => [],
+            ],
             array(
                 'xmlList' => array('<xml />'),
                 'expected' => array(),
