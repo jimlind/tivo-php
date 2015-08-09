@@ -36,8 +36,9 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testRequestTypePassThroughOnDownload()
     {
-        $spy = $this->any();
-        $this->guzzle->expects($spy)->method('request');
+        $spy      = $this->any();
+        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $this->guzzle->expects($spy)->method('request')->willReturn($response);
 
         $this->fixture->download();
 
@@ -54,8 +55,9 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
         $ip       = rand();
         $expected = 'https://'.$ip.'/TiVoConnect';
 
-        $spy = $this->any();
-        $this->guzzle->expects($spy)->method('request');
+        $spy      = $this->any();
+        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $this->guzzle->expects($spy)->method('request')->willReturn($response);
 
         $this->fixture = new XmlDownloader($ip, null, $this->guzzle);
         $this->fixture->download();
@@ -73,8 +75,9 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
         $mak      = rand();
         $expected = ['tivo', $mak, 'digest'];
 
-        $spy = $this->any();
-        $this->guzzle->expects($spy)->method('request');
+        $spy      = $this->any();
+        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $this->guzzle->expects($spy)->method('request')->willReturn($response);
 
         $this->fixture = new XmlDownloader(null, $mak, $this->guzzle);
         $this->fixture->download();
@@ -89,16 +92,18 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testAnchorOffsetIncrement()
     {
-        $xmlString = '<xml><Item /></xml>';
+        $firstResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $firstResponse->method('getBody')
+            ->will($this->returnValue('<xml><Item /></xml>'));
 
-        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
-        $response->method('getBody')
-            ->will($this->returnValue($xmlString));
+        $secondResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $secondResponse->method('getBody')
+            ->will($this->returnValue('<xml />'));
 
         $spy = $this->any();
         $this->guzzle->expects($spy)
             ->method('request')
-            ->will($this->onConsecutiveCalls($response));
+            ->will($this->onConsecutiveCalls($firstResponse, $secondResponse));
 
         $this->fixture->download();
 
