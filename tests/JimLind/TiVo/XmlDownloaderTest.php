@@ -3,7 +3,6 @@
 namespace JimLind\TiVo\Tests;
 
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\TransferException;
 use JimLind\TiVo\XmlDownloader;
 
 /**
@@ -32,59 +31,108 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that request type passed through to Guzzle.
+     * Test that Guzzle uses correct method.
      */
-    public function testRequestTypePassThroughOnDownload()
+    public function testMethodOnDownload()
     {
         $spy      = $this->any();
         $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
-        $this->guzzle->expects($spy)->method('request')->willReturn($response);
+        $this->guzzle->expects($spy)
+            ->method('send')
+            ->willReturn($response);
 
         $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
-        $actual         = $invocationList[0]->parameters[0];
-        $this->assertEquals('GET', $actual);
+        $request        = $invocationList[0]->parameters[0];
+
+        $this->assertEquals('GET', $request->getMethod());
     }
 
     /**
-     * Test that IP gets passed through to Guzzle.
+     * Test that Guzzle uses correct URI.
      */
-    public function testIPPathPassThroughOnDownload()
+    public function testUriOnDownload()
     {
-        $ip       = rand();
-        $expected = 'https://'.$ip.'/TiVoConnect';
-
         $spy      = $this->any();
         $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
-        $this->guzzle->expects($spy)->method('request')->willReturn($response);
+        $this->guzzle->expects($spy)
+            ->method('send')
+            ->willReturn($response);
 
-        $this->fixture = new XmlDownloader($ip, null, $this->guzzle);
+        $ipAddress = rand();
+        $this->fixture = new XmlDownloader($ipAddress, null, $this->guzzle);
         $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
-        $actual         = $invocationList[0]->parameters[1];
-        $this->assertEquals($expected, $actual);
+        $request        = $invocationList[0]->parameters[0];
+        $this->assertEquals(
+            'https://'.$ipAddress.'/TiVoConnect',
+            (string) $request->getUri()
+        );
     }
 
     /**
-     * Test that MAK gets passed through to Guzzle.
+     * Test that Guzzle uses correct auth options.
      */
-    public function testMacPassThroughOnDownload()
+    public function testAuthOnDownload()
     {
+        $spy      = $this->any();
+        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $this->guzzle->expects($spy)
+            ->method('send')
+            ->willReturn($response);
+
         $mak      = rand();
         $expected = ['tivo', $mak, 'digest'];
-
-        $spy      = $this->any();
-        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
-        $this->guzzle->expects($spy)->method('request')->willReturn($response);
-
         $this->fixture = new XmlDownloader(null, $mak, $this->guzzle);
         $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
-        $actual         = $invocationList[0]->parameters[2]['auth'];
+        $actual         = $invocationList[0]->parameters[1]['auth'];
         $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Test a Guzzle exception with response
+     */
+    public function testRequestExceptionResponseOnDownload()
+    {
+        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+
+        $exception = $this->getMockBuilder('GuzzleHttp\Exception\ClientException')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $exception->method('hasResponse')->willReturn(true);
+        $exception->method('getResponse')->willReturn($response);
+
+        $this->guzzle->method('send')
+            ->will($this->throwException($exception));
+
+        $actual = $this->fixture->download();
+        // TODO Test Logger
+        $this->assertEquals([], $actual);
+    }
+
+    /**
+     * Test a Guzzle exception with message
+     */
+    public function testRequestExceptionMessageOnDownload()
+    {
+        $message = rand();
+
+        $exception = $this->getMockBuilder('GuzzleHttp\Exception\ClientException')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $exception->method('hasResponse')->willReturn(false);
+        $exception->method('getMessage')->willReturn($message);
+
+        $this->guzzle->method('send')
+            ->will($this->throwException($exception));
+
+        $actual = $this->fixture->download();
+        // TODO Test Logger
+        $this->assertEquals([], $actual);
     }
 
     /**
@@ -94,37 +142,29 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     {
         $firstResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
         $firstResponse->method('getBody')
-            ->will($this->returnValue('<xml><Item /></xml>'));
+            ->willReturn('<xml><Item /></xml>');
+        $firstResponse->method('getStatusCode')
+            ->willReturn(200);
 
         $secondResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
         $secondResponse->method('getBody')
-            ->will($this->returnValue('<xml />'));
+            ->willReturn('<xml />');
+        $secondResponse->method('getStatusCode')
+            ->willReturn(200);
 
         $spy = $this->any();
         $this->guzzle->expects($spy)
-            ->method('request')
+            ->method('send')
             ->will($this->onConsecutiveCalls($firstResponse, $secondResponse));
 
         $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
 
-        $firstAnchor = $invocationList[0]->parameters[2]['query']['AnchorOffset'];
+        $firstAnchor = $invocationList[0]->parameters[1]['query']['AnchorOffset'];
         $this->assertEquals(0, $firstAnchor);
-        $secondAnchor = $invocationList[1]->parameters[2]['query']['AnchorOffset'];
+        $secondAnchor = $invocationList[1]->parameters[1]['query']['AnchorOffset'];
         $this->assertEquals(1, $secondAnchor);
-    }
-
-    /**
-     * Test what happens when Guzzle only throws an exception.
-     */
-    public function testNowPlayingException()
-    {
-        $this->guzzle->method('request')
-            ->will($this->throwException(new TransferException()));
-
-        $actual = $this->fixture->download();
-        $this->assertEquals([], $actual);
     }
 
     /**
@@ -144,7 +184,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
                 ->will($this->returnValue($xmlString));
 
             $this->guzzle->expects($this->at($index))
-                ->method('request')
+                ->method('send')
                 ->will($this->returnValue($response));
         }
 
