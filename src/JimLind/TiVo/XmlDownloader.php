@@ -3,7 +3,10 @@
 namespace JimLind\TiVo;
 
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Uri;
 use JimLind\TiVo\Utilities\XmlNamespace;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -15,9 +18,9 @@ use Psr\Log\NullLogger;
 class XmlDownloader
 {
     /**
-     * @var string
+     * @var Uri
      */
-    private $url;
+    private $uri;
 
     /**
      * @var string
@@ -43,7 +46,12 @@ class XmlDownloader
      */
     public function __construct($ip, $mak, ClientInterface $guzzle)
     {
-        $this->url    = 'https://'.$ip.'/TiVoConnect';
+        $originalUri = new Uri();
+        $this->uri  = $originalUri
+            ->withScheme('https')
+            ->withHost($ip)
+            ->withPath('TiVoConnect');
+
         $this->mak    = $mak;
         $this->guzzle = $guzzle;
 
@@ -85,18 +93,6 @@ class XmlDownloader
     }
 
     /**
-     * Upgrade an error to an Exception for easy catching.
-     *
-     * @param string $code
-     * @param int    $message
-     * @throws \Exception
-     */
-    public function throwException($code, $message)
-    {
-        throw new \Exception($message, $code);
-    }
-
-    /**
      * Downloads a single piece of list as SimpleXML
      *
      * @param integer $anchorOffset Count of previous shows
@@ -105,28 +101,26 @@ class XmlDownloader
      */
     private function downloadXmlPiece($anchorOffset)
     {
-        try {
-            $response = $this->guzzle->request(
-                'GET',
-                $this->url,
-                $this->buildGuzzleOptions($anchorOffset)
-            );
-        } catch (TransferException $exception) {
-            $this->logger->warning($exception->getMessage());
+        $request = new Request('GET', $this->uri);
+        $options = $this->buildOptions($anchorOffset);
 
-            return new \SimpleXMLElement('<xml />');
+        try {
+            $response = $this->guzzle->send($request, $options);
+        } catch (RequestException $exception) {
+            $response = $this->parseException($exception);
         }
 
-        return $this->parseXmlFromResponse($response);
+        return $this->parseResponse($response);
     }
 
     /**
      * Create an option array for Guzzle.
      *
      * @param integer $offset
-     * @return mixed[][]
+     *
+     * @return string[][]
      */
-    private function buildGuzzleOptions($offset)
+    private function buildOptions($offset)
     {
         return [
             'auth'  => ['tivo', $this->mak, 'digest'],
@@ -141,27 +135,59 @@ class XmlDownloader
     }
 
     /**
+     * Parse response from exception
+     *
+     * @param RequestException $exception
+     *
+     * @return Response
+     */
+    private function parseException(RequestException $exception)
+    {
+        if ($exception->hasResponse()) {
+            return $exception->getResponse();
+        } else {
+            return new Response(000, [], $exception->getMessage());
+        }
+    }
+
+    /**
      * Parse XML from the Guzzle Response
      *
      * @param ResponseInterface $response
      *
      * @return \SimpleXMLElement
      */
-    private function parseXmlFromResponse(ResponseInterface $response)
+    private function parseResponse(ResponseInterface $response)
     {
-        set_error_handler([$this, 'throwException']);
+        $responseCode = $response->getStatusCode();
+        $responseBody = $response->getBody();
 
-        try {
-            $responseBody = $response->getBody();
-
-            return new \SimpleXMLElement($responseBody);
-        } catch (\Exception $exception) {
-            $this->logger->warning('Not an XML response from Guzzle.');
-            $this->logger->warning($exception->getMessage());
-
+        if (200 !== $responseCode) {
+            $this->logger->warning('Client response was not a success');
+            $this->logger->warning($responseCode.': '.strip_tags($responseBody));
             return new \SimpleXMLElement('<xml />');
         }
 
-        restore_error_handler();
+        return $this->parseResponseBody($responseBody);
+    }
+
+    /**
+     * Parse XML from the Guzzle Response Body
+     *
+     * @param string $responseBody
+     * @return \SimpleXMLElement
+     */
+    private function parseResponseBody($responseBody)
+    {
+        try {
+            libxml_use_internal_errors(true);
+
+            return new \SimpleXMLElement($responseBody);
+        } catch (\Exception $exception) {
+            $this->logger->warning('Problem with SimpleXMLElement construction');
+            $this->logger->warning($exception->getMessage());
+        }
+
+        return new \SimpleXMLElement('<xml />');
     }
 }
