@@ -3,6 +3,7 @@
 namespace JimLind\TiVo\Tests;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\ClientException;
 use JimLind\TiVo\XmlDownloader;
 
 /**
@@ -110,8 +111,40 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
             ->will($this->throwException($exception));
 
         $actual = $this->fixture->download();
-        // TODO Test Logger
         $this->assertEquals([], $actual);
+    }
+
+    /**
+     * Test a Guzzle exception with response logged
+     */
+    public function testRequestExceptionResponseLoggedOnDownload()
+    {
+        $responseBody = rand();
+        $responseCode = rand();
+
+        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $response->method('getBody')->willReturn($responseBody);
+        $response->method('getStatusCode')->willReturn($responseCode);
+
+        $request   = $this->getMock('\Psr\Http\Message\RequestInterface');
+        $exception = new ClientException(rand(), $request, $response);
+
+        $this->guzzle->method('send')
+            ->will($this->throwException($exception));
+
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $spy    = $this->any();
+        $logger->expects($spy)->method('warning');
+
+        $this->fixture->setLogger($logger);
+        $this->fixture->download();
+
+        $invocationList = $spy->getInvocations();
+        $firstWarning   = $invocationList[0]->parameters[0];
+        $secondWarning  = $invocationList[1]->parameters[0];
+
+        $this->assertEquals('Client response was not a success', $firstWarning);
+        $this->assertEquals($responseCode.': '.$responseBody, $secondWarning);
     }
 
     /**
@@ -119,20 +152,41 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testRequestExceptionMessageOnDownload()
     {
-        $message = rand();
-
-        $exception = $this->getMockBuilder('GuzzleHttp\Exception\ClientException')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $exception->method('hasResponse')->willReturn(false);
-        $exception->method('getMessage')->willReturn($message);
+        $request   = $this->getMock('\Psr\Http\Message\RequestInterface');
+        $exception = new ClientException(rand(), $request);
 
         $this->guzzle->method('send')
             ->will($this->throwException($exception));
 
         $actual = $this->fixture->download();
-        // TODO Test Logger
         $this->assertEquals([], $actual);
+    }
+
+    /**
+     * Test a Guzzle exception with message logged
+     */
+    public function testRequestExceptionMessageLoggedOnDownload()
+    {
+        $message = rand();
+        $request   = $this->getMock('\Psr\Http\Message\RequestInterface');
+        $exception = new ClientException($message, $request);
+
+        $this->guzzle->method('send')
+            ->will($this->throwException($exception));
+
+        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $spy    = $this->any();
+        $logger->expects($spy)->method('warning');
+
+        $this->fixture->setLogger($logger);
+        $this->fixture->download();
+
+        $invocationList = $spy->getInvocations();
+        $firstWarning   = $invocationList[0]->parameters[0];
+        $secondWarning  = $invocationList[1]->parameters[0];
+
+        $this->assertEquals('Client response was not a success', $firstWarning);
+        $this->assertEquals('0: '.$message, $secondWarning);
     }
 
     /**
@@ -142,7 +196,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     {
         $firstResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
         $firstResponse->method('getBody')
-            ->willReturn('<xml><Item /></xml>');
+            ->willReturn('<xml><Item /><Item /></xml>');
         $firstResponse->method('getStatusCode')
             ->willReturn(200);
 
@@ -164,7 +218,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
         $firstAnchor = $invocationList[0]->parameters[1]['query']['AnchorOffset'];
         $this->assertEquals(0, $firstAnchor);
         $secondAnchor = $invocationList[1]->parameters[1]['query']['AnchorOffset'];
-        $this->assertEquals(1, $secondAnchor);
+        $this->assertEquals(2, $secondAnchor);
     }
 
     /**
@@ -179,9 +233,10 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     {
         foreach ($xmlList as $index => $xmlString) {
             $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
-            $response->expects($this->once())
-                ->method('getBody')
-                ->will($this->returnValue($xmlString));
+            $response->method('getBody')
+                ->willReturn($xmlString);
+            $response->method('getStatusCode')
+                ->willReturn(200);
 
             $this->guzzle->expects($this->at($index))
                 ->method('send')

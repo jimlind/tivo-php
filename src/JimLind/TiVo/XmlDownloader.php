@@ -146,7 +146,7 @@ class XmlDownloader
         if ($exception->hasResponse()) {
             return $exception->getResponse();
         } else {
-            return new Response(000, [], $exception->getMessage());
+            return new Response(0, [], $exception->getMessage());
         }
     }
 
