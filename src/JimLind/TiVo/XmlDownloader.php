@@ -83,8 +83,8 @@ class XmlDownloader
 
         $showList = $xmlFile->xpath('//tivo:Item');
         if (count($showList) > 0) {
-            // Recurse on next set of shows.
             $mergedShowList = array_merge($previousShowList, $showList);
+            // Recurse on next set of shows.
             return $this->download($mergedShowList);
         } else {
             // Last set of shows reached.
@@ -165,6 +165,7 @@ class XmlDownloader
         if (200 !== $responseCode) {
             $this->logger->warning('Client response was not a success');
             $this->logger->warning($responseCode.': '.strip_tags($responseBody));
+
             return new \SimpleXMLElement('<xml />');
         }
 
