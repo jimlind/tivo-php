@@ -91,7 +91,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
 
         $invocationList = $spy->getInvocations();
         $actual         = $invocationList[1]->parameters[2]['timeout'];
-        $this->assertEquals(60, $actual);
+        $this->assertEquals(120, $actual);
     }
 
     /**
