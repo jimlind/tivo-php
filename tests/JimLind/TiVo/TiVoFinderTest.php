@@ -159,7 +159,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider testParsingProvider
      */
-    public function testParsing($return, $info, $expected)
+    public function testParsing($return, $logList, $expected)
     {
         $this->process->method('isSuccessful')->willReturn(true);
         $this->process->method('getOutput')->willReturn($return);
@@ -168,10 +168,10 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
 
         $this->fixture->setLogger($logger);
 
-        if ($info) {
-            $logger->expects($this->once())
+        foreach($logList as $index => $message) {
+            $logger->expects($this->at($index))
                 ->method('warning')
-                ->with($info);
+                ->with($message);
         }
 
         $actual = $this->fixture->find();
@@ -197,22 +197,28 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
         return [
             [
                 'return' => ' ',
-                'info' => 'Unable to parse IP from Avahi output.',
+                'log' => [
+                    'Unable to parse IP from Avahi output.',
+                    'Output: " "',
+                ],
                 'expected' => '',
             ],
             [
                 'return' => ' address = [192.168.1.187]',
-                'info' => null,
+                'log' => [],
                 'expected' => '192.168.1.187',
             ],
             [
                 'return' => ' address = [192.168.1.X]',
-                'info' => 'Unable to parse IP from Avahi output.',
+                'log' => [
+                    'Unable to parse IP from Avahi output.',
+                    'Output: " address = [192.168.1.X]"',
+                ],
                 'expected' => '',
             ],
             [
                 'return' => implode(PHP_EOL, $realResponseLineList),
-                'info' => null,
+                'log' => [],
                 'expected' => '192.168.0.42',
             ],
         ];

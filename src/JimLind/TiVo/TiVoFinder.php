@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Service for finding a TiVo on your local network.
+ * Service for finding a TiVo on your local network
  */
 class TiVoFinder
 {
@@ -23,9 +23,7 @@ class TiVoFinder
     protected $logger  = null;
 
     /**
-     * Constructor
-     *
-     * @param ProcessBuilder $builder The Symfony ProcessBuilder component.
+     * @param ProcessBuilder $builder The Symfony ProcessBuilder component
      */
     public function __construct(ProcessBuilder $builder)
     {
@@ -36,7 +34,6 @@ class TiVoFinder
     }
 
     /**
-     * Set the Logger
      *
      * @param LoggerInterface $logger
      */
@@ -46,37 +43,37 @@ class TiVoFinder
     }
 
     /**
-     * Attempt to find the TiVo and log any problems.
+     * Find a TiVo or log failure
      *
      * @return string
      */
     public function find()
     {
-        $avahiResults = $this->getAvahiResults();
+        $avahiResults = $this->getProcessResults();
 
         if (empty($avahiResults)) {
-            // Failure. Log and exit early.
+            // Failure: Log and exit early
             $message = 'Unable to locate a TiVo device on the network.';
             $this->logger->warning($message);
 
             return '';
         }
 
-        return $this->parseAvahiResults($avahiResults);
+        return $this->parseResults($avahiResults);
     }
 
     /**
-     * Get string output from Avahi attempting to locate a TiVo.
+     * Run the Process to find a TiVo get results or log failure
      *
      * @return string
      */
-    protected function getAvahiResults()
+    protected function getProcessResults()
     {
-        $process = $this->buildLocationProcess();
+        $process = $this->buildProcess();
         $process->run();
 
         if ($process->isSuccessful() === false) {
-            // Failure. Log and exit early.
+            // Failure: Log and exit early
             $message = 'Problem executing avahi-browse. Tool may not be installed.';
             $this->logger->warning($message);
             $this->logger->warning('Command: '.$process->getCommandLine());
@@ -84,16 +81,16 @@ class TiVoFinder
             return '';
         }
 
-        // Command line output.
+        // Entirety of standard output of the command
         return $process->getOutput();
     }
 
     /**
-     * Builds the SymfonyProcess.
+     * Builds the Process that calls Avahi looking for a TiVo
      *
      * @return Process
      */
-    protected function buildLocationProcess()
+    protected function buildProcess()
     {
         $this->builder->setPrefix('avahi-browse');
         $this->builder->setArguments([
@@ -108,22 +105,23 @@ class TiVoFinder
     }
 
     /**
-     * Regular expression to find IP in Avahi Output.
+     * Parse IP from Process result or log failure
      *
-     * @param string $avahiResult Output of the call to Avahi
+     * @param string $avahiResult Output of Process calling Avahi
      *
      * @return string
      */
-    protected function parseAvahiResults($avahiResult)
+    protected function parseResults($avahiResult)
     {
         $matches = [];
         $pattern = '/^\s+address = \[(\d+\.\d+\.\d+\.\d+)\]$/m';
         preg_match($pattern, $avahiResult, $matches);
 
         if (empty($matches) || count($matches) < 2) {
-            // Failure. Log and exit early.
+            // Failure: Log and exit early
             $message = 'Unable to parse IP from Avahi output.';
             $this->logger->warning($message);
+            $this->logger->warning('Output: "'.$avahiResult.'"');
 
             return '';
         }

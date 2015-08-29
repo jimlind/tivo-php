@@ -199,10 +199,13 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     public function testLoggedBadParsing()
     {
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
-        $logger->method('warning')->with('Unable to parse IP from URL.');
+        $logger->expects($this->at(0))
+            ->method('warning')->with('Unable to parse IP from URL.');
+        $logger->expects($this->at(1))
+            ->method('warning')->with('URL: ""');
 
         $this->fixture->setLogger($logger);
-        $this->fixture->downloadPreview(null, null);
+        $this->fixture->downloadPreview('', '');
     }
 
     /**
@@ -267,7 +270,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('warning')
-            ->with($this->equalTo('Unable to download a partial video file.'));
+            ->with($this->equalTo('Unable to download a video file preview.'));
         $logger->expects($this->at(1))
             ->method('warning')
             ->with($this->equalTo($message));
@@ -290,7 +293,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('warning')
-            ->with($this->equalTo('Unable to download a complete video file.'));
+            ->with($this->equalTo('Unable to download a video file.'));
         $logger->expects($this->at(1))
             ->method('warning')
             ->with($this->equalTo($message));
