@@ -78,7 +78,7 @@ class VideoDownloader
     public function downloadPreview($url, $filePath)
     {
         try {
-            $this->downloadWithTimeout($url, $filePath, 60);
+            $this->downloadWithTimeout($url, $filePath, 120);
         } catch (RequestException $requestException) {
             // Connection timed out as expected
             $this->logger->info('Intentional timeout caught.');
