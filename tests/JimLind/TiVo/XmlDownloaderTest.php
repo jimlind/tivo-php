@@ -99,13 +99,10 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testRequestExceptionResponseOnDownload()
     {
+        $request  = $this->getMock('\Psr\Http\Message\RequestInterface');
         $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
 
-        $exception = $this->getMockBuilder('GuzzleHttp\Exception\ClientException')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $exception->method('hasResponse')->willReturn(true);
-        $exception->method('getResponse')->willReturn($response);
+        $exception = new ClientException(uniqid(), $request, $response);
 
         $this->guzzle->method('send')
             ->will($this->throwException($exception));
