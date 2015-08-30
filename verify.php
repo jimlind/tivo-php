@@ -115,6 +115,7 @@ $videoDecoder->decode($tivoFile, $mpegFile);
 // Verify file exists and has contents.
 if (file_exists($mpegFile) && filesize($mpegFile) > 0) {
     print(" >  Preview file was sucessfully decoded.\n");
+    print(" >  A decoding failure may be logged due to the size of the preview.\n");
 } else {
     print(" >  Preview file was not sucessfully decoded.\n");
     finishRun($logFile);
