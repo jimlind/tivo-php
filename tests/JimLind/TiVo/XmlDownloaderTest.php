@@ -153,7 +153,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     public function testRequestExceptionMessageOnDownload()
     {
         $request   = $this->getMock('\Psr\Http\Message\RequestInterface');
-        $exception = new ClientException(rand(), $request);
+        $exception = new ClientException(uniqid(), $request);
 
         $this->guzzle->method('send')
             ->will($this->throwException($exception));
@@ -167,7 +167,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testRequestExceptionMessageLoggedOnDownload()
     {
-        $message = rand();
+        $message   = uniqid();
         $request   = $this->getMock('\Psr\Http\Message\RequestInterface');
         $exception = new ClientException($message, $request);
 
