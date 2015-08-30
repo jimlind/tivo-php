@@ -154,7 +154,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
      * Test that non-empty return values are properly parsed.
      *
      * @param string $return   Simulated output from Avahi
-     * @param string $info     Logged as info.
+     * @param string $logList  List of strings logged as a warning
      * @param string $expected Expected result from find
      *
      * @dataProvider testParsingProvider
@@ -168,7 +168,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
 
         $this->fixture->setLogger($logger);
 
-        foreach($logList as $index => $message) {
+        foreach ($logList as $index => $message) {
             $logger->expects($this->at($index))
                 ->method('warning')
                 ->with($message);
