@@ -2,13 +2,15 @@
 
 namespace JimLind\TiVo\Tests\Utilities;
 
-use JimLind\TiVo\Utilities\XmlNamespace;
+use JimLind\TiVo\Extra\XmlTrait;
 
 /**
  * Test the TiVo\Utilities\Log class.
  */
 class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
 {
+    use XmlTrait;
+
     /**
      * Test a snippet of XML with a defined namespace.
      */
@@ -16,14 +18,14 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<items xmlns="http://www.example.org/schema"><item id="1" /></items>';
         $simpleXml = simplexml_load_string($xml);
-        XmlNamespace::addTiVoNamespace($simpleXml);
+        $outputXml = $this->addTiVoNamespace($simpleXml);
 
-        $itemList = $simpleXml->xpath('tivo:item[@id = 1]');
+        $itemList = $outputXml->xpath('tivo:item[@id = 1]');
         $this->assertCount(1, $itemList);
 
         $this->assertEquals(
-            $simpleXml->getDocNamespaces(true),
-            $simpleXml->getNamespaces(true)
+            $outputXml->getDocNamespaces(true),
+            $outputXml->getNamespaces(true)
         );
     }
 
@@ -34,14 +36,14 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<items><item id="1" /></items>';
         $simpleXml = simplexml_load_string($xml);
-        XmlNamespace::addTiVoNamespace($simpleXml);
+        $outputXml = $this->addTiVoNamespace($simpleXml);
 
-        $itemList = $simpleXml->xpath('tivo:item[@id = 1]');
+        $itemList = $outputXml->xpath('tivo:item[@id = 1]');
         $this->assertCount(1, $itemList);
 
         $this->assertEquals(
-            $simpleXml->getDocNamespaces(true),
-            $simpleXml->getNamespaces(true)
+            $outputXml->getDocNamespaces(true),
+            $outputXml->getNamespaces(true)
         );
     }
 
@@ -54,7 +56,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '';
         $simpleXml = simplexml_load_string($xml);
-        XmlNamespace::addTiVoNamespace($simpleXml);
+        $this->addTiVoNamespace($simpleXml);
     }
 
     /**
@@ -64,9 +66,9 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<item/>';
         $simpleXml = simplexml_load_string($xml);
-        XmlNamespace::addTiVoNamespace($simpleXml);
+        $outputXml = $this->addTiVoNamespace($simpleXml);
 
-        $xmlString = $simpleXml->asXml();
+        $xmlString = $outputXml->asXml();
 
         $expected = '<?xml version="1.0"?>'."\n";
         $expected .= '<item xmlns="http://www.w3.org/2001/XMLSchema"/>'."\n";
@@ -81,9 +83,9 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<items><item /></items>';
         $simpleXml = simplexml_load_string($xml);
-        XmlNamespace::addTiVoNamespace($simpleXml);
+        $outputXml = $this->addTiVoNamespace($simpleXml);
 
-        $xmlString = $simpleXml->asXml();
+        $xmlString = $outputXml->asXml();
 
         $expected = '<?xml version="1.0"?>'."\n";
         $expected .= '<items xmlns="http://www.w3.org/2001/XMLSchema"><item/></items>'."\n";
