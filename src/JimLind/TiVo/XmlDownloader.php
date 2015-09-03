@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
-use JimLind\TiVo\Utilities\XmlNamespace;
+use JimLind\TiVo\Extra\XmlTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -19,6 +19,8 @@ use SimpleXMLElement;
  */
 class XmlDownloader
 {
+    use XmlTrait;
+
     /**
      * @var Uri
      */
@@ -76,10 +78,10 @@ class XmlDownloader
      */
     public function download($previousShowList = [])
     {
-        $xmlFile = $this->downloadXmlPiece(count($previousShowList));
-        XmlNamespace::addTiVoNamespace($xmlFile);
+        $rawXml        = $this->downloadXmlPiece(count($previousShowList));
+        $namespacedXml = $this->addTiVoNamespace($rawXml);
 
-        $showList = $xmlFile->xpath('//tivo:Item');
+        $showList = $namespacedXml->xpath('//tivo:Item');
         if (count($showList) > 0) {
             $mergedShowList = array_merge($previousShowList, $showList);
             // Recurse on next set of shows.

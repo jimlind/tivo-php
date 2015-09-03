@@ -3,13 +3,15 @@
 namespace JimLind\TiVo\Factory;
 
 use JimLind\TiVo\Model\Show;
-use JimLind\TiVo\Utilities\XmlNamespace;
+use JimLind\TiVo\Extra\XmlTrait;
 
 /**
  * Default show factory to build a show model.
  */
 class ShowFactory
 {
+    use XmlTrait;
+
     /**
      * @var JimLind\TiVo\Model\Show
      */
@@ -24,16 +26,16 @@ class ShowFactory
      */
     public function createShowFromXml($xml)
     {
-        XmlNamespace::addTiVoNamespace($xml);
+        $namespacedXml = $this->addTiVoNamespace($xml);
 
-        $urlList   = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
+        $urlList   = $namespacedXml->xpath('tivo:Links/tivo:Content/tivo:Url');
         $urlString = (string) array_pop($urlList);
 
         $this->show = $this->newShow();
         $this->show->setId($this->parseID($urlString));
         $this->show->setURL($urlString);
 
-        $detailList = $xml->xpath('tivo:Details');
+        $detailList = $namespacedXml->xpath('tivo:Details');
         $detailXml  = array_pop($detailList);
         $this->populateWithXMLPieces($detailXml, $urlString);
 
@@ -53,25 +55,25 @@ class ShowFactory
     /**
      * Populate the model with data.
      *
-     * @param SimpleXMLElement $detailXML All the particular show data.
+     * @param SimpleXMLElement $rawXml    All the particular show data.
      * @param string           $urlString The full string of the TiVo show URL.
      *
      * @return \JimLind\TiVo\Model\Show
      */
-    protected function populateWithXMLPieces($detailXML, $urlString)
+    protected function populateWithXMLPieces($rawXml, $urlString)
     {
-        XmlNamespace::addTiVoNamespace($detailXML);
+        $namespacedXml = $this->addTiVoNamespace($rawXml);
 
-        $this->show->setShowTitle($this->popXPath($detailXML, 'Title'));
-        $this->show->setEpisodeTitle($this->popXPath($detailXML, 'EpisodeTitle'));
-        $this->show->setEpisodeNumber($this->popXPath($detailXML, 'EpisodeNumber'));
-        $this->show->setDuration($this->popXPath($detailXML, 'Duration'));
-        $this->show->setDescription($this->popXPath($detailXML, 'Description'));
-        $this->show->setChannel($this->popXPath($detailXML, 'SourceChannel'));
-        $this->show->setStation($this->popXPath($detailXML, 'SourceStation'));
-        $this->show->setHD(strtoupper($this->popXPath($detailXML, 'HighDefinition')) == 'YES');
+        $this->show->setShowTitle($this->popXPath($namespacedXml, 'Title'));
+        $this->show->setEpisodeTitle($this->popXPath($namespacedXml, 'EpisodeTitle'));
+        $this->show->setEpisodeNumber($this->popXPath($namespacedXml, 'EpisodeNumber'));
+        $this->show->setDuration($this->popXPath($namespacedXml, 'Duration'));
+        $this->show->setDescription($this->popXPath($namespacedXml, 'Description'));
+        $this->show->setChannel($this->popXPath($namespacedXml, 'SourceChannel'));
+        $this->show->setStation($this->popXPath($namespacedXml, 'SourceStation'));
+        $this->show->setHD(strtoupper($this->popXPath($namespacedXml, 'HighDefinition')) == 'YES');
 
-        $timestamp = hexdec($this->popXPath($detailXML, 'CaptureDate'));
+        $timestamp = hexdec($this->popXPath($namespacedXml, 'CaptureDate'));
         $this->show->setDate(new \DateTime('@'.$timestamp));
     }
 

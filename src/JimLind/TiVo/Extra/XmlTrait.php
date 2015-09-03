@@ -1,18 +1,18 @@
 <?php
 
-namespace JimLind\TiVo\Utilities;
+namespace JimLind\TiVo\Extra;
 
 /**
- * Adjust XML Namespaces
+ * Trait for handling XML
  */
-class XmlNamespace
+trait XmlTrait
 {
     /**
      * Add the default namespace as 'tivo' namespace.
      *
      * @param SimpleXMLElement $simpleXml
      */
-    public static function addTiVoNamespace(&$simpleXml)
+    public static function addTiVoNamespace($simpleXml)
     {
         if (!$simpleXml instanceof \SimpleXMLElement) {
             throw new \Exception('Input is not a SimpleXMLElement');
@@ -29,5 +29,7 @@ class XmlNamespace
             $simpleXml    = simplexml_load_string($xmlString);
         }
         $simpleXml->registerXPathNamespace('tivo', $namespaceUrl);
+
+        return $simpleXml;
     }
 }
