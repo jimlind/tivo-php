@@ -8,7 +8,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
-use JimLind\TiVo\Extra\XmlTrait;
+use JimLind\TiVo\Characteristic\XmlTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -79,7 +79,7 @@ class XmlDownloader
     public function download($previousShowList = [])
     {
         $rawXml        = $this->downloadXmlPiece(count($previousShowList));
-        $namespacedXml = $this->addTiVoNamespace($rawXml);
+        $namespacedXml = $this->registerTiVoNamespace($rawXml);
 
         $showList = $namespacedXml->xpath('//tivo:Item');
         if (count($showList) > 0) {

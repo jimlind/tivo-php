@@ -3,7 +3,7 @@
 namespace JimLind\TiVo\Factory;
 
 use JimLind\TiVo\Model\Show;
-use JimLind\TiVo\Extra\XmlTrait;
+use JimLind\TiVo\Characteristic\XmlTrait;
 
 /**
  * Default show factory to build a show model.
@@ -26,7 +26,7 @@ class ShowFactory
      */
     public function createShowFromXml($xml)
     {
-        $namespacedXml = $this->addTiVoNamespace($xml);
+        $namespacedXml = $this->registerTiVoNamespace($xml);
 
         $urlList   = $namespacedXml->xpath('tivo:Links/tivo:Content/tivo:Url');
         $urlString = (string) array_pop($urlList);
@@ -62,7 +62,7 @@ class ShowFactory
      */
     protected function populateWithXMLPieces($rawXml, $urlString)
     {
-        $namespacedXml = $this->addTiVoNamespace($rawXml);
+        $namespacedXml = $this->registerTiVoNamespace($rawXml);
 
         $this->show->setShowTitle($this->popXPath($namespacedXml, 'Title'));
         $this->show->setEpisodeTitle($this->popXPath($namespacedXml, 'EpisodeTitle'));

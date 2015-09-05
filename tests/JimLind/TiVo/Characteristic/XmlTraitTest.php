@@ -1,15 +1,23 @@
 <?php
 
-namespace JimLind\TiVo\Tests\Utilities;
+namespace JimLind\TiVo\Tests\Characteristic;
 
-use JimLind\TiVo\Extra\XmlTrait;
+use JimLind\TiVo\Characteristic\XmlTrait;
 
 /**
  * Test the TiVo\Utilities\Log class.
  */
 class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
 {
-    use XmlTrait;
+    /**
+     * @var XmlTrait Test Object
+     */
+    protected $fixture;
+
+    protected function setUp()
+    {
+        $this->fixture = $this->getObjectForTrait('JimLind\TiVo\Characteristic\XmlTrait');
+    }
 
     /**
      * Test a snippet of XML with a defined namespace.
@@ -18,7 +26,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<items xmlns="http://www.example.org/schema"><item id="1" /></items>';
         $simpleXml = simplexml_load_string($xml);
-        $outputXml = $this->addTiVoNamespace($simpleXml);
+        $outputXml = $this->fixture->registerTiVoNamespace($simpleXml);
 
         $itemList = $outputXml->xpath('tivo:item[@id = 1]');
         $this->assertCount(1, $itemList);
@@ -36,7 +44,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<items><item id="1" /></items>';
         $simpleXml = simplexml_load_string($xml);
-        $outputXml = $this->addTiVoNamespace($simpleXml);
+        $outputXml = $this->fixture->registerTiVoNamespace($simpleXml);
 
         $itemList = $outputXml->xpath('tivo:item[@id = 1]');
         $this->assertCount(1, $itemList);
@@ -56,7 +64,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '';
         $simpleXml = simplexml_load_string($xml);
-        $this->addTiVoNamespace($simpleXml);
+        $this->fixture->registerTiVoNamespace($simpleXml);
     }
 
     /**
@@ -66,7 +74,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<item/>';
         $simpleXml = simplexml_load_string($xml);
-        $outputXml = $this->addTiVoNamespace($simpleXml);
+        $outputXml = $this->fixture->registerTiVoNamespace($simpleXml);
 
         $xmlString = $outputXml->asXml();
 
@@ -83,7 +91,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     {
         $xml = '<items><item /></items>';
         $simpleXml = simplexml_load_string($xml);
-        $outputXml = $this->addTiVoNamespace($simpleXml);
+        $outputXml = $this->fixture->registerTiVoNamespace($simpleXml);
 
         $xmlString = $outputXml->asXml();
 
