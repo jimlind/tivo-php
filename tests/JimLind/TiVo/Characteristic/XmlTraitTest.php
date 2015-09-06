@@ -72,16 +72,15 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
      */
     public function testElementXMLString()
     {
-        $xml = '<item/>';
-        $simpleXml = simplexml_load_string($xml);
-        $outputXml = $this->fixture->registerTiVoNamespace($simpleXml);
+        $xmlElement = simplexml_load_string('<a />');
+        $outputXml  = $this->fixture->registerTiVoNamespace($xmlElement);
 
-        $xmlString = $outputXml->asXml();
+        $actual = $outputXml->asXml();
 
         $expected = '<?xml version="1.0"?>'."\n";
-        $expected .= '<item xmlns="http://www.w3.org/2001/XMLSchema"/>'."\n";
+        $expected .= '<a xmlns="http://www.w3.org/2001/XMLSchema"/>'."\n";
 
-        $this->assertEquals($expected, $xmlString);
+        $this->assertEquals($expected, $actual);
     }
 
     /**
@@ -89,15 +88,14 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
      */
     public function testStructureXMLString()
     {
-        $xml = '<items><item /></items>';
-        $simpleXml = simplexml_load_string($xml);
-        $outputXml = $this->fixture->registerTiVoNamespace($simpleXml);
+        $xmlStructure = simplexml_load_string('<b><c /></b>');
+        $outputXml    = $this->fixture->registerTiVoNamespace($xmlStructure);
 
-        $xmlString = $outputXml->asXml();
+        $actual = $outputXml->asXml();
 
         $expected = '<?xml version="1.0"?>'."\n";
-        $expected .= '<items xmlns="http://www.w3.org/2001/XMLSchema"><item/></items>'."\n";
+        $expected .= '<b xmlns="http://www.w3.org/2001/XMLSchema"><c/></b>'."\n";
 
-        $this->assertEquals($expected, $xmlString);
+        $this->assertEquals($expected, $actual);
     }
 }
