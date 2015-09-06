@@ -2,48 +2,66 @@
 
 namespace JimLind\TiVo\Factory;
 
-use JimLind\TiVo\Model\Show;
 use JimLind\TiVo\Characteristic\XmlTrait;
+use JimLind\TiVo\Model\Show;
+use SimpleXMLElement;
 
 /**
- * Default show factory to build a show model.
+ * Build a populated show
  */
 class ShowFactory
 {
     use XmlTrait;
 
     /**
-     * @var JimLind\TiVo\Model\Show
+     * @var Show
      */
     protected $show = null;
 
     /**
-     * Create a show from an XML Element.
+     * Create a show from an XML Element
      *
-     * @param SimpleXMLElement $xml XML Element from the TiVo.
+     * @param SimpleXMLElement $xml XML Element from the TiVo
      *
      * @return Show
      */
-    public function createShowFromXml($xml)
+    public function createShowFromXml(SimpleXMLElement $xml)
     {
         $namespacedXml = $this->registerTiVoNamespace($xml);
+        $showArray     = $this->normalizeShowXml($namespacedXml);
+        $emptyShow     = $this->newShow();
 
-        $urlList   = $namespacedXml->xpath('tivo:Links/tivo:Content/tivo:Url');
-        $urlString = (string) array_pop($urlList);
-
-        $this->show = $this->newShow();
-        $this->show->setId($this->parseID($urlString));
-        $this->show->setURL($urlString);
-
-        $detailList = $namespacedXml->xpath('tivo:Details');
-        $detailXml  = array_pop($detailList);
-        $this->populateWithXMLPieces($detailXml, $urlString);
-
-        return $this->show;
+        return $this->populateShow($emptyShow, $showArray);
     }
 
     /**
-     * Create a new show with an easily replaceable method.
+     * Get all useful show data into an array
+     *
+     * @param SimpleXMLElement $xml
+     *
+     * @return mixed[]
+     */
+    protected function normalizeShowXml(SimpleXMLElement $xml) {
+        $urlList       = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
+        $detailXml     = reset($xml->xpath('tivo:Details'));
+        $namespacedXml = $this->registerTiVoNamespace($detailXml);
+
+        return [
+            'showTitle' => $this->popXPath($namespacedXml, 'Title'),
+            'episodeTitle' => $this->popXPath($namespacedXml, 'EpisodeTitle'),
+            'episodeNumber' => $this->popXPath($namespacedXml, 'EpisodeNumber'),
+            'duration' => $this->popXPath($namespacedXml, 'Duration'),
+            'description' => $this->popXPath($namespacedXml, 'Description'),
+            'channel' => $this->popXPath($namespacedXml, 'SourceChannel'),
+            'station' => $this->popXPath($namespacedXml, 'SourceStation'),
+            'hd' => $this->popXPath($namespacedXml, 'HighDefinition'),
+            'date' => $this->popXPath($namespacedXml, 'CaptureDate'),
+            'url' => (string) reset($urlList),
+        ];
+    }
+
+    /**
+     * Create a new show with an easily replaceable method
      *
      * @return Show
      */
@@ -53,34 +71,38 @@ class ShowFactory
     }
 
     /**
-     * Populate the model with data.
+     * Populate the model with data
      *
-     * @param SimpleXMLElement $rawXml    All the particular show data.
-     * @param string           $urlString The full string of the TiVo show URL.
+     * @param Show    $show Empty show model
+     * @param mixed[] $data Raw show data
      *
-     * @return \JimLind\TiVo\Model\Show
+     * @return Show
      */
-    protected function populateWithXMLPieces($rawXml, $urlString)
+    protected function populateShow(Show $show, $data)
     {
-        $namespacedXml = $this->registerTiVoNamespace($rawXml);
+        $hd   = strtoupper($data['hd']) == 'YES';
+        $date = new \DateTime('@'.hexdec($data['date']));
+        $id   = $this->parseID($data['url']);
 
-        $this->show->setShowTitle($this->popXPath($namespacedXml, 'Title'));
-        $this->show->setEpisodeTitle($this->popXPath($namespacedXml, 'EpisodeTitle'));
-        $this->show->setEpisodeNumber($this->popXPath($namespacedXml, 'EpisodeNumber'));
-        $this->show->setDuration($this->popXPath($namespacedXml, 'Duration'));
-        $this->show->setDescription($this->popXPath($namespacedXml, 'Description'));
-        $this->show->setChannel($this->popXPath($namespacedXml, 'SourceChannel'));
-        $this->show->setStation($this->popXPath($namespacedXml, 'SourceStation'));
-        $this->show->setHD(strtoupper($this->popXPath($namespacedXml, 'HighDefinition')) == 'YES');
+        $show->setId($id);
+        $show->setShowTitle($data['showTitle']);
+        $show->setEpisodeTitle($data['episodeTitle']);
+        $show->setEpisodeNumber($data['episodeNumber']);
+        $show->setDuration($data['duration']);
+        $show->setDate($date);
+        $show->setDescription($data['description']);
+        $show->setChannel($data['channel']);
+        $show->setStation($data['station']);
+        $show->setHD($hd);
+        $show->setUrl($data['url']);
 
-        $timestamp = hexdec($this->popXPath($namespacedXml, 'CaptureDate'));
-        $this->show->setDate(new \DateTime('@'.$timestamp));
+        return $show;
     }
 
     /**
-     * Parses an ID from a download string.
+     * Parses an ID from a URL string
      *
-     * @param string $urlString A full URL with parameters.
+     * @param string $urlString A full URL with parameters
      *
      * @return integer
      */
@@ -96,18 +118,20 @@ class ShowFactory
     }
 
     /**
-     * Return a string represented from the XPath.
+     * Return an XML value from an XPath
      *
-     * @param SimpleXMLElement $xml  The XML element that hopefully contains the XPath.
-     * @param string           $path The XPath string to parse the XML with.
+     * @param SimpleXMLElement $xml  The XML element that hopefully contains the XPath
+     * @param string           $path The XPath string to parse the XML with
      *
      * @return string
      */
     protected function popXPath($xml, $path)
     {
-        $pathList = $xml->xpath('tivo:'.$path);
+        $namespacedXml = $this->registerTiVoNamespace($xml);
+        $pathList      = $namespacedXml->xpath('tivo:'.$path);
+
         if (count($pathList) == 1) {
-            return (string) array_pop($pathList);
+            return (string) reset($pathList);
         }
 
         return '';
