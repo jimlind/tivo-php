@@ -13,17 +13,14 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @var ClientInterface
      */
-    private $guzzle = null;
+    protected $guzzle;
 
     /**
      * @var VideoDownloader
      */
-    private $fixture = null;
+    protected $fixture;
 
-    /**
-     * Setup the PHPUnit test.
-     */
-    public function setUp()
+    protected function setUp()
     {
         $this->guzzle = $this->getMock('\\GuzzleHttp\\ClientInterface');
 
@@ -31,7 +28,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * A single call to get a file should perform two guzzle requests.
+     * A single call to get a file should perform two guzzle requests
      */
     public function testDoubleRequestOnDownloadPreview()
     {
@@ -42,7 +39,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that MAC gets passed through to Guzzle.
+     * Test that MAC gets passed through to Guzzle
      */
     public function testMacPassThroughOnDownload()
     {
@@ -63,7 +60,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that filePath gets passed through to Guzzle.
+     * Test that filePath gets passed through to Guzzle
      */
     public function testFilePathPassThroughOnDownload()
     {
@@ -80,7 +77,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the timeout for storePreview is passed through to Guzzle.
+     * Test the timeout for storePreview is passed through to Guzzle
      */
     public function testDownloadPreviewGuzzleTimeout()
     {
@@ -95,7 +92,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the timeout for download is passed through to Guzzle.
+     * Test the timeout for download is passed through to Guzzle
      */
     public function testDownloadGuzzleTimeout()
     {
@@ -110,7 +107,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that URL escapes any odd characters for Guzzle.
+     * Test that URL escapes any odd characters for Guzzle
      *
      * @param string $input
      * @param string $expected
@@ -130,7 +127,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for the parsing test.
+     * Data provider for the parsing test
      *
      * @return mixed[]
      */
@@ -142,7 +139,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the IP parsing.
+     * Test the IP parsing
      *
      * @param string $input
      * @param string $expectedSecure
@@ -163,7 +160,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for the parsing test.
+     * Data provider for the parsing test
      *
      * @return mixed[]
      */
@@ -194,7 +191,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test logged warning on bad data.
+     * Test logged warning on bad data
      */
     public function testLoggedBadParsing()
     {
@@ -209,7 +206,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test catching an exception from the first touch.
+     * Test catching an exception from the first touch
      */
     public function testSecureTouchException()
     {
@@ -232,7 +229,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test logging expected timeout on storePreview.
+     * Test logging expected timeout on storePreview
      */
     public function testDownloadPreviewTimeout()
     {
@@ -257,7 +254,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test catching a real exception from the preview file download.
+     * Test catching a real exception from the preview file download
      */
     public function testPreviewFileDownloadException()
     {
@@ -280,7 +277,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test catching a real exception from the file download.
+     * Test catching a real exception from the file download
      */
     public function testFileDownloadException()
     {

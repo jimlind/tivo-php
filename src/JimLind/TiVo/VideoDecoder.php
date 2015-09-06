@@ -14,17 +14,17 @@ class VideoDecoder
     /**
      * @var string
      */
-    private $mak;
+    protected $mak;
 
     /**
      * @var ProcessBuilder
      */
-    protected $builder = null;
+    protected $builder;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger  = null;
+    protected $logger;
 
     /**
      * @param string         $mak     Your TiVo's Media Access Key

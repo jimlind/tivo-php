@@ -16,17 +16,17 @@ class VideoDownloader
     /**
      * @var string
      */
-    private $mak;
+    protected $mak;
 
     /**
      * @var ClientInterface
      */
-    private $guzzle;
+    protected $guzzle;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @param string          $mak    Your TiVo's Media Access Key
@@ -94,7 +94,7 @@ class VideoDownloader
      * Download the remote file to the local system
      *
      * To get a file from a TiVo via HTTP you must first touch the HTTPS interface
-     * to authenticate before the actual download can start.
+     * to authenticate before the actual download can start
      *
      * @param string  $url      Where the remote file is
      * @param string  $filePath Where the downloaded file goes

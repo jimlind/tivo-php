@@ -14,22 +14,19 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     /**
      * @var Process
      */
-    private $process = null;
+    protected $process;
 
     /**
      * @var ProcessBuilder
      */
-    private $builder = null;
+    protected $builder;
 
     /**
      * @var VideoDecoder
      */
-    private $fixture = null;
+    protected $fixture;
 
-    /**
-     * Setup the PHPUnit test.
-     */
-    public function setUp()
+    protected function setUp()
     {
         $this->process = $this->getMockBuilder('\Symfony\Component\Process\Process')
             ->disableOriginalConstructor()
@@ -43,7 +40,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder prefix setup.
+     * Test Symfony/ProcessBuilder prefix setup
      */
     public function testBuilderSettingPrefix()
     {
@@ -55,7 +52,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder arguments setup.
+     * Test Symfony/ProcessBuilder arguments setup
      */
     public function testBuilderSettingArguments()
     {
@@ -79,7 +76,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder timeout setup.
+     * Test Symfony/ProcessBuilder timeout setup
      */
     public function testBuilderSettingTimeout()
     {
@@ -91,7 +88,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/Process run method.
+     * Test Symfony/Process run method
      */
     public function testProcessRun()
     {
@@ -101,7 +98,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test proper behavior if process is successful.
+     * Test proper behavior if process is successful
      */
     public function testProccessSuccess()
     {
@@ -113,7 +110,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test proper behavior if process is not successful.
+     * Test proper behavior if process is not successful
      */
     public function testProcessFailure()
     {
