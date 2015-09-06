@@ -5,7 +5,7 @@ namespace JimLind\TiVo\Tests\Characteristic;
 use JimLind\TiVo\Characteristic\XmlTrait;
 
 /**
- * Test the TiVo\Utilities\Log class.
+ * Test the TiVo\Utilities\Log class
  */
 class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
 {
@@ -20,7 +20,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test a snippet of XML with a defined namespace.
+     * Test a snippet of XML with a defined namespace
      */
     public function testNamespacedXml()
     {
@@ -38,7 +38,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test a snippet of XML without a namespace.
+     * Test a snippet of XML without a namespace
      */
     public function testRawXml()
     {
@@ -68,34 +68,30 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test XML element output.
+     * Test XML output
+     *
+     * @dataProvider testAfterRegisterProvider
      */
-    public function testElementXMLString()
+    public function testAfterRegister($input, $expected)
     {
-        $xmlElement = simplexml_load_string('<a />');
-        $outputXml  = $this->fixture->registerTiVoNamespace($xmlElement);
-
-        $actual = $outputXml->asXml();
-
-        $expected = '<?xml version="1.0"?>'."\n";
-        $expected .= '<a xmlns="http://www.w3.org/2001/XMLSchema"/>'."\n";
+        $inputXml  = simplexml_load_string($input);
+        $outputXml = $this->fixture->registerTiVoNamespace($inputXml);
+        $actual    = $outputXml->asXml();
 
         $this->assertEquals($expected, $actual);
     }
 
-    /**
-     * Test full XML structure output.
-     */
-    public function testStructureXMLString()
+    public function testAfterRegisterProvider()
     {
-        $xmlStructure = simplexml_load_string('<b><c /></b>');
-        $outputXml    = $this->fixture->registerTiVoNamespace($xmlStructure);
-
-        $actual = $outputXml->asXml();
-
-        $expected = '<?xml version="1.0"?>'."\n";
-        $expected .= '<b xmlns="http://www.w3.org/2001/XMLSchema"><c/></b>'."\n";
-
-        $this->assertEquals($expected, $actual);
+        return [
+            [
+                '<x />',
+                "<?xml version=\"1.0\"?>\n<x xmlns=\"http://www.w3.org/2001/XMLSchema\"/>\n",
+            ],
+            [
+                '<x><y /></x>',
+                "<?xml version=\"1.0\"?>\n<x xmlns=\"http://www.w3.org/2001/XMLSchema\"/><y/></x>\n",
+            ]
+        ];
     }
 }
