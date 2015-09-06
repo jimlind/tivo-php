@@ -43,8 +43,8 @@ class ShowFactory
      */
     protected function normalizeShowXml(SimpleXMLElement $xml) {
         $urlList       = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
-        $detailXml     = reset($xml->xpath('tivo:Details'));
-        $namespacedXml = $this->registerTiVoNamespace($detailXml);
+        $detailXml     = $xml->xpath('tivo:Details');
+        $namespacedXml = $this->registerTiVoNamespace(reset($detailXml));
 
         return [
             'showTitle' => $this->popXPath($namespacedXml, 'Title'),
