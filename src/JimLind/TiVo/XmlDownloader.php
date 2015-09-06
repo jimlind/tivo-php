@@ -48,8 +48,7 @@ class XmlDownloader
      */
     public function __construct($ip, $mak, ClientInterface $guzzle)
     {
-        $originalUri = new Uri();
-        $this->uri  = $originalUri
+        $this->uri = (new Uri)
             ->withScheme('https')
             ->withHost($ip)
             ->withPath('TiVoConnect');
