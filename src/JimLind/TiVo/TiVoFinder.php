@@ -15,12 +15,12 @@ class TiVoFinder
     /**
      * @var ProcessBuilder
      */
-    protected $builder = null;
+    protected $builder;
 
     /**
      * @var LoggerInterface
      */
-    protected $logger  = null;
+    protected $logger;
 
     /**
      * @param ProcessBuilder $builder The Symfony ProcessBuilder component

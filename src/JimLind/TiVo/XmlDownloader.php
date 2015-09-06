@@ -24,22 +24,22 @@ class XmlDownloader
     /**
      * @var Uri
      */
-    private $uri;
+    protected $uri;
 
     /**
      * @var string
      */
-    private $mak;
+    protected $mak;
 
     /**
      * @var ClientInterface
      */
-    private $guzzle;
+    protected $guzzle;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @param string          $ip     Your TiVo's IP Address
@@ -70,7 +70,7 @@ class XmlDownloader
     }
 
     /**
-     * Returns multiple XML file downloads merged into one array.
+     * Returns multiple XML file downloads merged into one array
      *
      * @param SimpleXMLElement[] $previousShowList Array of previous shows
      *
@@ -114,7 +114,7 @@ class XmlDownloader
     }
 
     /**
-     * Create an option array for Guzzle.
+     * Create an option array for Guzzle
      *
      * @param integer $offset
      *
@@ -153,7 +153,7 @@ class XmlDownloader
     /**
      * Parse XML from the Guzzle Response
      *
-     * If response is not a success, log it and return an empty XML object.
+     * If response is not a success, log it and return an empty XML object
      *
      * @param ResponseInterface $response
      *
@@ -177,7 +177,7 @@ class XmlDownloader
     /**
      * Parse XML from the Guzzle Response Body
      *
-     * If parsing XML parsing errors, log it and return an empty XML object.
+     * If parsing XML parsing errors, log it and return an empty XML object
      *
      * @param string $responseBody
      *

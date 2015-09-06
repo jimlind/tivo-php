@@ -7,29 +7,26 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Test the TiVo\TiVoFinder service.
+ * Test the TiVo\TiVoFinder service
  */
 class TiVoFinderTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Process
      */
-    private $process = null;
+    protected $process;
 
     /**
      * @var ProcessBuilder
      */
-    private $builder = null;
+    protected $builder;
 
     /**
      * @var TiVoFinder
      */
-    private $fixture = null;
+    protected $fixture;
 
-    /**
-     * Setup the PHPUnit test.
-     */
-    public function setUp()
+    protected function setUp()
     {
         $this->process = $this->getMockBuilder('\Symfony\Component\Process\Process')
             ->disableOriginalConstructor()
@@ -43,7 +40,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder prefix setup.
+     * Test Symfony/ProcessBuilder prefix setup
      */
     public function testBuilderSettingPrefix()
     {
@@ -55,7 +52,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder arguments setup.
+     * Test Symfony/ProcessBuilder arguments setup
      */
     public function testBuilderSettingArguments()
     {
@@ -74,7 +71,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder timeout setup.
+     * Test Symfony/ProcessBuilder timeout setup
      */
     public function testBuilderSettingTimeout()
     {
@@ -86,7 +83,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/Process run method.
+     * Test Symfony/Process run method
      */
     public function testProcessRun()
     {
@@ -96,7 +93,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test proper behavior if process is successful.
+     * Test proper behavior if process is successful
      */
     public function testProccessSuccess()
     {
@@ -107,7 +104,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test proper behavior if process is not successful.
+     * Test proper behavior if process is not successful
      */
     public function testProcessFailure()
     {
@@ -132,7 +129,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test proper behavior if process is successfully empty.
+     * Test proper behavior if process is successfully empty
      */
     public function testEmptyProcessSuccess()
     {
@@ -151,7 +148,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that non-empty return values are properly parsed.
+     * Test that non-empty return values are properly parsed
      *
      * @param string $return   Simulated output from Avahi
      * @param string $logList  List of strings logged as a warning
@@ -179,7 +176,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for the parsing test.
+     * Data provider for the parsing test
      *
      * @return mixed[]
      */

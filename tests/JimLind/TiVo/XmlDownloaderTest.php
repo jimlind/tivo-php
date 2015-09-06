@@ -14,17 +14,14 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     /**
      * @var ClientInterface
      */
-    private $guzzle;
+    protected $guzzle;
 
     /**
      * @var XmlDownloader
      */
-    private $fixture = null;
+    protected $fixture;
 
-    /**
-     * Setup the PHPUnit test.
-     */
-    public function setUp()
+    protected function setUp()
     {
         $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface');
 
@@ -32,7 +29,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that Guzzle uses correct method.
+     * Test that Guzzle uses correct method
      */
     public function testMethodOnDownload()
     {
@@ -51,7 +48,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that Guzzle uses correct URI.
+     * Test that Guzzle uses correct URI
      */
     public function testUriOnDownload()
     {
@@ -74,7 +71,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that Guzzle uses correct auth options.
+     * Test that Guzzle uses correct auth options
      */
     public function testAuthOnDownload()
     {
@@ -187,7 +184,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that AnchorOffset increments on successful Guzzle call.
+     * Test that AnchorOffset increments on successful Guzzle call
      */
     public function testAnchorOffsetIncrement()
     {
@@ -219,7 +216,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the NowPlaying string to SimpleXML parsing.
+     * Test the NowPlaying string to SimpleXML parsing
      *
      * @param string[]           $xmlList  Array of XML strings
      * @param SimpleXMLElement[] $expected Array of XML Elements
@@ -245,7 +242,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Data provider for the XML parsing test.
+     * Data provider for the XML parsing test
      *
      * @return mixed[]
      */
