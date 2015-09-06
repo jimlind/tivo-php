@@ -5,7 +5,7 @@ namespace JimLind\TiVo\Factory;
 use JimLind\TiVo\Factory\ShowFactory;
 
 /**
- * Default show list factory to build a list of show models.
+ * Build a list of populated shows
  */
 class ShowListFactory
 {
@@ -17,10 +17,10 @@ class ShowListFactory
     /**
      * @var ArrayObject
      */
-    private $showList = null;
+    protected $showList = null;
 
     /**
-     * Constructs the ShowList Factory.
+     * Constructor
      */
     public function __construct()
     {
@@ -29,9 +29,9 @@ class ShowListFactory
     }
 
     /**
-     * Create a list of shows from a list of XML Elements.
+     * Create a list of shows from a list of XML Elements
      *
-     * @param SimpleXMLElement[] $xmlList XML Element from the TiVo.
+     * @param SimpleXMLElement[] $xmlList XML Element from the TiVo
      *
      * @return JimLind\TiVo\Model\Show[]
      */
@@ -42,7 +42,7 @@ class ShowListFactory
             $this->showList->append($show);
         }
 
-        // Array of created shows.
+        // List of shows
         return $this->showList;
     }
 }

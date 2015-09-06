@@ -3,7 +3,7 @@
 namespace JimLind\TiVo\Model;
 
 /**
- * Model of show that's stored on the TiVo.
+ * Data object for a show
  */
 class Show
 {
@@ -64,7 +64,7 @@ class Show
 
 
     /**
-     * Get show Id.
+     * Get show Id
      *
      * @return integer
      */
@@ -74,7 +74,7 @@ class Show
     }
 
     /**
-     * Set show Id.
+     * Set show Id
      *
      * @param integer $id
      */
@@ -84,7 +84,7 @@ class Show
     }
 
     /**
-     * Get show title.
+     * Get show title
      *
      * @return string
      */
@@ -94,7 +94,7 @@ class Show
     }
 
     /**
-     * Set show title.
+     * Set show title
      *
      * @param string $showTitle
      */
@@ -104,7 +104,7 @@ class Show
     }
 
     /**
-     * Get show episode number.
+     * Get show episode number
      *
      * @return integer
      */
@@ -114,7 +114,7 @@ class Show
     }
 
     /**
-     * Set show episode number.
+     * Set show episode number
      *
      * @param integer $episodeNumber
      */
@@ -124,7 +124,7 @@ class Show
     }
 
     /**
-     * Get show episode title.
+     * Get show episode title
      *
      * @return string
      */
@@ -134,7 +134,7 @@ class Show
     }
 
     /**
-     * Set show episode title.
+     * Set show episode title
      *
      * @param string $episodeTitle
      */
@@ -144,7 +144,7 @@ class Show
     }
 
     /**
-     * Get show duration.
+     * Get show duration
      *
      * @return integer
      */
@@ -154,7 +154,7 @@ class Show
     }
 
     /**
-     * Set show duration.
+     * Set show duration
      *
      * @param integer $duration
      */
@@ -164,7 +164,7 @@ class Show
     }
 
     /**
-     * Get show date.
+     * Get show date
      *
      * @return DateTime
      */
@@ -174,7 +174,7 @@ class Show
     }
 
     /**
-     * Set show date.
+     * Set show date
      *
      * @param DateTime $date
      */
@@ -187,7 +187,7 @@ class Show
     }
 
     /**
-     * Get show description.
+     * Get show description
      *
      * @return string
      */
@@ -197,7 +197,7 @@ class Show
     }
 
     /**
-     * Set show description.
+     * Set show description
      *
      * @param string $description
      */
@@ -207,7 +207,7 @@ class Show
     }
 
     /**
-     * Get show channel.
+     * Get show channel
      *
      * @return integer
      */
@@ -217,7 +217,7 @@ class Show
     }
 
     /**
-     * Set show channel.
+     * Set show channel
      *
      * @param integer $channel
      */
@@ -227,7 +227,7 @@ class Show
     }
 
     /**
-     * Get show station.
+     * Get show station
      *
      * @return string
      */
@@ -237,7 +237,7 @@ class Show
     }
 
     /**
-     * Set show station.
+     * Set show station
      *
      * @param string $station
      */
@@ -247,7 +247,7 @@ class Show
     }
 
     /**
-     * Get show HD status.
+     * Get show HD status
      *
      * @return boolean
      */
@@ -257,7 +257,7 @@ class Show
     }
 
     /**
-     * Set show HD status.
+     * Set show HD status
      *
      * @param boolean $hd
      */
@@ -267,7 +267,7 @@ class Show
     }
 
     /**
-     * Get show URL.
+     * Get show URL
      *
      * @return string
      */
@@ -277,7 +277,7 @@ class Show
     }
 
     /**
-     * Set show URL.
+     * Set show URL
      *
      * @param string $url
      */
