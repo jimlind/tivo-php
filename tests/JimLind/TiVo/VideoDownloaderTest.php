@@ -77,33 +77,33 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test the timeout for storePreview is passed through to Guzzle
+     * Test the timeout is passed through to Guzzle
+     *
+     * @dataProvider testGuzzleTimeoutProvider
      */
-    public function testDownloadPreviewGuzzleTimeout()
+    public function testGuzzleTimeout($method, $timeout)
     {
         $spy = $this->any();
         $this->guzzle->expects($spy)->method('request');
 
-        $this->fixture->downloadPreview(null, null);
+        $this->fixture->$method(null, null);
 
         $invocationList = $spy->getInvocations();
         $actual         = $invocationList[1]->parameters[2]['timeout'];
-        $this->assertEquals(120, $actual);
+        $this->assertEquals($timeout, $actual);
     }
 
     /**
-     * Test the timeout for download is passed through to Guzzle
+     * Data provider for the timeout test
+     *
+     * @return mixed[]
      */
-    public function testDownloadGuzzleTimeout()
+    public function testGuzzleTimeoutProvider()
     {
-        $spy = $this->any();
-        $this->guzzle->expects($spy)->method('request');
-
-        $this->fixture->download(null, null);
-
-        $invocationList = $spy->getInvocations();
-        $actual         = $invocationList[1]->parameters[2]['timeout'];
-        $this->assertEquals(0, $actual);
+        return [
+            ['download', 0],
+            ['downloadPreview', 120],
+        ];
     }
 
     /**
