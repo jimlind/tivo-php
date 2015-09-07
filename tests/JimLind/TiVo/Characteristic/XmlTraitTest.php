@@ -90,7 +90,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
             ],
             [
                 '<x><y /></x>',
-                "<?xml version=\"1.0\"?>\n<x xmlns=\"http://www.w3.org/2001/XMLSchema\"/><y/></x>\n",
+                "<?xml version=\"1.0\"?>\n<x xmlns=\"http://www.w3.org/2001/XMLSchema\"><y/></x>\n",
             ]
         ];
     }
