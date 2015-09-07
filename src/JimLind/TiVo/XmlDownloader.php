@@ -10,14 +10,12 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use JimLind\TiVo\Characteristic\XmlTrait;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use SimpleXMLElement;
 
 /**
  * Service for downloading a list of shows from a TiVo
  */
-class XmlDownloader
+class XmlDownloader extends AbstractBase
 {
     use XmlTrait;
 
@@ -37,11 +35,6 @@ class XmlDownloader
     protected $guzzle;
 
     /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * @param string          $ip     Your TiVo's IP Address
      * @param string          $mak    Your TiVo's Media Access Key
      * @param ClientInterface $guzzle A Guzzle Client
@@ -56,16 +49,7 @@ class XmlDownloader
         $this->mak    = $mak;
         $this->guzzle = $guzzle;
 
-        // Default to the NullLogger
-        $this->setLogger(new NullLogger());
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
+        parent::__construct();
     }
 
     /**
