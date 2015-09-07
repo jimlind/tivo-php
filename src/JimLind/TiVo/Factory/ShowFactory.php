@@ -41,7 +41,8 @@ class ShowFactory
      *
      * @return mixed[]
      */
-    protected function normalizeShowXml(SimpleXMLElement $xml) {
+    protected function normalizeShowXml(SimpleXMLElement $xml)
+    {
         $urlList       = $xml->xpath('tivo:Links/tivo:Content/tivo:Url');
         $detailXml     = $xml->xpath('tivo:Details');
         $namespacedXml = $this->registerTiVoNamespace(reset($detailXml));

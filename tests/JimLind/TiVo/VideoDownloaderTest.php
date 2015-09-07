@@ -79,6 +79,9 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     /**
      * Test the timeout is passed through to Guzzle
      *
+     * @param string $method  Download method
+     * @param int    $timeout Timeout value
+     *
      * @dataProvider testGuzzleTimeoutProvider
      */
     public function testGuzzleTimeout($method, $timeout)

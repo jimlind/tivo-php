@@ -70,6 +70,9 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
     /**
      * Test XML output
      *
+     * @param string $input    Raw XML string
+     * @param string $expected Namespaced XML string
+     *
      * @dataProvider testAfterRegisterProvider
      */
     public function testAfterRegister($input, $expected)
@@ -81,6 +84,11 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
+    /**
+     * Data provider for the after register test
+     *
+     * @return mixed[]
+     */
     public function testAfterRegisterProvider()
     {
         return [
@@ -91,7 +99,7 @@ class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
             [
                 '<x><y /></x>',
                 "<?xml version=\"1.0\"?>\n<x xmlns=\"http://www.w3.org/2001/XMLSchema\"><y/></x>\n",
-            ]
+            ],
         ];
     }
 }
