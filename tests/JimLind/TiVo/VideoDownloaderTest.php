@@ -258,21 +258,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testPreviewFileDownloadException()
     {
-        $message   = rand();
-
-        $this->guzzle->expects($this->at(1))
-            ->method('request')
-            ->will($this->throwException(new \Exception($message)));
-
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
-        $logger->expects($this->at(0))
-            ->method('warning')
-            ->with($this->equalTo('Unable to download a video file preview.'));
-        $logger->expects($this->at(1))
-            ->method('warning')
-            ->with($this->equalTo($message));
-
-        $this->fixture->setLogger($logger);
+        $this->setUpExceptionTest('Unable to download a video file preview.');
         $this->fixture->downloadPreview('http://0.0.0.0:80', null);
     }
 
@@ -281,21 +267,31 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testFileDownloadException()
     {
-        $message   = rand();
+        $this->setUpExceptionTest('Unable to download a video file.');
+        $this->fixture->download('http://0.0.0.0:80', null);
+    }
+
+    /**
+     * Setup pieces for testing exception passing
+     *
+     * @param string $message
+     */
+    protected function setUpExceptionTest($message)
+    {
+        $secondWarning = rand();
 
         $this->guzzle->expects($this->at(1))
             ->method('request')
-            ->will($this->throwException(new \Exception($message)));
+            ->will($this->throwException(new \Exception($secondWarning)));
 
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('warning')
-            ->with($this->equalTo('Unable to download a video file.'));
+            ->with($this->equalTo($message));
         $logger->expects($this->at(1))
             ->method('warning')
-            ->with($this->equalTo($message));
+            ->with($this->equalTo($secondWarning));
 
         $this->fixture->setLogger($logger);
-        $this->fixture->download('http://0.0.0.0:80', null);
     }
 }
