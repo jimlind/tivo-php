@@ -2,15 +2,14 @@
 
 namespace JimLind\TiVo;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
  * Service for decoding encoded TiVo video files
  */
-class VideoDecoder
+class VideoDecoder extends AbstractBase
 {
+
     /**
      * @var string
      */
@@ -22,11 +21,6 @@ class VideoDecoder
     protected $builder;
 
     /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * @param string         $mak     Your TiVo's Media Access Key
      * @param ProcessBuilder $builder The Symfony ProcessBuilder component
      */
@@ -35,16 +29,7 @@ class VideoDecoder
         $this->mak     = $mak;
         $this->builder = $builder;
 
-        // Default to the NullLogger
-        $this->setLogger(new NullLogger());
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
+        parent::__construct();
     }
 
     /**

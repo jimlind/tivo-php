@@ -5,14 +5,13 @@ namespace JimLind\TiVo;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\RequestException;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * Service for downloading video files from a TiVo
  */
-class VideoDownloader
+class VideoDownloader extends AbstractBase
 {
+
     /**
      * @var string
      */
@@ -24,11 +23,6 @@ class VideoDownloader
     protected $guzzle;
 
     /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * @param string          $mak    Your TiVo's Media Access Key
      * @param ClientInterface $guzzle A Guzzle Client
      */
@@ -37,16 +31,7 @@ class VideoDownloader
         $this->mak    = $mak;
         $this->guzzle = $guzzle;
 
-        // Default to the NullLogger
-        $this->setLogger(new NullLogger());
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
+        parent::__construct();
     }
 
     /**

@@ -2,25 +2,19 @@
 
 namespace JimLind\TiVo;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
  * Service for finding a TiVo on your local network
  */
-class TiVoFinder
+class TiVoFinder extends AbstractBase
 {
+
     /**
      * @var ProcessBuilder
      */
     protected $builder;
-
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     /**
      * @param ProcessBuilder $builder The Symfony ProcessBuilder component
@@ -29,17 +23,7 @@ class TiVoFinder
     {
         $this->builder = $builder;
 
-        // Default to the NullLogger
-        $this->setLogger(new NullLogger());
-    }
-
-    /**
-     *
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
+        parent::__construct();
     }
 
     /**
