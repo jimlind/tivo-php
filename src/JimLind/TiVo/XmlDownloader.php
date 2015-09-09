@@ -4,11 +4,12 @@ namespace JimLind\TiVo;
 
 use Exception;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
 use JimLind\TiVo\Characteristic\XmlTrait;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use SimpleXMLElement;
 
@@ -84,14 +85,9 @@ class XmlDownloader extends AbstractBase
      */
     private function downloadXmlPiece($anchorOffset)
     {
-        $request = new Request('GET', $this->uri);
-        $options = $this->buildGuzzleOptions($anchorOffset);
-
-        try {
-            $response = $this->guzzle->send($request, $options);
-        } catch (RequestException $exception) {
-            $response = $this->parseException($exception);
-        }
+        $request  = new Request('GET', $this->uri);
+        $options  = $this->buildGuzzleOptions($anchorOffset);
+        $response = $this->getResponse($this->guzzle, $request, $options);
 
         return $this->parseResponse($response);
     }
@@ -118,19 +114,25 @@ class XmlDownloader extends AbstractBase
     }
 
     /**
-     * Parse response from exception
+     * Always get a response from a request by catching all exceptions
      *
-     * @param RequestException $exception
+     * @param ClientInterface $client
+     * @param RequestInterface $request
+     * @param mixed[] $options
      *
-     * @return Response
+     * @return ResponseInterface
      */
-    private function parseException(RequestException $exception)
+    private function getResponse(ClientInterface $client, RequestInterface $request, $options)
     {
-        if ($exception->hasResponse()) {
-            return $exception->getResponse();
-        } else {
-            return new Response(0, [], $exception->getMessage());
+        try {
+            $response = $client->send($request, $options);
+        } catch (BadResponseException $requestException) {
+            $response = $requestException->getResponse();
+        } catch (\Exception $exception) {
+            $response = new Response(0, [], $exception->getMessage());
         }
+
+        return $response;
     }
 
     /**

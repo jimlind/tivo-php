@@ -3,7 +3,7 @@
 namespace JimLind\TiVo\Tests;
 
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\BadResponseException;
 use JimLind\TiVo\XmlDownloader;
 
 /**
@@ -92,14 +92,14 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test a Guzzle exception with response
+     * Test Guzzle with bad response exception has empty result
      */
-    public function testRequestExceptionResponseOnDownload()
+    public function testBadResponseExceptionOnDownload()
     {
         $request  = $this->getMock('\Psr\Http\Message\RequestInterface');
         $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
 
-        $exception = new ClientException(uniqid(), $request, $response);
+        $exception = new BadResponseException(uniqid(), $request, $response);
 
         $this->guzzle->method('send')
             ->will($this->throwException($exception));
@@ -109,9 +109,9 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test a Guzzle exception with response logged
+     * Test Guzzle with bad response exception logged
      */
-    public function testRequestExceptionResponseLoggedOnDownload()
+    public function testBadResponseExceptionLoggedOnDownload()
     {
         $responseBody = rand();
         $responseCode = rand();
@@ -121,7 +121,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
         $response->method('getStatusCode')->willReturn($responseCode);
 
         $request   = $this->getMock('\Psr\Http\Message\RequestInterface');
-        $exception = new ClientException(rand(), $request, $response);
+        $exception = new BadResponseException(rand(), $request, $response);
 
         $this->guzzle->method('send')
             ->will($this->throwException($exception));
@@ -142,12 +142,11 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test a Guzzle exception with message
+     * Test Guzzle with exception has empty result
      */
-    public function testRequestExceptionMessageOnDownload()
+    public function testExceptionOnDownload()
     {
-        $request   = $this->getMock('\Psr\Http\Message\RequestInterface');
-        $exception = new ClientException(uniqid(), $request);
+        $exception = new \Exception(uniqid());
 
         $this->guzzle->method('send')
             ->will($this->throwException($exception));
@@ -157,13 +156,12 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test a Guzzle exception with message logged
+     * Test Guzzle with exception logged
      */
-    public function testRequestExceptionMessageLoggedOnDownload()
+    public function testExceptionMessageLoggedOnDownload()
     {
         $message   = uniqid();
-        $request   = $this->getMock('\Psr\Http\Message\RequestInterface');
-        $exception = new ClientException($message, $request);
+        $exception = new \Exception($message);
 
         $this->guzzle->method('send')
             ->will($this->throwException($exception));
