@@ -3,13 +3,14 @@
 namespace JimLind\TiVo\Tests;
 
 use JimLind\TiVo\VideoDecoder;
+use PHPUnit_Framework_TestCase;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Test the TiVo\VideoDecoder service.
+ * Test the VideoDecoder service
  */
-class VideoDecoderTest extends \PHPUnit_Framework_TestCase
+class VideoDecoderTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Process
@@ -40,7 +41,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder prefix setup
+     * Test ProcessBuilder prefix setup
      */
     public function testBuilderSettingPrefix()
     {
@@ -52,7 +53,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder arguments setup
+     * Test ProcessBuilder arguments setup
      */
     public function testBuilderSettingArguments()
     {
@@ -76,7 +77,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder timeout setup
+     * Test ProcessBuilder timeout setup
      */
     public function testBuilderSettingTimeout()
     {
@@ -88,7 +89,7 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/Process run method
+     * Test Process run method
      */
     public function testProcessRun()
     {
@@ -122,10 +123,10 @@ class VideoDecoderTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('warning')
-            ->with('Problem executing tivodecode. Tool may not be installed.');
+            ->with('Problem executing command');
         $logger->expects($this->at(1))
             ->method('warning')
-            ->with('Command: '.$command);
+            ->with('Details: `'.$command.'`');
 
         $this->fixture->setLogger($logger);
         $actual = $this->fixture->decode(null, null);

@@ -2,12 +2,13 @@
 
 namespace JimLind\TiVo;
 
+use Exception;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\RequestException;
 
 /**
- * Service for downloading video files from a TiVo
+ * Service for downloading video files from TiVo
  */
 class VideoDownloader extends AbstractBase
 {
@@ -23,8 +24,8 @@ class VideoDownloader extends AbstractBase
     protected $guzzle;
 
     /**
-     * @param string          $mak    Your TiVo's Media Access Key
-     * @param ClientInterface $guzzle A Guzzle Client
+     * @param string          $mak    TiVo's Media Access Key
+     * @param ClientInterface $guzzle Guzzle Client
      */
     public function __construct($mak, ClientInterface $guzzle)
     {
@@ -44,10 +45,10 @@ class VideoDownloader extends AbstractBase
     {
         try {
             $this->downloadWithTimeout($url, $filePath);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             // Something went wrong with Guzzle
-            $this->logger->warning('Unable to download a video file.');
-            $this->logger->warning($exception->getMessage());
+            $this->logger->warning('Unable to download a video file');
+            $this->logger->warning('Message: `'.$exception->getMessage().'`');
         }
     }
 
@@ -55,7 +56,7 @@ class VideoDownloader extends AbstractBase
      * Download a preview of a video file from a TiVo
      *
      * The download action is halted with a timeout
-     * Timeout is logged as `info` and an actual error is looged as `warning`
+     * Timeout is logged as `info` and an actual error is logged as `warning`
      *
      * @param string $url      Where the remote file is
      * @param string $filePath Where the downloaded file goes
@@ -66,19 +67,19 @@ class VideoDownloader extends AbstractBase
             $this->downloadWithTimeout($url, $filePath, 120);
         } catch (RequestException $requestException) {
             // Connection timed out as expected
-            $this->logger->info('Intentional timeout caught.');
-            $this->logger->info($requestException->getMessage());
-        } catch (\Exception $exception) {
+            $this->logger->info('Intentional timeout caught');
+            $this->logger->info('Message: `'.$requestException->getMessage().'`');
+        } catch (Exception $exception) {
             // Something went wrong with Guzzle
-            $this->logger->warning('Unable to download a video file preview.');
-            $this->logger->warning($exception->getMessage());
+            $this->logger->warning('Unable to download a video file preview');
+            $this->logger->warning('Message: `'.$exception->getMessage().'`');
         }
     }
 
     /**
      * Download the remote file to the local system
      *
-     * To get a file from a TiVo via HTTP you must first touch the HTTPS interface
+     * To get a file from TiVo via HTTP you must first touch the HTTPS interface
      * to authenticate before the actual download can start
      *
      * @param string  $url      Where the remote file is
@@ -120,7 +121,7 @@ class VideoDownloader extends AbstractBase
     }
 
     /**
-     * Touch the TiVo via HTTPS to start Cookie storage
+     * Touch TiVo via HTTPS to start Cookie storage
      *
      * @param string $url Where the remote file is
      *
@@ -140,10 +141,10 @@ class VideoDownloader extends AbstractBase
 
         try {
             $this->guzzle->request('GET', $httpsURL, $options);
-        } catch (\Exception $exception) {
-            // Something went wrong with Guzzle.
+        } catch (Exception $exception) {
+            // Something went wrong with Guzzle
             $this->logger->warning('Unable to access the TiVo via HTTPS');
-            $this->logger->warning($exception->getMessage());
+            $this->logger->warning('Message: `'.$exception->getMessage().'`');
         }
 
         return $cookieJar;
@@ -161,11 +162,11 @@ class VideoDownloader extends AbstractBase
         $matches = [];
         $pattern = '/http:..(\d+\.\d+\.\d+\.\d+):80/';
         preg_match($pattern, $url, $matches);
-        if (empty($matches) && count($matches) < 2) {
+
+        if (empty($matches) || count($matches) < 2) {
             // Failure: Log and exit early
-            $message = 'Unable to parse IP from URL.';
-            $this->logger->warning($message);
-            $this->logger->warning('URL: "'.$url.'"');
+            $this->logger->warning('Unable to parse IP');
+            $this->logger->warning('Input: `'.$url.'`');
 
             return '';
         }

@@ -6,7 +6,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Service for finding a TiVo on your local network
+ * Service for finding TiVo on your local network
  */
 class TiVoFinder extends AbstractBase
 {
@@ -17,7 +17,7 @@ class TiVoFinder extends AbstractBase
     protected $builder;
 
     /**
-     * @param ProcessBuilder $builder The Symfony ProcessBuilder component
+     * @param ProcessBuilder $builder Symfony ProcessBuilder component
      */
     public function __construct(ProcessBuilder $builder)
     {
@@ -27,40 +27,38 @@ class TiVoFinder extends AbstractBase
     }
 
     /**
-     * Find a TiVo or log failure
+     * Find TiVo or log failure
      *
      * @return string
      */
     public function find()
     {
-        $avahiResults = $this->getProcessResults();
+        $output = $this->getProcessOutput();
 
-        if (empty($avahiResults)) {
+        if (empty($output)) {
             // Failure: Log and exit early
-            $message = 'Unable to locate a TiVo device on the network.';
-            $this->logger->warning($message);
+            $this->logger->warning('Unable to locate a TiVo device on the network');
 
             return '';
         }
 
-        return $this->parseResults($avahiResults);
+        return $this->parseOutput($output);
     }
 
     /**
-     * Run the Process to find a TiVo get results or log failure
+     * Run a Process and get results or log failure
      *
      * @return string
      */
-    protected function getProcessResults()
+    protected function getProcessOutput()
     {
         $process = $this->buildProcess();
         $process->run();
 
         if ($process->isSuccessful() === false) {
             // Failure: Log and exit early
-            $message = 'Problem executing avahi-browse. Tool may not be installed.';
-            $this->logger->warning($message);
-            $this->logger->warning('Command: '.$process->getCommandLine());
+            $this->logger->warning('Problem executing command');
+            $this->logger->warning('Details: `'.$process->getCommandLine().'`');
 
             return '';
         }
@@ -70,7 +68,7 @@ class TiVoFinder extends AbstractBase
     }
 
     /**
-     * Builds the Process that calls Avahi looking for a TiVo
+     * Build a Process to run avahi-browse looking for TiVo on TCP
      *
      * @return Process
      */
@@ -89,23 +87,22 @@ class TiVoFinder extends AbstractBase
     }
 
     /**
-     * Parse IP from Process result or log failure
+     * Parse IP from output or log failure
      *
-     * @param string $avahiResult Output of Process calling Avahi
+     * @param string $output Output of Process
      *
      * @return string
      */
-    protected function parseResults($avahiResult)
+    protected function parseOutput($output)
     {
         $matches = [];
         $pattern = '/^\s+address = \[(\d+\.\d+\.\d+\.\d+)\]$/m';
-        preg_match($pattern, $avahiResult, $matches);
+        preg_match($pattern, $output, $matches);
 
         if (empty($matches) || count($matches) < 2) {
             // Failure: Log and exit early
-            $message = 'Unable to parse IP from Avahi output.';
-            $this->logger->warning($message);
-            $this->logger->warning('Output: "'.$avahiResult.'"');
+            $this->logger->warning('Unable to parse IP');
+            $this->logger->warning('Input: `'.$output.'`');
 
             return '';
         }

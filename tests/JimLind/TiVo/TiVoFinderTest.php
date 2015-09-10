@@ -3,13 +3,14 @@
 namespace JimLind\TiVo\Tests;
 
 use JimLind\TiVo\TiVoFinder;
+use PHPUnit_Framework_TestCase;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Test the TiVo\TiVoFinder service
+ * Test the TiVoFinder service
  */
-class TiVoFinderTest extends \PHPUnit_Framework_TestCase
+class TiVoFinderTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Process
@@ -40,7 +41,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder prefix setup
+     * Test ProcessBuilder prefix setup
      */
     public function testBuilderSettingPrefix()
     {
@@ -52,7 +53,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder arguments setup
+     * Test ProcessBuilder arguments setup
      */
     public function testBuilderSettingArguments()
     {
@@ -71,7 +72,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/ProcessBuilder timeout setup
+     * Test ProcessBuilder timeout setup
      */
     public function testBuilderSettingTimeout()
     {
@@ -83,7 +84,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test Symfony/Process run method
+     * Test Process run method
      */
     public function testProcessRun()
     {
@@ -93,7 +94,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test proper behavior if process is successful
+     * Test proper behavior if Process is successful
      */
     public function testProccessSuccess()
     {
@@ -104,7 +105,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test proper behavior if process is not successful
+     * Test proper behavior if Process is not successful
      */
     public function testProcessFailure()
     {
@@ -119,10 +120,10 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
         $this->fixture->setLogger($logger);
         $logger->expects($this->at(0))
             ->method('warning')
-            ->with('Problem executing avahi-browse. Tool may not be installed.');
+            ->with('Problem executing command');
         $logger->expects($this->at(1))
             ->method('warning')
-            ->with('Command: '.$command);
+            ->with('Details: `'.$command.'`');
 
         $actual = $this->fixture->find();
         $this->assertEquals('', $actual);
@@ -141,7 +142,7 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
         $this->fixture->setLogger($logger);
         $logger->expects($this->at(0))
             ->method('warning')
-            ->with('Unable to locate a TiVo device on the network.');
+            ->with('Unable to locate a TiVo device on the network');
 
         $actual = $this->fixture->find();
         $this->assertEquals('', $actual);
@@ -195,8 +196,8 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
             [
                 'return' => ' ',
                 'log' => [
-                    'Unable to parse IP from Avahi output.',
-                    'Output: " "',
+                    'Unable to parse IP',
+                    'Input: ` `',
                 ],
                 'expected' => '',
             ],
@@ -208,8 +209,8 @@ class TiVoFinderTest extends \PHPUnit_Framework_TestCase
             [
                 'return' => ' address = [192.168.1.X]',
                 'log' => [
-                    'Unable to parse IP from Avahi output.',
-                    'Output: " address = [192.168.1.X]"',
+                    'Unable to parse IP',
+                    'Input: ` address = [192.168.1.X]`',
                 ],
                 'expected' => '',
             ],

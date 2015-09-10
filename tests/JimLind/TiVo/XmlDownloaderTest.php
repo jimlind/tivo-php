@@ -2,14 +2,17 @@
 
 namespace JimLind\TiVo\Tests;
 
+use Exception;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
 use JimLind\TiVo\XmlDownloader;
+use PHPUnit_Framework_TestCase;
+use SimpleXMLElement;
 
 /**
- * Test the TiVo\XmlDownloader service.
+ * Test the XmlDownloader service
  */
-class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
+class XmlDownloaderTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var ClientInterface
@@ -138,7 +141,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
         $secondWarning  = $invocationList[1]->parameters[0];
 
         $this->assertEquals('Client response was not a success', $firstWarning);
-        $this->assertEquals($responseCode.': '.$responseBody, $secondWarning);
+        $this->assertEquals($responseCode.': `'.$responseBody.'`', $secondWarning);
     }
 
     /**
@@ -161,7 +164,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
     public function testExceptionMessageLoggedOnDownload()
     {
         $message   = uniqid();
-        $exception = new \Exception($message);
+        $exception = new Exception($message);
 
         $this->guzzle->method('send')
             ->will($this->throwException($exception));
@@ -178,7 +181,7 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
         $secondWarning  = $invocationList[1]->parameters[0];
 
         $this->assertEquals('Client response was not a success', $firstWarning);
-        $this->assertEquals('0: '.$message, $secondWarning);
+        $this->assertEquals('0: `'.$message.'`', $secondWarning);
     }
 
     /**
@@ -268,9 +271,9 @@ class XmlDownloaderTest extends \PHPUnit_Framework_TestCase
                     '<xml><ItemCount>0</ItemCount></xml>',
                 ],
                 'expected' => [
-                    new \SimpleXMLElement('<Item />'),
-                    new \SimpleXMLElement('<Item />'),
-                    new \SimpleXMLElement('<Item />'),
+                    new SimpleXMLElement('<Item />'),
+                    new SimpleXMLElement('<Item />'),
+                    new SimpleXMLElement('<Item />'),
                 ],
             ],
         ];

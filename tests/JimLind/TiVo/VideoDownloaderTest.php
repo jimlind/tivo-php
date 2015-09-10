@@ -2,13 +2,16 @@
 
 namespace JimLind\TiVo\Tests;
 
+use Exception;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\RequestException;
 use JimLind\TiVo\VideoDownloader;
+use PHPUnit_Framework_TestCase;
 
 /**
- * Test the TiVo\VideoDownloader service.
+ * Test the VideoDownloader service
  */
-class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
+class VideoDownloaderTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var ClientInterface
@@ -200,9 +203,9 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     {
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
-            ->method('warning')->with('Unable to parse IP from URL.');
+            ->method('warning')->with('Unable to parse IP');
         $logger->expects($this->at(1))
-            ->method('warning')->with('URL: ""');
+            ->method('warning')->with('Input: ``');
 
         $this->fixture->setLogger($logger);
         $this->fixture->downloadPreview('', '');
@@ -214,7 +217,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     public function testSecureTouchException()
     {
         $message   = rand();
-        $exception = new \Exception($message);
+        $exception = new Exception($message);
         $this->guzzle->expects($this->at(0))
             ->method('request')
             ->will($this->throwException($exception));
@@ -225,7 +228,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('Unable to access the TiVo via HTTPS'));
         $logger->expects($this->at(1))
             ->method('warning')
-            ->with($this->equalTo($message));
+            ->with($this->equalTo('Message: `'.$message.'`'));
 
         $this->fixture->setLogger($logger);
         $this->fixture->downloadPreview('http://1.1.1.1:80', null);
@@ -238,7 +241,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
     {
         $message     = rand();
         $mockRequest = $this->getMock('\Psr\Http\Message\RequestInterface');
-        $exception   = new \GuzzleHttp\Exception\RequestException($message, $mockRequest);
+        $exception   = new RequestException($message, $mockRequest);
 
         $this->guzzle->expects($this->at(1))
             ->method('request')
@@ -247,10 +250,10 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('info')
-            ->with($this->equalTo('Intentional timeout caught.'));
+            ->with($this->equalTo('Intentional timeout caught'));
         $logger->expects($this->at(1))
             ->method('info')
-            ->with($this->equalTo($message));
+            ->with($this->equalTo('Message: `'.$message.'`'));
 
         $this->fixture->setLogger($logger);
         $this->fixture->downloadPreview('http://0.0.0.0:80', null);
@@ -261,7 +264,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testPreviewFileDownloadException()
     {
-        $this->setUpExceptionTest('Unable to download a video file preview.');
+        $this->setUpExceptionTest('Unable to download a video file preview');
         $this->fixture->downloadPreview('http://0.0.0.0:80', null);
     }
 
@@ -270,7 +273,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
      */
     public function testFileDownloadException()
     {
-        $this->setUpExceptionTest('Unable to download a video file.');
+        $this->setUpExceptionTest('Unable to download a video file');
         $this->fixture->download('http://0.0.0.0:80', null);
     }
 
@@ -285,7 +288,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
 
         $this->guzzle->expects($this->at(1))
             ->method('request')
-            ->will($this->throwException(new \Exception($secondWarning)));
+            ->will($this->throwException(new Exception($secondWarning)));
 
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
@@ -293,7 +296,7 @@ class VideoDownloaderTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo($message));
         $logger->expects($this->at(1))
             ->method('warning')
-            ->with($this->equalTo($secondWarning));
+            ->with($this->equalTo('Message: `'.$secondWarning.'`'));
 
         $this->fixture->setLogger($logger);
     }

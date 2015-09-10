@@ -5,7 +5,7 @@ namespace JimLind\TiVo;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
- * Service for decoding encoded TiVo video files
+ * Service for decoding TiVo video files
  */
 class VideoDecoder extends AbstractBase
 {
@@ -21,8 +21,8 @@ class VideoDecoder extends AbstractBase
     protected $builder;
 
     /**
-     * @param string         $mak     Your TiVo's Media Access Key
-     * @param ProcessBuilder $builder The Symfony ProcessBuilder component
+     * @param string         $mak     TiVo's Media Access Key
+     * @param ProcessBuilder $builder Symfony ProcessBuilder component
      */
     public function __construct($mak, ProcessBuilder $builder)
     {
@@ -33,7 +33,7 @@ class VideoDecoder extends AbstractBase
     }
 
     /**
-     * Decode a TiVo file to the new decoded file or log failure
+     * Decode a TiVo file or log failure
      *
      * @param string $input  Where the encoded TiVo file is
      * @param string $output Where the decoded MPEG file goes
@@ -47,9 +47,8 @@ class VideoDecoder extends AbstractBase
 
         if ($process->isSuccessful() === false) {
             // Failure: Log and exit early
-            $message = 'Problem executing tivodecode. Tool may not be installed.';
-            $this->logger->warning($message);
-            $this->logger->warning('Command: '.$process->getCommandLine());
+            $this->logger->warning('Problem executing command');
+            $this->logger->warning('Details: `'.$process->getCommandLine().'`');
 
             return false;
         }
@@ -58,9 +57,9 @@ class VideoDecoder extends AbstractBase
     }
 
     /**
-     * Builds the Process that calls TiVoDecode on the encoded file
+     * Build a Process to run tivodecode decoding a file with a MAK
      *
-     * @param string $mak    TiVo Your TiVo's Media Access Key
+     * @param string $mak    TiVo's Media Access Key
      * @param string $input  Where the encoded TiVo file is
      * @param string $output Where the decoded MPEG file goes
      *

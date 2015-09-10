@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use SimpleXMLElement;
 
 /**
- * Service for downloading a list of shows from a TiVo
+ * Service for downloading a list of shows from TiVo
  */
 class XmlDownloader extends AbstractBase
 {
@@ -36,9 +36,9 @@ class XmlDownloader extends AbstractBase
     protected $guzzle;
 
     /**
-     * @param string          $ip     Your TiVo's IP Address
-     * @param string          $mak    Your TiVo's Media Access Key
-     * @param ClientInterface $guzzle A Guzzle Client
+     * @param string          $ip     TiVo's IP Address
+     * @param string          $mak    TiVo's Media Access Key
+     * @param ClientInterface $guzzle Guzzle Client
      */
     public function __construct($ip, $mak, ClientInterface $guzzle)
     {
@@ -54,9 +54,9 @@ class XmlDownloader extends AbstractBase
     }
 
     /**
-     * Returns multiple XML file downloads merged into one array
+     * Get a list of shows as XMLElements recursively building on previous downloads
      *
-     * @param SimpleXMLElement[] $previousShowList Array of previous shows
+     * @param SimpleXMLElement[] $previousShowList List of shows already downloaded
      *
      * @return SimpleXMLElement[]
      */
@@ -68,10 +68,10 @@ class XmlDownloader extends AbstractBase
         $showList = $namespacedXml->xpath('//tivo:Item');
         if (count($showList) > 0) {
             $mergedShowList = array_merge($previousShowList, $showList);
-            // Recurse on next set of shows.
+            // Recurse on next set of shows
             return $this->download($mergedShowList);
         } else {
-            // Last set of shows reached.
+            // Last set of shows reached
             return $previousShowList;
         }
     }
@@ -128,7 +128,7 @@ class XmlDownloader extends AbstractBase
             $response = $client->send($request, $options);
         } catch (BadResponseException $requestException) {
             $response = $requestException->getResponse();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $response = new Response(0, [], $exception->getMessage());
         }
 
@@ -151,7 +151,7 @@ class XmlDownloader extends AbstractBase
 
         if (200 !== $responseCode) {
             $this->logger->warning('Client response was not a success');
-            $this->logger->warning($responseCode.': '.strip_tags($responseBody));
+            $this->logger->warning($responseCode.': `'.strip_tags($responseBody).'`');
 
             return new SimpleXMLElement('<xml />');
         }
@@ -176,7 +176,7 @@ class XmlDownloader extends AbstractBase
             return new SimpleXMLElement($responseBody);
         } catch (Exception $exception) {
             $this->logger->warning('Problem with SimpleXMLElement construction');
-            $this->logger->warning($exception->getMessage());
+            $this->logger->warning('Message: `'.$exception->getMessage().'`');
         }
 
         return new SimpleXMLElement('<xml />');
