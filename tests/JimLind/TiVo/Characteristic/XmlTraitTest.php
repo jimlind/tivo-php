@@ -3,11 +3,12 @@
 namespace JimLind\TiVo\Tests\Characteristic;
 
 use JimLind\TiVo\Characteristic\XmlTrait;
+use PHPUnit_Framework_TestCase;
 
 /**
  * Test the TiVo\Utilities\Log class
  */
-class XmlNamespaceTest extends \PHPUnit_Framework_TestCase
+class XmlNamespaceTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var XmlTrait Test Object

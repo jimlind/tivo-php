@@ -2,6 +2,8 @@
 
 namespace JimLind\TiVo\Model;
 
+use DateTime;
+
 /**
  * Data object for a show
  */
@@ -180,8 +182,8 @@ class Show
      */
     public function setDate($date)
     {
-        if (!$date instanceof \DateTime) {
-            $date = new \DateTime($date);
+        if (!$date instanceof DateTime) {
+            $date = new DateTime($date);
         }
         $this->date = $date;
     }

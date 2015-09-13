@@ -3,11 +3,12 @@
 namespace JimLind\TiVo\Tests\Factory;
 
 use JimLind\TiVo\Factory\ShowListFactory;
+use PHPUnit_Framework_TestCase;
 
 /**
  * Test the factory for show models.
  */
-class ShowFactoryListTest extends \PHPUnit_Framework_TestCase
+class ShowFactoryListTest extends PHPUnit_Framework_TestCase
 {
     protected $fixture = null;
 

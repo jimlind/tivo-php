@@ -2,12 +2,14 @@
 
 namespace JimLind\TiVo\Tests\Factory;
 
+use DateTime;
 use JimLind\TiVo\Factory\ShowFactory;
+use PHPUnit_Framework_TestCase;
 
 /**
  * Test the factory for show models.
  */
-class ShowFactoryTest extends \PHPUnit_Framework_TestCase
+class ShowFactoryTest extends PHPUnit_Framework_TestCase
 {
     protected $fixture = null;
 
@@ -169,7 +171,7 @@ class ShowFactoryTest extends \PHPUnit_Framework_TestCase
         $xmlElement = simplexml_load_string($xmlString);
 
         $show     = $this->fixture->createShowFromXml($xmlElement);
-        $expected = new \DateTime('2106-02-07 06:28:15 GMT');
+        $expected = new DateTime('2106-02-07 06:28:15 GMT');
         $this->assertEquals($show->getDate(), $expected);
     }
 

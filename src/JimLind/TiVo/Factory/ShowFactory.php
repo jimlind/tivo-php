@@ -2,6 +2,7 @@
 
 namespace JimLind\TiVo\Factory;
 
+use DateTime;
 use JimLind\TiVo\Characteristic\XmlTrait;
 use JimLind\TiVo\Model\Show;
 use SimpleXMLElement;
@@ -82,7 +83,7 @@ class ShowFactory
     protected function populateShow(Show $show, $data)
     {
         $hd   = strtoupper($data['hd']) == 'YES';
-        $date = new \DateTime('@'.hexdec($data['date']));
+        $date = new DateTime('@'.hexdec($data['date']));
         $id   = $this->parseID($data['url']);
 
         $show->setId($id);

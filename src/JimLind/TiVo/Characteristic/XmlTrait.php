@@ -2,6 +2,9 @@
 
 namespace JimLind\TiVo\Characteristic;
 
+use Exception;
+use SimpleXMLElement;
+
 /**
  * Trait for handling XML
  */
@@ -16,8 +19,8 @@ trait XmlTrait
      */
     public function registerTiVoNamespace($simpleXml)
     {
-        if (!$simpleXml instanceof \SimpleXMLElement) {
-            throw new \Exception('Input is not a SimpleXMLElement');
+        if (!$simpleXml instanceof SimpleXMLElement) {
+            throw new Exception('Input is not a SimpleXMLElement');
         }
 
         $namespaces = $simpleXml->getNamespaces(true);

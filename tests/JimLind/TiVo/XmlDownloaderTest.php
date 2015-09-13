@@ -149,7 +149,7 @@ class XmlDownloaderTest extends PHPUnit_Framework_TestCase
      */
     public function testExceptionOnDownload()
     {
-        $exception = new \Exception(uniqid());
+        $exception = new Exception(uniqid());
 
         $this->guzzle->method('send')
             ->will($this->throwException($exception));

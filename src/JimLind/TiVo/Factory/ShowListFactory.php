@@ -2,6 +2,7 @@
 
 namespace JimLind\TiVo\Factory;
 
+use ArrayObject;
 use JimLind\TiVo\Factory\ShowFactory;
 
 /**
@@ -25,7 +26,7 @@ class ShowListFactory
     public function __construct()
     {
         $this->showFactory = new ShowFactory();
-        $this->showList    = new \ArrayObject();
+        $this->showList    = new ArrayObject();
     }
 
     /**
