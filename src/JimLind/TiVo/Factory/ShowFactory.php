@@ -22,7 +22,7 @@ class ShowFactory
     /**
      * Create a show from an XML Element
      *
-     * @param SimpleXMLElement $xml XML Element from the TiVo
+     * @param SimpleXMLElement $xml XML Element from a TiVo
      *
      * @return Show
      */

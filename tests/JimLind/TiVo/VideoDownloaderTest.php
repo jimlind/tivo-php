@@ -225,7 +225,7 @@ class VideoDownloaderTest extends PHPUnit_Framework_TestCase
         $logger = $this->getMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('warning')
-            ->with($this->equalTo('Unable to access the TiVo via HTTPS'));
+            ->with($this->equalTo('Unable to access your TiVo via HTTPS'));
         $logger->expects($this->at(1))
             ->method('warning')
             ->with($this->equalTo('Message: `'.$message.'`'));

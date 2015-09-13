@@ -143,7 +143,7 @@ class VideoDownloader extends AbstractBase
             $this->guzzle->request('GET', $httpsURL, $options);
         } catch (Exception $exception) {
             // Something went wrong with Guzzle
-            $this->logger->warning('Unable to access the TiVo via HTTPS');
+            $this->logger->warning('Unable to access your TiVo via HTTPS');
             $this->logger->warning('Message: `'.$exception->getMessage().'`');
         }
 
@@ -151,7 +151,7 @@ class VideoDownloader extends AbstractBase
     }
 
     /**
-     * Parse the IP address from the file URL provided by the TiVo
+     * Parse the IP address from the file URL provided by TiVo
      *
      * @param string $url Where the remote file is
      *

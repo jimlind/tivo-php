@@ -11,7 +11,7 @@ sudo apt-get install php5-curl
 ```
 
 #### Avahi Install
-If you want to locate the TiVo on your network the Avahi daemon needs to be installed.
+If you want to locate a TiVo on your network the Avahi daemon needs to be installed.
 ```sh
 sudo apt-get install avahi-utils
 ```

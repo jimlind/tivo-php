@@ -32,7 +32,7 @@ class ShowListFactory
     /**
      * Create a list of shows from a list of XML Elements
      *
-     * @param SimpleXMLElement[] $xmlList XML Element from the TiVo
+     * @param SimpleXMLElement[] $xmlList XML Element from a TiVo
      *
      * @return JimLind\TiVo\Model\Show[]
      */

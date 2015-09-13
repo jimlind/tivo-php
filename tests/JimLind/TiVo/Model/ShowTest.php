@@ -7,14 +7,14 @@ use JimLind\TiVo\Model\Show;
 use PHPUnit_Framework_TestCase;
 
 /**
- * Test the Show Model.
+ * Test the Show Model
  */
 class ShowTest extends PHPUnit_Framework_TestCase
 {
     protected $fixture = null;
 
     /**
-     * Setup the PHPUnit test.
+     * Setup the PHPUnit test
      */
     public function setup()
     {
@@ -22,7 +22,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Show Id.
+     * Test set and get Show Id
      */
     public function testId()
     {
@@ -34,7 +34,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Show Title.
+     * Test set and get Show Title
      */
     public function testShowTitle()
     {
@@ -46,7 +46,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Episode Number.
+     * Test set and get Episode Number
      */
     public function testEpisodeNumber()
     {
@@ -58,7 +58,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Episode Title.
+     * Test set and get Episode Title
      */
     public function testEpisodeTitle()
     {
@@ -70,7 +70,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Show Duration.
+     * Test set and get Show Duration
      */
     public function testShowDuration()
     {
@@ -82,7 +82,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Show Date.
+     * Test set and get Show Date
      */
     public function testShowDate()
     {
@@ -94,7 +94,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Show Date as string.
+     * Test set and get Show Date as string
      */
     public function testShowDateAsString()
     {
@@ -107,7 +107,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Show Description.
+     * Test set and get Show Description
      */
     public function testShowDescription()
     {
@@ -119,7 +119,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Show Channel.
+     * Test set and get Show Channel
      */
     public function testShowChannel()
     {
@@ -131,7 +131,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Show Station.
+     * Test set and get Show Station
      */
     public function testShowStation()
     {
@@ -143,7 +143,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Show HD.
+     * Test set and get Show HD
      */
     public function testShowHD()
     {
@@ -155,7 +155,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test set and get Show HD.
+     * Test set and get Show HD
      */
     public function testShowURL()
     {

@@ -36,7 +36,7 @@ $show = $showList->offsetGet(0);
 // The TiVo IP address and MAK (Media Access Key) are needed here.
 $videoDownloader = new JimLind\TiVo\VideoDownloader($mak, $guzzle);
 
-// Download preview and complete files from the TiVo.
+// Download preview and complete files from TiVo.
 $videoDownloader->downloadPreview($show->getURL(), '/home/user/videos/raw_video_preview.tivo');
 $videoDownloader->download($show->getURL(), '/home/user/videos/raw_video_complete.tivo');
 

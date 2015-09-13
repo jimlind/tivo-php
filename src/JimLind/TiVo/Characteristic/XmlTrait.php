@@ -11,7 +11,7 @@ use SimpleXMLElement;
 trait XmlTrait
 {
     /**
-     * Register the default namespace as 'tivo' namespace.
+     * Register the default namespace as 'tivo' namespace
      *
      * @param SimpleXMLElement $simpleXml
      *

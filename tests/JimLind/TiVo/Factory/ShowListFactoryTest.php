@@ -6,14 +6,14 @@ use JimLind\TiVo\Factory\ShowListFactory;
 use PHPUnit_Framework_TestCase;
 
 /**
- * Test the factory for show models.
+ * Test the factory for show models
  */
 class ShowFactoryListTest extends PHPUnit_Framework_TestCase
 {
     protected $fixture = null;
 
     /**
-     * Setup the PHPUnit test.
+     * Setup the PHPUnit test
      */
     public function setup()
     {
@@ -21,7 +21,7 @@ class ShowFactoryListTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests that an ArrayObject was returned.
+     * Tests that an ArrayObject was returned
      */
     public function testReturnType()
     {
@@ -32,7 +32,7 @@ class ShowFactoryListTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Tests that list of shows is created.
+     * Tests that list of shows is created
      */
     public function testCreate()
     {

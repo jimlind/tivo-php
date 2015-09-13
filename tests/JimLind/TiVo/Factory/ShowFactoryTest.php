@@ -7,14 +7,14 @@ use JimLind\TiVo\Factory\ShowFactory;
 use PHPUnit_Framework_TestCase;
 
 /**
- * Test the factory for show models.
+ * Test the factory for show models
  */
 class ShowFactoryTest extends PHPUnit_Framework_TestCase
 {
     protected $fixture = null;
 
     /**
-     * Setup the PHPUnit test.
+     * Setup the PHPUnit test
      */
     public function setup()
     {
@@ -22,7 +22,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing Show ID.
+     * Test parsing Show ID
      */
     public function testShowId()
     {
@@ -35,7 +35,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing Show URL.
+     * Test parsing Show URL
      */
     public function testShowUrl()
     {
@@ -48,7 +48,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing Show Title.
+     * Test parsing Show Title
      */
     public function testShowTitle()
     {
@@ -61,7 +61,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing Episode Title.
+     * Test parsing Episode Title
      */
     public function testEpisodeTitle()
     {
@@ -74,7 +74,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing Episode Number.
+     * Test parsing Episode Number
      */
     public function testEpisodeNumber()
     {
@@ -87,7 +87,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing Show Duration.
+     * Test parsing Show Duration
      */
     public function testShowDuration()
     {
@@ -100,7 +100,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing Show Description.
+     * Test parsing Show Description
      */
     public function testShowDescription()
     {
@@ -113,7 +113,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing Show Channel.
+     * Test parsing Show Channel
      */
     public function testShowChannel()
     {
@@ -126,7 +126,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing Show Station.
+     * Test parsing Show Station
      */
     public function testShowStation()
     {
@@ -139,7 +139,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing positive Show HD status.
+     * Test parsing positive Show HD status
      */
     public function testHighDefinitionTrue()
     {
@@ -151,7 +151,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing negative Show HD status.
+     * Test parsing negative Show HD status
      */
     public function testHighDefinitionFalse()
     {
@@ -163,7 +163,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test parsing Show Date.
+     * Test parsing Show Date
      */
     public function testCaptureDate()
     {
@@ -176,7 +176,7 @@ class ShowFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that the Factory isn't stateful.
+     * Test that the Factory isn't stateful
      */
     public function testRepeatCreates()
     {

@@ -1,6 +1,6 @@
 {
     "name": "jimlind/tivo-php",
-    "description": "Communicate with a S3 TiVo via Guzzle",
+    "description": "Communicate with an S3 TiVo via Guzzle",
     "keywords": ["tivo", "guzzle"],
     "homepage": "https://github.com/jimlind/tivo-php",
     "license": "MIT",
