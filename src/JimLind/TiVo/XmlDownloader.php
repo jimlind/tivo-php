@@ -8,6 +8,7 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Uri;
+use JimLind\TiVo\Characteristic\LoggingTrait;
 use JimLind\TiVo\Characteristic\XmlTrait;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,8 +17,9 @@ use SimpleXMLElement;
 /**
  * Service for downloading a list of shows from TiVo
  */
-class XmlDownloader extends AbstractBase
+class XmlDownloader
 {
+    use LoggingTrait;
     use XmlTrait;
 
     /**
@@ -50,7 +52,7 @@ class XmlDownloader extends AbstractBase
         $this->mak    = $mak;
         $this->guzzle = $guzzle;
 
-        parent::__construct();
+        $this->setNullLogger();
     }
 
     /**

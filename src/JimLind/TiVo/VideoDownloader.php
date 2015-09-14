@@ -6,12 +6,14 @@ use Exception;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\RequestException;
+use JimLind\TiVo\Characteristic\LoggingTrait;
 
 /**
  * Service for downloading video files from TiVo
  */
-class VideoDownloader extends AbstractBase
+class VideoDownloader
 {
+    use LoggingTrait;
 
     /**
      * @var string
@@ -32,7 +34,7 @@ class VideoDownloader extends AbstractBase
         $this->mak    = $mak;
         $this->guzzle = $guzzle;
 
-        parent::__construct();
+        $this->setNullLogger();
     }
 
     /**

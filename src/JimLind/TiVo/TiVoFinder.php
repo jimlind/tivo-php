@@ -2,14 +2,16 @@
 
 namespace JimLind\TiVo;
 
+use JimLind\TiVo\Characteristic\LoggingTrait;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
  * Service for finding TiVo on your local network
  */
-class TiVoFinder extends AbstractBase
+class TiVoFinder
 {
+    use LoggingTrait;
 
     /**
      * @var ProcessBuilder
@@ -23,7 +25,7 @@ class TiVoFinder extends AbstractBase
     {
         $this->builder = $builder;
 
-        parent::__construct();
+        $this->setNullLogger();
     }
 
     /**

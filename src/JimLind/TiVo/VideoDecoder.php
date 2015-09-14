@@ -2,13 +2,15 @@
 
 namespace JimLind\TiVo;
 
+use JimLind\TiVo\Characteristic\LoggingTrait;
 use Symfony\Component\Process\ProcessBuilder;
 
 /**
  * Service for decoding TiVo video files
  */
-class VideoDecoder extends AbstractBase
+class VideoDecoder
 {
+    use LoggingTrait;
 
     /**
      * @var string
@@ -29,7 +31,7 @@ class VideoDecoder extends AbstractBase
         $this->mak     = $mak;
         $this->builder = $builder;
 
-        parent::__construct();
+        $this->setNullLogger();
     }
 
     /**
