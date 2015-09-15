@@ -17,7 +17,7 @@ This is built for, tested on, and intended to run on Ubuntu 14.04 LTS (Trusty Ta
 There are a few prerequisites you can find documented in the provided [installation file](INSTALLATION.md) for your perusal.
 
 ```sh
-composer.phar require jimlind/tivo-php
+composer require jimlind/tivo-php
 ```
 
 #### Verification
