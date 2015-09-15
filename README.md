@@ -16,6 +16,10 @@ I find that learning by example is the best way so here is an [example file](exa
 This is built for, tested on, and intended to run on Ubuntu 14.04 LTS (Trusty Tahr). You can run it other distributions, but YMMV.
 There are a few prerequisites you can find documented in the provided [installation file](INSTALLATION.md) for your perusal.
 
+```sh
+composer.phar require jimlind/tivo-php
+```
+
 #### Verification
 
 I wrote a [verification script](verify.php) for you to test your setup.

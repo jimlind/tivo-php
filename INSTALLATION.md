@@ -1,7 +1,7 @@
 ## Installs and Dependencies
 
 #### PHP Install
-Obviously you need it or the whole idea is shot. PHP 5.4 and greater is supported.
+Obviously you need it or the whole idea is shot. PHP 5.5 and greater is supported.
 
 #### cURL Install
 To get Guzzle to work you might need PHP's implementation of cURL.
