@@ -1,6 +1,6 @@
 <?php
 
-include 'vendor/autoload.php';
+require 'vendor/autoload.php';
 
 // Setup the ProcessBuilder dependency.
 // This is part of the the Process component from Symfony for executing commands.
