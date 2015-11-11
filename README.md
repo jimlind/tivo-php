@@ -34,7 +34,7 @@ Example: php verify.php 7678999999 192.168.0.1
 
 ## Code Quality Metrics
 
-#### 100% Code Coverage!
+#### 100% Code Coverage
 ```sh
 composer install
 vendor/bin/phpunit --coverage-text
