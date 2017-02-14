@@ -98,7 +98,7 @@ class ShowTest extends PHPUnit_Framework_TestCase
      */
     public function testShowDateAsString()
     {
-        $dayString = rand(0, 100).' days';
+        $dayString = rand(0, 100).' days 00:00:00';
         $this->fixture->setDate($dayString);
 
         $expected = new DateTime($dayString);
