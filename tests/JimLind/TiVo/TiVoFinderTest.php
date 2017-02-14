@@ -33,7 +33,7 @@ class TiVoFinderTest extends PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->builder = $this->getMock('\Symfony\Component\Process\ProcessBuilder');
+        $this->builder = $this->createMock('\Symfony\Component\Process\ProcessBuilder');
         $this->builder->method('getProcess')
             ->willReturn($this->process);
 
@@ -115,7 +115,7 @@ class TiVoFinderTest extends PHPUnit_Framework_TestCase
         $this->process->method('getCommandLine')->willReturn($command);
         $this->process->expects($this->never())->method('getOutput');
 
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
 
         $this->fixture->setLogger($logger);
         $logger->expects($this->at(0))
@@ -137,7 +137,7 @@ class TiVoFinderTest extends PHPUnit_Framework_TestCase
         $this->process->method('isSuccessful')->willReturn(true);
         $this->process->method('getOutput')->willReturn('');
 
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
 
         $this->fixture->setLogger($logger);
         $logger->expects($this->at(0))
@@ -162,7 +162,7 @@ class TiVoFinderTest extends PHPUnit_Framework_TestCase
         $this->process->method('isSuccessful')->willReturn(true);
         $this->process->method('getOutput')->willReturn($return);
 
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
 
         $this->fixture->setLogger($logger);
 

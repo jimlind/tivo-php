@@ -25,7 +25,7 @@ class VideoDownloaderTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->guzzle = $this->getMock('\\GuzzleHttp\\ClientInterface');
+        $this->guzzle = $this->createMock('\\GuzzleHttp\\ClientInterface');
 
         $this->fixture = new VideoDownloader(null, $this->guzzle);
     }
@@ -201,7 +201,7 @@ class VideoDownloaderTest extends PHPUnit_Framework_TestCase
      */
     public function testLoggedBadParsing()
     {
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('warning')->with('Unable to parse IP');
         $logger->expects($this->at(1))
@@ -222,7 +222,7 @@ class VideoDownloaderTest extends PHPUnit_Framework_TestCase
             ->method('request')
             ->will($this->throwException($exception));
 
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('warning')
             ->with($this->equalTo('Unable to access your TiVo via HTTPS'));
@@ -240,14 +240,14 @@ class VideoDownloaderTest extends PHPUnit_Framework_TestCase
     public function testDownloadPreviewTimeout()
     {
         $message     = rand();
-        $mockRequest = $this->getMock('\Psr\Http\Message\RequestInterface');
+        $mockRequest = $this->createMock('\Psr\Http\Message\RequestInterface');
         $exception   = new RequestException($message, $mockRequest);
 
         $this->guzzle->expects($this->at(1))
             ->method('request')
             ->will($this->throwException($exception));
 
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('info')
             ->with($this->equalTo('Intentional timeout caught'));
@@ -290,7 +290,7 @@ class VideoDownloaderTest extends PHPUnit_Framework_TestCase
             ->method('request')
             ->will($this->throwException(new Exception($secondWarning)));
 
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('warning')
             ->with($this->equalTo($message));

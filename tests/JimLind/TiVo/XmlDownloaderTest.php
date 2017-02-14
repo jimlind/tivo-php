@@ -26,9 +26,9 @@ class XmlDownloaderTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->guzzle = $this->getMock('\GuzzleHttp\ClientInterface');
+        $this->guzzle = $this->createMock('\GuzzleHttp\ClientInterface');
 
-        $this->fixture = new XmlDownloader(null, null, $this->guzzle);
+        $this->fixture = new XmlDownloader(uniqid(), null, $this->guzzle);
     }
 
     /**
@@ -37,7 +37,7 @@ class XmlDownloaderTest extends PHPUnit_Framework_TestCase
     public function testMethodOnDownload()
     {
         $spy      = $this->any();
-        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $response = $this->createMock('\Psr\Http\Message\ResponseInterface');
         $this->guzzle->expects($spy)
             ->method('send')
             ->willReturn($response);
@@ -56,19 +56,19 @@ class XmlDownloaderTest extends PHPUnit_Framework_TestCase
     public function testUriOnDownload()
     {
         $spy      = $this->any();
-        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $response = $this->createMock('\Psr\Http\Message\ResponseInterface');
         $this->guzzle->expects($spy)
             ->method('send')
             ->willReturn($response);
 
-        $ipAddress = rand();
-        $this->fixture = new XmlDownloader($ipAddress, null, $this->guzzle);
+        $host = uniqid();
+        $this->fixture = new XmlDownloader($host, null, $this->guzzle);
         $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
         $request        = $invocationList[0]->parameters[0];
         $this->assertEquals(
-            'https://'.$ipAddress.'/TiVoConnect',
+            'https://'.$host.'/TiVoConnect',
             (string) $request->getUri()
         );
     }
@@ -79,14 +79,14 @@ class XmlDownloaderTest extends PHPUnit_Framework_TestCase
     public function testAuthOnDownload()
     {
         $spy      = $this->any();
-        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $response = $this->createMock('\Psr\Http\Message\ResponseInterface');
         $this->guzzle->expects($spy)
             ->method('send')
             ->willReturn($response);
 
         $mak      = rand();
         $expected = ['tivo', $mak, 'digest'];
-        $this->fixture = new XmlDownloader(null, $mak, $this->guzzle);
+        $this->fixture = new XmlDownloader(uniqid(), $mak, $this->guzzle);
         $this->fixture->download();
 
         $invocationList = $spy->getInvocations();
@@ -99,8 +99,8 @@ class XmlDownloaderTest extends PHPUnit_Framework_TestCase
      */
     public function testBadResponseExceptionOnDownload()
     {
-        $request  = $this->getMock('\Psr\Http\Message\RequestInterface');
-        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $request  = $this->createMock('\Psr\Http\Message\RequestInterface');
+        $response = $this->createMock('\Psr\Http\Message\ResponseInterface');
 
         $exception = new BadResponseException(uniqid(), $request, $response);
 
@@ -119,17 +119,17 @@ class XmlDownloaderTest extends PHPUnit_Framework_TestCase
         $responseBody = rand();
         $responseCode = rand();
 
-        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $response = $this->createMock('\Psr\Http\Message\ResponseInterface');
         $response->method('getBody')->willReturn($responseBody);
         $response->method('getStatusCode')->willReturn($responseCode);
 
-        $request   = $this->getMock('\Psr\Http\Message\RequestInterface');
+        $request   = $this->createMock('\Psr\Http\Message\RequestInterface');
         $exception = new BadResponseException(rand(), $request, $response);
 
         $this->guzzle->method('send')
             ->will($this->throwException($exception));
 
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
         $spy    = $this->any();
         $logger->expects($spy)->method('warning');
 
@@ -169,7 +169,7 @@ class XmlDownloaderTest extends PHPUnit_Framework_TestCase
         $this->guzzle->method('send')
             ->will($this->throwException($exception));
 
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
         $spy    = $this->any();
         $logger->expects($spy)->method('warning');
 
@@ -189,13 +189,13 @@ class XmlDownloaderTest extends PHPUnit_Framework_TestCase
      */
     public function testAnchorOffsetIncrement()
     {
-        $firstResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $firstResponse = $this->createMock('\Psr\Http\Message\ResponseInterface');
         $firstResponse->method('getBody')
             ->willReturn('<xml><Item /><Item /></xml>');
         $firstResponse->method('getStatusCode')
             ->willReturn(200);
 
-        $secondResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $secondResponse = $this->createMock('\Psr\Http\Message\ResponseInterface');
         $secondResponse->method('getBody')
             ->willReturn('<xml />');
         $secondResponse->method('getStatusCode')
@@ -227,7 +227,7 @@ class XmlDownloaderTest extends PHPUnit_Framework_TestCase
     public function testGuzzleReturnParsing($xmlList, $expected)
     {
         foreach ($xmlList as $index => $xmlString) {
-            $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+            $response = $this->createMock('\Psr\Http\Message\ResponseInterface');
             $response->method('getBody')
                 ->willReturn($xmlString);
             $response->method('getStatusCode')

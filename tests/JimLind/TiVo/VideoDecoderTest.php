@@ -33,7 +33,7 @@ class VideoDecoderTest extends PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->builder = $this->getMock('\Symfony\Component\Process\ProcessBuilder');
+        $this->builder = $this->createMock('\Symfony\Component\Process\ProcessBuilder');
         $this->builder->method('getProcess')
             ->willReturn($this->process);
 
@@ -120,7 +120,7 @@ class VideoDecoderTest extends PHPUnit_Framework_TestCase
         $this->process->method('isSuccessful')->willReturn(false);
         $this->process->method('getCommandLine')->willReturn($command);
 
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
         $logger->expects($this->at(0))
             ->method('warning')
             ->with('Problem executing command');
